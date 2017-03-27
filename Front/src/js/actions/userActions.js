@@ -1,23 +1,20 @@
-export function fetchUser() {
-  return {
-    type: "FETCH_USER_FULFILLED",
-    payload: {
-      name: "Will",
-      age: 35,
-    }
-  }
+import axios from "axios";
+
+export function getUser() {
+  type
 }
 
-export function setUserName(name) {
-  return {
-    type: 'SET_USER_NAME',
-    payload: name,
-  }
-}
-
-export function setUserAge(age) {
-  return {
-    type: 'SET_USER_AGE',
-    payload: age,
+export function fetchUser(userDetails) {
+  return function(dispatch) {
+    axios.post("http://localhost:3001/api/user/login", {
+      name:userDetails.name,
+      password:userDetails.password
+    })
+    .then((response) => {
+      dispatch({type: "USER_LOGIN_FULFILLED", payload: response.data})
+    })
+    .catch((err) => {
+      dispatch({type: "USER_LOGIN_REJECTED", payload: err})
+    })
   }
 }

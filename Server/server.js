@@ -1,10 +1,13 @@
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
-
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+var router = express.Router();
 app.use(function (req, res, next) {
 
     // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+    res.setHeader('Access-Control-Allow-Origin', '*');
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -20,12 +23,26 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get('/', function(req, res) {
-  res.send('Hello Lunabrackets\n');
+app.use('/api', router);
+
+router.get('/', function(req, res) {
+  res.send('Hello LunabracketsAPI\n');
 });
 
-app.get('/getUsers', function(req, res) {
-  res.send([{"id":1,"first_name":"Amy","last_name":"Payne","email":"apayne0@moonfruit.com","gender":"Female","ip_address":"192.249.79.105"},
+router.route('/user/login').post(function(req, res){
+  console.log("Calling API");
+  var name = req.body.name;
+  var password = req.body.password;
+  if(name === 'test' && password === 'test'){
+    res.json({message:'User verified', id:1, name:'test'});
+  }
+  else {
+    res.json({message:'Invalid user or password'});
+  }
+})
+
+router.get('/users', function(req, res) {
+  res.json([{"id":1,"first_name":"Amy","last_name":"Payne","email":"apayne0@moonfruit.com","gender":"Female","ip_address":"192.249.79.105"},
 {"id":2,"first_name":"Phyllis","last_name":"Wright","email":"pwright1@tamu.edu","gender":"Female","ip_address":"208.8.207.2"},
 {"id":3,"first_name":"Anna","last_name":"Greene","email":"agreene2@apple.com","gender":"Female","ip_address":"148.251.33.74"},
 {"id":4,"first_name":"Craig","last_name":"Knight","email":"cknight3@twitter.com","gender":"Male","ip_address":"110.13.238.153"},
