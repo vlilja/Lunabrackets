@@ -1,0 +1,57 @@
+@import "variables";
+
+#tournament-form {
+    background-color: $light-yellow;
+    margin: 20px 5% 5%;
+    border-radius: 15px;
+
+    h3 {
+        padding-top: 10px;
+        margin-left: 5px;
+    }
+
+    span {
+        margin-left: 5px;
+    }
+
+    .options {
+        margin-left: 3em;
+
+        label {
+            margin-left: 5px;
+        }
+
+        .settings {
+            min-width: 300px;
+
+            select {
+                width: 40px;
+                float: right;
+            }
+        }
+
+        .inline-block {
+            label {
+                min-width: 200px;
+            }
+
+            .numberfield {
+                float: right;
+            }
+        }
+    }
+
+    .numberfield {
+        width: 40px;
+    }
+}
+
+#tournament-form > label {
+    text-decoration: underline;
+    margin-left: 3em;
+}
+
+#tournament-form > input {
+    margin-left: 3em;
+    min-width: 150px;
+}

@@ -1,0 +1,20 @@
+$yellow: #f5c000;
+$light-yellow: #f4fb04;
+$black: #1a1a1a;
+$white: #f2f2f2;
+$dark-grey:#868686;
+$light-grey: rgba(221, 221, 221, .7);
+@mixin linear-gradient($color1, $color2) {
+    background: -webkit-linear-gradient($color1, $color2); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient($color1, $color2); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient($color1, $color2); /* For Firefox 3.6 to 15 */
+    background: linear-gradient($color1, $color2); /* Standard syntax (must be last) */
+}
+
+.lunaux-margin-bottom {
+  margin-bottom: 5px;
+}
+
+.lunaux-margin-bottom-double {
+  margin-bottom: 10px;
+}

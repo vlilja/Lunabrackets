@@ -1,11 +1,49 @@
-$font-stack:    Helvetica, sans-serif;
-$primary-color: #333;
+@import "variables";
 
-h1 {
-  color: red;
+body,
+html {
+    font-family: 'Raleway', sans-serif;
+    height: 100%;
 }
 
-body {
-  font: 100% $font-stack;
-  color: $primary-color;
+button:focus {
+    outline: none;
+}
+
+.lunaux-btn {
+    margin-left: 3em;
+    background-color: black;
+    border-color: transparent;
+    color: $light-yellow;
+    border-radius: 15px;
+    font-size: 16px;
+}
+
+.lunaux-btn:hover {
+    border-color: $black;
+    color: $black;
+    background-color: $light-yellow;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+#wrap {
+    min-height: 100%;
+}
+
+#app {
+    overflow: auto;
+    background-color: #f2f2f2;
+    padding-bottom: 95px;
+}
+
+.footer {
+    position: relative;
+    margin-top: -95px;
+    height: 95px;
+    clear: both;
+    padding-top: 20px;
+    background-color: $dark-grey;
 }

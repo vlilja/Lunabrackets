@@ -1,0 +1,18 @@
+@import "variables";
+
+.navbar-default {
+  border: $black;
+  border-top: 1px;
+  border-bottom: 3px;
+  @include linear-gradient($yellow, $light-grey);
+
+  .navbar-nav{
+    float:right;
+    padding-right: 25px;
+  }
+
+  a, .navbar-brand, .navbar-brand:hover {
+    color: $black;
+  }
+
+}

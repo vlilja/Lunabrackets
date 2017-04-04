@@ -1,6 +1,10 @@
 import React from "react";
 import { connect } from "react-redux";
 import {  fetchUser } from "../actions/userActions";
+import Jumbotron from "./Jumbotron";
+import Navbar from "./Navbar";
+import Content from "./Content";
+require('../../stylesheets/login.scss');
 
 @connect((store) => {
     return {
@@ -9,13 +13,6 @@ import {  fetchUser } from "../actions/userActions";
     };
 })
 
-/*
-function mapStateToProps(store) {
-  return {
-      user: store.user.user
-  };
-}
-*/
 export default class Layout extends React.Component {
 
     constructor(){
@@ -35,39 +32,41 @@ export default class Layout extends React.Component {
     }
     submitLogin(event){
       event.preventDefault();
-      console.log("state" + this.state);
       var userDetails = {
         name:this.state.loginName,
         password:this.state.password
       }
-      console.log(userDetails);
       this.props.dispatch(fetchUser(userDetails));
     }
 
     render() {
         const {user, fetched}  = this.props;
-        console.log(this.props);
-        if(!fetched) {
-          return (<div>
+        var test = true;
+        if(!test) {
+          return(
+            <div>
+            <Jumbotron />
+            <div className="login-form">
+              <h4>User login</h4>
             <form onSubmit={this.submitLogin}>
               <label>Name
+              </label>
               <input value={this.state.loginName} name="loginName" onChange={this.handleInputChange} type="text"></input>
-              </label>
               <br />
-              <label>Password
+              <label>Password</label>
               <input value={this.state.password} name="password" onChange={this.handleInputChange} type="text"></input>
-              </label>
               <br />
-              <input type="submit" value="Log in" />
+              <input id="submit" type="submit" value="Log in" />
             </form>
-          </div>);
+          </div>
+        </div>);
         }
         else {
           return (<div>
-            <h1>Welcome to Lunabracket {name}</h1>
-          </div>)
+            <Jumbotron />
+            <Navbar />
+            <Content />
+          </div>);
         }
     }
 }
-
-//export default connect(mapStateToProps)(Layout);
