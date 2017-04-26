@@ -15,6 +15,9 @@ export default function reducer(state={
     case "SHOW_SEARCH_PLAYER": {
       return {...state, view:'searchPlayer'}
     }
+    case "SHOW_TOURNAMENT_VIEW": {
+      return {...state, view:'tournamentView'}
+    }
   }
 
   return state;

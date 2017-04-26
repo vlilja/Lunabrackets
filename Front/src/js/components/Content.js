@@ -2,6 +2,8 @@ import React from "react";
 import { connect } from "react-redux";
 import {  fetchUser } from "../actions/userActions";
 import Tournamentform from "./Tournamentform";
+import Tournamentview from "./Tournamentview";
+import Dashboard from "./Dashboard";
 
 @connect((store)=> {
   return {
@@ -33,8 +35,10 @@ export default class Content extends React.Component {
       case 'searchPlayer':
         return (<div>Search Player</div>);
       break;
+      case 'tournamentView':
+        return (<div><Tournamentview /></div>)
     default:
-      return (<div>This is Lunabrackets</div>)
+      return (<div><Dashboard /></div>)
     }
   }
 

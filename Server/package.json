@@ -16,6 +16,7 @@
     "express": "^4.15.0"
   },
   "devDependencies": {
-    "body-parser": "^1.17.1"
+    "body-parser": "^1.17.1",
+    "mariasql": "^0.2.6"
   }
 }

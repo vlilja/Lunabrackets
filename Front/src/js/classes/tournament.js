@@ -3,17 +3,16 @@ export default {
         name: '',
         type: 'League',
         size: '8',
-        gametype: '8-ball',
+        gameType: '8-ball',
         handicap: false,
         cupSize:'4',
-        raceto: {
+        raceTo: {
           roundrobin:'1',
           double:'1',
           single:'1'
-        },
-        league: false
+        }
     },
-    gametypes: {
+    gameTypes: {
         eightball: '8-ball',
         nineball: '9-ball',
         tenball: '10-ball',

@@ -1,13 +1,48 @@
 @import "variables";
 
-body,
-html {
+html, body {
     font-family: 'Raleway', sans-serif;
+    min-height: 100%;
     height: 100%;
+}
+
+body {
+  margin-bottom: 100px;
+}
+
+ul {
+  list-style: none;
 }
 
 button:focus {
     outline: none;
+}
+
+.lunaux-status-bar {
+  border: 1px solid $dark-grey;
+  display: inline-block;
+  width:100%;
+
+  div {
+    padding-right: 5px;
+    text-align: right;
+  }
+  .one-third{
+    display:inline-block;
+    width:33%;
+    background-color: $green;
+  }
+  .two-thirds{
+    display:inline-block;
+    width:66%;
+    background-color: $orange;
+  }
+  .full{
+    display:inline-block;
+    width:100%;
+    background-color: $red;
+  }
+
 }
 
 .lunaux-btn {
@@ -33,17 +68,9 @@ button:focus {
     min-height: 100%;
 }
 
-#app {
-    overflow: auto;
-    background-color: #f2f2f2;
-    padding-bottom: 95px;
-}
-
 .footer {
-    position: relative;
-    margin-top: -95px;
-    height: 95px;
-    clear: both;
-    padding-top: 20px;
+    position: absolute;
+    width:100%;
+    height: 100px;
     background-color: $dark-grey;
 }

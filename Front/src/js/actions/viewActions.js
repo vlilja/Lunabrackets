@@ -25,7 +25,15 @@ const view =  {
       type:'SHOW_SEARCH_PLAYER',
       payload:{}
     }
+  },
+  
+  showTournamentView: function() {
+    return {
+      type:'SHOW_TOURNAMENT_VIEW',
+      payload:{}
+    }
   }
+
 
 }
 

@@ -65,7 +65,9 @@ export default class Layout extends React.Component {
           return (<div>
             <Jumbotron />
             <Navbar />
+            <div className = "lunaux-margin-left">
             <Content />
+            </div>
           </div>);
         }
     }

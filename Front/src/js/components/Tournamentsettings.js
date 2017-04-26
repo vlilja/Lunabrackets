@@ -7,9 +7,8 @@ export default class Tournamentsettings extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            raceto: this.props.raceto,
-            sizeoptions: [],
-            size: this.props.cupSize
+            raceTo: this.props.raceTo,
+            sizeoptions: []
         };
         this.initCupSize = this.initCupSize.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -33,10 +32,10 @@ export default class Tournamentsettings extends React.Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        var raceto = this.state.raceto;
-        raceto = {...raceto, [name]:value};
-        this.setState({raceto: raceto});
-        this.props.setRaceTo(raceto);
+        var raceTo = this.state.raceTo;
+        raceTo = {...raceTo, [name]:value};
+        this.setState({raceTo: raceTo});
+        this.props.setRaceTo(raceTo);
     }
 
     handleSelectChange(event) {
@@ -51,17 +50,17 @@ export default class Tournamentsettings extends React.Component {
                 <div className="options">
                     <div className="inline-block settings">
                         <div className="lunaux-margin-bottom">
-                            <label>Round-robin stage, race to</label><input className="numberfield" name="roundrobin" onChange={this.handleInputChange} type="number" min="1"/>
+                            <label>Round-robin stage, race to</label><input className="numberfield" name="roundrobin" value={this.state.raceTo.roundrobin} onChange={this.handleInputChange} type="number" min="1"/>
                         </div>
                         <div className="lunaux-margin-bottom">
-                            <label>Double-elimination stage, race to</label><input className="numberfield" name="double" onChange={this.handleInputChange} type="number" min="1"/>
+                            <label>Double-elimination stage, race to</label><input className="numberfield" name="double" value={this.state.raceTo.double} onChange={this.handleInputChange} type="number" min="1"/>
                         </div>
                         <div className="lunaux-margin-bottom">
-                            <label>Single-elimination stage, race to</label><input className="numberfield" name="single"  onChange={this.handleInputChange} type="number" min="1"/>
+                            <label>Single-elimination stage, race to</label><input className="numberfield" name="single" value={this.state.raceTo.single}  onChange={this.handleInputChange} type="number" min="1"/>
                         </div>
                         <div className="lunaux-margin-bottom">
                             <label>Players in cup</label>
-                              <select value={this.state.size} onChange={this.handleSelectChange}>
+                              <select value={this.props.cupSize} onChange={this.handleSelectChange}>
                                   {this.state.sizeoptions}
                               </select>
                         </div>
@@ -73,9 +72,9 @@ export default class Tournamentsettings extends React.Component {
                 <div className="options">
                     <div className="inline-block settings">
                         <div className="lunaux-margin-bottom">
-                            <label>Double-elimination stage, race to</label><input className="numberfield" name="double" onChange={this.handleInputChange} type="number" min="1"/></div>
+                            <label>Double-elimination stage, race to</label><input className="numberfield" name="double" value={this.state.raceTo.double} onChange={this.handleInputChange} type="number" min="1"/></div>
                         <div className="lunaux-margin-bottom">
-                            <label>Single-elimination stage, race to</label><input className="numberfield" name="single" onChange={this.handleInputChange} type="number" min="1"/></div>
+                            <label>Single-elimination stage, race to</label><input className="numberfield" name="single" value={this.state.raceTo.single} onChange={this.handleInputChange} type="number" min="1"/></div>
                         <div className="lunaux-margin-bottom">
                             <label>Players in cup</label>
                             <select value={this.props.cupSize} onChange={this.handleSelectChange}>
@@ -90,7 +89,7 @@ export default class Tournamentsettings extends React.Component {
                 <div className="options">
                     <div className="inline-block settings">
                         <div className="lunaux-margin-bottom">
-                            <label>Race to</label><input className="numberfield" name="single" type="number" onChange={this.handleInputChange} min="1"/></div>
+                            <label>Race to</label><input className="numberfield" name="single" type="number" value={this.state.raceTo.single} onChange={this.handleInputChange} min="1"/></div>
                     </div>
                 </div>
             );

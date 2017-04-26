@@ -3,6 +3,7 @@ export default function reducer(state={
       id: null,
       name: null
     },
+    users:[],
     fetched: false,
     fetching: false,
     error: null,
@@ -21,6 +22,18 @@ export default function reducer(state={
           user: action.payload,
           fetched: true,
           fetching: false
+        }
+      }
+      case "FETCH_USERS_FULFILLED": {
+        return {
+          ...state,
+          users:action.payload
+        }
+      }
+      case "FETCH_USERS_REJECTED": {
+        return {
+          ...state,
+          error:action.payload
         }
       }
     }

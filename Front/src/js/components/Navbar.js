@@ -22,7 +22,7 @@ export default class Navbar extends React.Component {
       <nav className="navbar navbar-default">
         <div className="container-fluid">
           <div className="navbar-header">
-            <a className="navbar-brand" href="#">Lunabrackets</a>
+            <a className="navbar-brand" href="#" onClick={()=>{this.props.dispatch(view.showHomeScreen())}}>Lunabrackets</a>
           </div>
           <ul className="nav navbar-nav">
             <li className="dropdown"><a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#">Tournaments<span className="caret"></span></a>

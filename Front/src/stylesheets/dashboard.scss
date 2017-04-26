@@ -1,0 +1,32 @@
+@import "variables";
+
+$height: 180px;
+$width: 300px;
+
+.lunaux-selectable-box {
+    margin:5px;
+    display: inline-block;
+    border: 1px solid $dark-grey;
+    height:$height;
+    width: $width;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: $light-yellow;
+    box-shadow: 10px 10px 5px;
+    transition: all 0.5s;
+
+    h3 {
+      text-decoration: underline;
+    }
+    p {
+      font-weight: bold;
+    }
+}
+
+.lunaux-selectable-box:hover {
+  transform:translate(-20px, -5px);
+  height:$height*1.10;
+  width:$width*1.10;
+  margin: -5px -5px -5px -5px;
+  box-shadow: 15px 15px 5px;
+}
