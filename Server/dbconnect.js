@@ -40,7 +40,7 @@ endTransaction = function(success, cb) {
             if (err) {
                 cb(new Error('Rollback failed'));
             }
-            cb(new Error('Tournament creation failed'));
+            cb(new Error('Transaction failed'));
         });
     }
 }
@@ -90,17 +90,24 @@ db.getRaceTo = function(id, cb) {
 }
 
 db.getSingleEliminationMatches = function(tournamentId, cb) {
-    var queryString = 'SELECT * from se_matches WHERE se_id = (SELECT id from single_elimination WHERE tournament_id = ' + tournamentId + ')'
+    console.log('fetcing single elim');
+    var queryString = 'SELECT * from se_matches WHERE se_id = (SELECT id from single_elimination WHERE tournament_id = ' + tournamentId + ') ORDER BY number ASC'
     c.query(queryString, function(err, rows) {
         if (err) {
+          console.log(err);
             cb(err);
         }
+        console.log(rows);
         cb(rows);
     })
 }
 
-db.updateSingleEliminationMatch = function(matchId, playerOneId, playerTwoId, cb) {
-    var queryString = 'UPDATE se_matches SET playerOne = ' + playerOneId + ', playerTwo = ' + playerTwoId + ' WHERE id = ' + matchId;
+db.updateSingleEliminationMatch = function(match, cb) {
+    var playerOne = match.playerOne != null ? 'playerOne = "' + match.playerOne + '",' : '';
+    var playerTwo = match.playerTwo != null ? 'playerTwo = "' + match.playerTwo + '",' : '';
+    var queryString = 'UPDATE se_matches SET '+playerOne+' '+playerTwo+' \
+    playerOneScore = "' + match.playerOneScore + '", playerTwoScore = "' + match.playerTwoScore + '", complete = "'+match.complete+'"  WHERE id = ' + match.id;
+    console.log(queryString);
     c.query(queryString, function(err, rows) {
         if (err) {
             cb(err);
@@ -110,9 +117,21 @@ db.updateSingleEliminationMatch = function(matchId, playerOneId, playerTwoId, cb
     })
 }
 
+db.updateTournamentStatus = function(tournamentId, status, cb) {
+    var queryString = "UPDATE tournament SET status ='" + status + "' WHERE id = " + tournamentId;
+    c.query(queryString, function(err, rows) {
+        if (err) {
+            console.log(err);
+            cb(new Error('Update failed'));
+        } else {
+            cb(rows);
+        }
+    })
+}
+
 db.createSingleEliminationMatches = function(tournamentId, matches, cb) {
     var promise = new Promise((resolve, reject) => {
-        c.query('SELECT id FROM single_elimination WHERE tournament_id =' + tournamentId, function(err, rows) {
+        c.query('SELECT id, raceTo FROM single_elimination WHERE tournament_id =' + tournamentId, function(err, rows) {
             if (err) {
                 reject(err);
             } else {
@@ -122,17 +141,25 @@ db.createSingleEliminationMatches = function(tournamentId, matches, cb) {
     });
     promise.then((result) => {
             var seId = result.id;
+            var raceTo = result.raceTo;
             var transaction = startTransaction();
             transaction.then((result) => {
                 while (matches.length > 0) {
                     var match = matches.pop();
+                    match.raceTo = raceTo;
                     db.createSingleEliminationMatch(seId, match, function(result) {
                         if (result instanceof Error) {
                             throw result;
                         }
                     })
                 }
-                endTransaction(true, cb);
+                this.updateTournamentStatus(tournamentId, 'started', function(res) {
+                    if (res instanceof Error) {
+                        endTransaction(false, cb);
+                    } else {
+                        endTransaction(true, cb);
+                    }
+                });
             })
         })
         .catch((error) => {
@@ -143,12 +170,13 @@ db.createSingleEliminationMatches = function(tournamentId, matches, cb) {
 
 db.createSingleEliminationMatch = function(seId, match, cb) {
     var queryString
+    console.log(match);
     if (match.playerOne != null && match.playerTwo != null) {
-        queryString = 'INSERT INTO se_matches (se_id, matchNumber, playerOne, playerTwo, playerOneScore, playerTwoScore, nextMatch)\
-                      VALUES (' + seId + ',' + match.number + ',' + match.playerOne.id + ',' + match.playerTwo.id + ',' + 0 + ',' + 0 + ',' + match.nextMatch + ')';
+        queryString = 'INSERT INTO se_matches (se_id, number, playerOne, playerTwo, playerOneScore, playerTwoScore, nextMatch, raceTo)\
+                      VALUES (' + seId + ',' + match.number + ',' + match.playerOne.id + ',' + match.playerTwo.id + ',' + 0 + ',' + 0 + ',' + match.nextMatch + ',' + match.raceTo + ')';
     } else {
-        var queryString = 'INSERT INTO se_matches (se_id, matchNumber, playerOne, playerTwo, playerOneScore, playerTwoScore, nextMatch)\
-                                        VALUES (' + seId + ',' + match.number + ',' + null + ',' + null + ',' + 0 + ',' + 0 + ',' + match.nextMatch + ')';
+        var queryString = 'INSERT INTO se_matches (se_id, number, playerOne, playerTwo, playerOneScore, playerTwoScore, nextMatch, raceTo)\
+                                        VALUES (' + seId + ',' + match.number + ',' + null + ',' + null + ',' + 0 + ',' + 0 + ',' + match.nextMatch + ',' + match.raceTo + ')';
     }
     c.query(queryString, function(err, rows) {
         if (err) {
@@ -196,10 +224,12 @@ db.createTournament = function(tournament, cb) {
             var id = result['@id'];
             if (tournament.type === 'DoubleWithoutCup') {
                 var queryString =
-                    'INSERT INTO double_elimination(tournament_id, raceTo, size) values (' + id + ',' + tournament.raceTo.single + ',' + tournament.size + ')';
+                    'INSERT INTO double_elimination(tournament_id, raceTo, size) values \
+                    (' + id + ',' + tournament.raceTo.single + ',' + tournament.size + ')';
             } else {
                 var queryString =
-                    'INSERT INTO single_elimination(tournament_id, raceTo, size) values (' + id + ',' + tournament.raceTo.single + ',' + tournament.cupSize + ')';
+                    'INSERT INTO single_elimination(tournament_id, raceTo, size) values \
+                    (' + id + ',' + tournament.raceTo.single + ',' + tournament.cupSize + ')';
             }
             return new Promise((resolve, reject) => {
                 c.query(queryString,
@@ -217,7 +247,8 @@ db.createTournament = function(tournament, cb) {
             switch (tournament.type) {
                 case "DoubleWithCup":
                     console.log('Creating double with cup')
-                    var queryString = 'INSERT INTO double_elimination(tournament_id, raceTo, size) values (' + id + ',' + tournament.raceTo.double + ',' + tournament.size + ')';
+                    var queryString = 'INSERT INTO double_elimination(tournament_id, raceTo, size) values \
+                    (' + id + ',' + tournament.raceTo.double + ',' + tournament.size + ')';
                     c.query(queryString,
                         function(err, rows) {
                             if (err) {
@@ -232,7 +263,8 @@ db.createTournament = function(tournament, cb) {
                 case 'League':
                     console.log('Creating league');
                     var promise = new Promise((resolve, reject) => {
-                        var queryString = 'INSERT INTO double_elimination(tournament_id, raceTo, size) values (' + id + ',' + tournament.raceTo.double + ',' + 16 + ')';
+                        var queryString = 'INSERT INTO double_elimination(tournament_id, raceTo, size) values \
+                        (' + id + ',' + tournament.raceTo.double + ',' + 16 + ')';
                         c.query(queryString,
                             function(err, rows) {
                                 if (err) {
@@ -244,7 +276,8 @@ db.createTournament = function(tournament, cb) {
                             });
                     });
                     promise.then((result) => {
-                            var queryString = 'INSERT INTO round_robin(tournament_id, raceTo, size) values (' + id + ',' + tournament.raceTo.roundrobin + ',' + 32 + ')';
+                            var queryString = 'INSERT INTO round_robin(tournament_id, raceTo, size) values \
+                            (' + id + ',' + tournament.raceTo.roundrobin + ',' + 32 + ')';
                             c.query(queryString,
                                 function(err, rows) {
                                     if (err) {

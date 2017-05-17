@@ -3,7 +3,9 @@ import {connect} from "react-redux";
 import defaultTournament from "../classes/tournament";
 import Playermanagement from "./Playermanagement";
 import BracketContainer from "./BracketContainer";
+import Bracket from "./Bracket";
 import {startSingleElimination} from "../actions/tournamentActions";
+import view from "../actions/viewActions";
 
 @connect((store) => {
     return {tournament: store.tournament.selectedTournament, participants: store.tournament.selectedTournamentParticipants}
@@ -55,7 +57,7 @@ export default class Tournamentview extends React.Component {
                             <label>Size: {tournament.size}
                                 players</label><br/>
                             <label>Game: {tournament.gameType}</label><br/>
-                            <label>Handicap enabled: {tournament.handicap
+                            <label>Handicap enabled: {tournament.handicap === 'Y'
                                     ? 'Yes'
                                     : 'No'}</label><br/>
                             <label>{this.showRaceTo()}</label><br/>
@@ -76,13 +78,11 @@ export default class Tournamentview extends React.Component {
                             </div>
                         )
                         : ''}
-                    {tournament.status === 'started'
-                        ? (<BracketContainer tournamentId={tournament.id}/>)
-                        : ''
-}
-
                 </div>
-
+                <div className="row">
+                        {tournament.status === 'started'
+                            ? <Bracket /> : '' }
+                </div>
             </div>
         )
     }

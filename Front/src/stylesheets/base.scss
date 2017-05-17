@@ -45,6 +45,11 @@ button:focus {
 
 }
 
+.vertical-align {
+  display: flex;
+  flex-direction: row;
+}
+
 .lunaux-btn {
     margin-left: 3em;
     background-color: black;

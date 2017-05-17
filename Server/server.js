@@ -103,15 +103,48 @@ router.get('/tournaments/:tournament_id/single-elimination', function(req, res) 
 });
 
 router.post('/tournaments/:tournament_id/single-elimination', function(req, res) {
-    db.createSingleEliminationMatches(req.params.tournament_id, req.body.matches, function(response) {
-        console.log(response);
+    var promise = new Promise((resolve,reject) => {
+      db.createSingleEliminationMatches(req.params.tournament_id, req.body.matches, function(response) {
+          if(response instanceof Error){
+            reject(response);
+          }
+          else {
+            resolve(response);
+          }
+      });
     });
+    promise.then((result) => {
+      res.json('Single elimination tournament started successfully');
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).send(reason);
+    })
+
 });
 
-router.post('/tournaments/:tournament_id/single-elimination/:match_id', function(req, res) {
-    db.updateSingleEliminationMatch(req.params.match_id, req.body.playerOneId, req.body.playerTwoId, function(response) {
-        res.json(response);
+router.post('/tournaments/:tournament_id/single-elimination/matches/:match_id', function(req, res) {
+    var match = req.body.match;
+    var promise = new Promise((resolve, reject) => {
+      db.updateSingleEliminationMatch(match, function(result){
+        if(result instanceof Error){
+          console.log(result);
+          reject(result)
+        }
+        else {
+          resolve(result);
+        }
+      });
     });
+    promise.then((result) => {
+      res.json('Single elimination match updated successfully');
+    })
+    .catch((error) =>{
+      console.log(error);
+      res.status(500).send(error);
+    })
+
+
 })
 
 router.get('/users', function(req, res) {

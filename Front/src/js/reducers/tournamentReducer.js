@@ -2,9 +2,11 @@ export default function reducer(state = {
     tournaments: [],
     selectedTournament: '',
     selectedTournamentParticipants: [],
-    selectedTournamentMatches: [],
+    selectedTournamentMatches: {},
     fetching: false,
     fetched: false,
+    fetchingMatches: false,
+    fetchedMatches: false,
     error: null,
     message: ''
 
@@ -50,10 +52,19 @@ export default function reducer(state = {
                     error: action.payload
                 }
             }
+        case "FETCH_SINGLE_ELIMINATION_MATCHES": {
+          {
+            return { ...state,
+                fetchingMatches: true,
+                message: ''
+            }
+          }
+        }
         case "FETCH_SINGLE_ELIMINATION_MATCHES_FULLFILLED":
             {
                 return { ...state,
-                    fetching: false,
+                    fetchingMatches: false,
+                    fetchedMatches:true,
                     selectedTournamentMatches: action.payload
                 }
             }
@@ -79,7 +90,7 @@ export default function reducer(state = {
                 return { ...state,
                     error: action.payload,
                     message: {
-                        type: 'success',
+                        type: 'error',
                         text: 'There was an error in tournament creation'
                     }
                 }
@@ -109,6 +120,28 @@ export default function reducer(state = {
                     selectedTournament: action.payload
                 }
             }
+        case "UPDATE_MATCHES": {
+          {
+              return {
+                ...state,
+                selectedTournamentMatches: action.payload
+              }
+
+          }
+        }
+        case "CLEAR_SELECTED_TOURNAMENT_INFO":
+          {
+              return { ...state,
+                  selectedTournament: action.payload,
+                  selectedTournamentParticipants: [],
+                  selectedTournamentMatches: [],
+                  fetching: false,
+                  fetched: false,
+                  fetchingMatches: false,
+                  fetchedMatches: false
+              }
+          }
+
     }
 
     return state;
