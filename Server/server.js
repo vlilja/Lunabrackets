@@ -1,7 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var db = require('./dbconnect');
+var db = require('./DB/dbOperations');
 var app = express();
+var dbClient = require('./DB/dbconnect').initConnection();
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -49,7 +50,7 @@ router.route('/user/login').post(function(req, res) {
 })
 
 router.get('/tournaments', function(req, res) {
-    db.getTournaments(function(tournaments) {
+    db.tournament.getTournaments(dbClient, function(tournaments) {
         res.json(tournaments);
     });
 });
@@ -58,7 +59,7 @@ router.post('/tournaments', function(req, res) {
     var tournament = req.body;
     var promise = new Promise((resolve, reject) => {
         console.log('Calling create tournament');
-        db.createTournament(tournament, function(response) {
+        db.tournament.createTournament(dbClient, tournament, function(response) {
             console.log(response);
             if (response instanceof Error) {
                 console.log('response is errored')
@@ -79,32 +80,32 @@ router.post('/tournaments', function(req, res) {
 });
 
 router.get('/tournaments/:tournament_id/participants', function(req, res) {
-    db.getParticipants(req.params.tournament_id, function(response) {
+    db.tournament.getParticipants(dbClient, req.params.tournament_id, function(response) {
         res.json(response);
     })
 });
 
 router.post('/tournaments/:tournament_id/participants/:participant_id', function(req, res) {
-    db.addParticipant(req.params.tournament_id, req.params.participant_id, function(response) {
+    db.tournament.addParticipant(dbClient, req.params.tournament_id, req.params.participant_id, function(response) {
         res.json(response);
     })
 });
 
 router.get('/tournaments/:tournament_id/raceto/', function(req, res) {
-    db.getRaceTo(req.params.tournament_id, function(response) {
+    db.tournament.getRaceTo(dbClient, req.params.tournament_id, function(response) {
         res.json(response);
     })
 });
 
 router.get('/tournaments/:tournament_id/single-elimination', function(req, res) {
-    db.getSingleEliminationMatches(req.params.tournament_id, function(response) {
+    db.tournament.singleElimination.getSingleEliminationMatches(dbClient, req.params.tournament_id, function(response) {
         res.json(response);
     })
 });
 
 router.post('/tournaments/:tournament_id/single-elimination', function(req, res) {
     var promise = new Promise((resolve,reject) => {
-      db.createSingleEliminationMatches(req.params.tournament_id, req.body.matches, function(response) {
+      db.tournament.singleElimination.createSingleEliminationMatches(dbClient, req.params.tournament_id, req.body.matches, function(response) {
           if(response instanceof Error){
             reject(response);
           }
@@ -123,10 +124,34 @@ router.post('/tournaments/:tournament_id/single-elimination', function(req, res)
 
 });
 
+router.get('/tournaments/:tournament_id/double-elimination', function(req, res){
+
+})
+
+router.post('/tournaments/:tournament_id/double-elimination', function(req, res) {
+  var promise = new Promise((resolve,reject) => {
+    db.tournament.doubleElimination.createDoubleEliminationMatches(req.params.tournament_id, req.body.matches, function(response) {
+        if(response instanceof Error){
+          reject(response);
+        }
+        else {
+          resolve(response);
+        }
+    });
+  });
+  promise.then((result) => {
+    res.json('Single elimination tournament started successfully');
+  })
+  .catch((error) => {
+    console.log(error);
+    res.status(500).send(reason);
+  })
+});
+
 router.post('/tournaments/:tournament_id/single-elimination/matches/:match_id', function(req, res) {
     var match = req.body.match;
     var promise = new Promise((resolve, reject) => {
-      db.updateSingleEliminationMatch(match, function(result){
+      db.tournament.singleElimination.updateSingleEliminationMatch(dbClient, match, function(result){
         if(result instanceof Error){
           console.log(result);
           reject(result)
@@ -148,7 +173,7 @@ router.post('/tournaments/:tournament_id/single-elimination/matches/:match_id', 
 })
 
 router.get('/users', function(req, res) {
-    db.getUsers(function(result) {
+    db.user.getUsers(dbClient, function(result) {
         res.json(result);
     })
 });

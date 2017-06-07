@@ -4,7 +4,7 @@ import defaultTournament from "../classes/tournament";
 import Playermanagement from "./Playermanagement";
 import BracketContainer from "./BracketContainer";
 import Bracket from "./Bracket";
-import {startSingleElimination} from "../actions/tournamentActions";
+import {startSingleElimination, startDoubleElimination} from "../actions/tournamentActions";
 import view from "../actions/viewActions";
 
 @connect((store) => {
@@ -40,6 +40,9 @@ export default class Tournamentview extends React.Component {
     startTournament() {
         if (this.props.tournament.type === 'Single') {
             this.props.dispatch(startSingleElimination(this.props.tournament, this.props.participants));
+        }
+        if(this.props.tournament.type === 'DoubleWithoutCup'){
+          this.props.dispatch(startDoubleElimination(this.props.tournament, this.props.participants));
         }
     }
 

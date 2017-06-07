@@ -1,6 +1,6 @@
 import React from "react";
 import {connect} from "react-redux";
-import {fetchTournaments, selectTournament} from "../actions/tournamentActions";
+import {fetchTournaments, selectTournament, getHelloWorld} from "../actions/tournamentActions";
 import Statusbar from "./Statusbar.js";
 import view from "../actions/viewActions";
 require("../../stylesheets/dashboard.scss");
@@ -62,6 +62,7 @@ export default class Dashboard extends React.Component {
         }
         return (
             <div>There are no tournaments, maybe create one?</div>
+
         )
 
     }
