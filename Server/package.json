@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "body-parser": "^1.17.1",
+    "express-delay": "^0.2.0",
     "mariasql": "^0.2.6"
   }
 }

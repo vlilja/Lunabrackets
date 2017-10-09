@@ -1,6 +1,5 @@
 import React from "react";
 import {connect} from "react-redux";
-require("../../stylesheets/base.scss");
 
 export default class Tournamentsettings extends React.Component {
 

@@ -3,7 +3,6 @@ import {connect} from "react-redux";
 import {fetchTournaments, selectTournament, getHelloWorld} from "../actions/tournamentActions";
 import Statusbar from "./Statusbar.js";
 import view from "../actions/viewActions";
-require("../../stylesheets/dashboard.scss");
 
 @connect((store) => {
     return {tournaments: store.tournament.tournaments, tournamentFetching: store.tournament.fetching, tournamentFetched: store.tournament.fetched}

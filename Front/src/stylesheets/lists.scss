@@ -1,0 +1,14 @@
+@import "variables";
+
+ul.scrollable {
+  overflow-y: scroll;
+  max-height: 500px;
+}
+
+ul.pointer > li {
+  cursor:pointer;
+}
+
+ul.pointer > li:hover {
+  color:$yellow;
+}

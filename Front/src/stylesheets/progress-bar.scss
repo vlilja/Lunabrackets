@@ -1,0 +1,12 @@
+@import "variables";
+
+.stage-indicator {
+  background-color: $light-yellow;
+  text-align: center;
+
+
+}
+
+.stage-indicator.selected {
+  background-color: red;
+}

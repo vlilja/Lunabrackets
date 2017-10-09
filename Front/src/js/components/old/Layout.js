@@ -3,8 +3,6 @@ import { connect } from "react-redux";
 import {  fetchUser } from "../actions/userActions";
 import Jumbotron from "./Jumbotron";
 import Navbar from "./Navbar";
-import Content from "./Content";
-require('../../stylesheets/login.scss');
 
 @connect((store) => {
     return {
@@ -65,8 +63,7 @@ export default class Layout extends React.Component {
           return (<div>
             <Jumbotron />
             <Navbar />
-            <div className = "lunaux-margin-left">
-            <Content />
+            <div className="lunaux-margin-left">
             </div>
           </div>);
         }

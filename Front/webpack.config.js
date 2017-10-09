@@ -28,6 +28,10 @@ module.exports = {
         path: __dirname + "/src/",
         filename: "client.min.js"
     },
+    devServer: {
+    port: 8080,
+    historyApiFallback: true
+    },
     plugins: [
         new ETP('styles.css')
     ],

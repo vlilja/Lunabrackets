@@ -4,6 +4,7 @@ export default function reducer(state={
       name: null
     },
     users:[],
+    searchResults:[],
     fetched: false,
     fetching: false,
     error: null,
@@ -33,6 +34,23 @@ export default function reducer(state={
       case "FETCH_USERS_REJECTED": {
         return {
           ...state,
+          error:action.payload
+        }
+      }
+      case "FETCH_PLAYERS": {
+        return {...state, searchResults:[], fetching: true}
+      }
+      case "FETCH_PLAYERS_FULFILLED": {
+        return {
+          ...state,
+          fetching:false,
+          searchResults:action.payload
+        }
+      }
+      case "FETCH_PLAYERS_REJECTED": {
+        return {
+          ...state,
+          fetching:false,
           error:action.payload
         }
       }

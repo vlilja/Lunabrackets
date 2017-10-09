@@ -1,26 +1,7 @@
-@import "variables";
-
-.lunaux-modal {
-    position: absolute;
-    top: 40px;
-    left: 40px;
-    right: 40px;
-    bottom: 40px;
-    border: 1px solid #ccc;
-    background: #fff;
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    border-radius:: 4px;
-    outline: none;
-    padding: 20px;
-    background-color: $light-yellow;
-}
-
-.lunaux-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: $light-grey;
+.small-modal{
+      border-radius: 5px;
+      top: 35%;
+      padding: 10px 10px 10px 10px;
+      background-color: white;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }

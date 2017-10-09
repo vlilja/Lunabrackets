@@ -1,81 +1,18 @@
+//custom
 @import "variables";
+@import "tooltip";
+@import "margins";
+@import "modal";
+@import "sticky-footer";
+@import "errors";
+@import "lists";
+@import "progress-bar";
 
 html, body {
-    font-family: 'Raleway', sans-serif;
-    min-height: 100%;
-    height: 100%;
+  min-height: 100%;
+  min-width: 100%;
 }
 
-body {
-  margin-bottom: 100px;
-}
-
-ul {
-  list-style: none;
-}
-
-button:focus {
-    outline: none;
-}
-
-.lunaux-status-bar {
-  border: 1px solid $dark-grey;
-  display: inline-block;
-  width:100%;
-
-  div {
-    padding-right: 5px;
-    text-align: right;
-  }
-  .one-third{
-    display:inline-block;
-    width:33%;
-    background-color: $green;
-  }
-  .two-thirds{
-    display:inline-block;
-    width:66%;
-    background-color: $orange;
-  }
-  .full{
-    display:inline-block;
-    width:100%;
-    background-color: $red;
-  }
-
-}
-
-.vertical-align {
-  display: flex;
-  flex-direction: row;
-}
-
-.lunaux-btn {
-    margin-left: 3em;
-    background-color: black;
-    border-color: transparent;
-    color: $light-yellow;
-    border-radius: 15px;
-    font-size: 16px;
-}
-
-.lunaux-btn:hover {
-    border-color: $black;
-    color: $black;
-    background-color: $light-yellow;
-}
-
-.inline-block {
-    display: inline-block;
-}
-
-#wrap {
-    min-height: 100%;
-}
-
-.footer {
-    position: absolute;
-    width:100%;
-    height: 100px;
-    background-color: $dark-grey;
+.clickable {
+  cursor: pointer;
 }

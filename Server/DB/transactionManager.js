@@ -14,15 +14,22 @@ module.exports = {
     })
   },
 
-  endTransaction: function(c, success, cb) {
+  endTransaction: function(c, success, cb, response = 0) {
     console.log('Ending transaction');
+    if (success && !cb) {
+      console.log('Ended in success');
+      c.query('COMMIT', function(err, rows) {
+        if (err) {
+        }
+      });
+    }
     if (success) {
       console.log('Ended in success');
       c.query('COMMIT', function(err, rows) {
         if (err) {
           cb(err);
         }
-        cb(rows);
+        cb(rows, response);
       });
     }
     if (!success) {

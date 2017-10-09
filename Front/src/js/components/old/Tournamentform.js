@@ -6,8 +6,6 @@ import Modal from "react-modal";
 import Messages from "./Messages";
 import view from "../actions/viewActions";
 import {createTournament} from "../actions/tournamentActions";
-require('../../stylesheets/tournamentform.scss');
-require('../../stylesheets/modal.scss');
 
 @connect((store) => {
     return {message: store.tournament.message};
