@@ -1,0 +1,17 @@
+@import "variables";
+
+.group-bracket td:first-child {
+  text-align: left;
+}
+
+.group-bracket td {
+  text-align: center;
+}
+
+.greyed-out {
+  background-color: $dark-grey;
+}
+
+.win {
+  background-color: $light-yellow;
+}

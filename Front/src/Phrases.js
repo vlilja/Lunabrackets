@@ -12,7 +12,8 @@ export default {
       straight: 'Straight pool'
     },
     yes: 'Yes',
-    no: 'No'
+    no: 'No',
+    ndash: '–'
   },
   league: {
     heading: 'Leagues',
@@ -37,6 +38,13 @@ export default {
     warningHeading: 'Warning',
     warningMessage: 'There are less than 32 players in the league and it will cause games with walk overs. Do you want to proceed and still create this league?'
   },
+  leagueNavigation: {
+    admin: 'Admin',
+    results: 'Results',
+    group: 'Group',
+    qualifiers: 'Qualifiers',
+    finals: 'Finals'
+  },
   adminView: {
     heading: 'Administration',
     leaguePanelHeading: 'League details',
@@ -44,10 +52,16 @@ export default {
     handicapHeading: 'Adjust handicaps',
     start: 'Start'
   },
+  groupView: {
+    wins: 'Wins',
+    matchScoreFormHeading: 'Enter match score',
+    update:'Update'
+  },
   errorMessages: {
     pageNotFound:'Sorry we couldn\'t find what u were looking for...',
     missingName: 'Missing tournament name',
     missingPlayers: 'Missing players',
-    handicapError: 'Fix handicaps'
+    handicapError: 'Fix handicaps',
+    invalidScore: 'Who won? Fix scores'
   }
 }

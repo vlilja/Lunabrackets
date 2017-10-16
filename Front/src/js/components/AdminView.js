@@ -106,7 +106,7 @@ export default class AdminView extends React.Component {
       }
     }
     if (this.state.invalidHandicaps.length === 0 && !invalid) {
-      this.props.startLeague(this.state.players, this.state.groups);
+      this.props.startLeague(this.state.players, this.state.groups, this.state.raceTo);
     }
     this.setState({
       ...this.state

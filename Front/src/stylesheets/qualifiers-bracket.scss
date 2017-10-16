@@ -1,0 +1,26 @@
+
+$height: 60px;
+
+.qualifiers-bracket .panel {
+  margin-bottom:0px;
+}
+
+.match {
+  height: $height;
+}
+
+.match-padding-half {
+  height: $height/2;
+}
+
+.match-padding-three-quarters {
+  height: $height/4*3;
+}
+
+.match-padding-double {
+  height: $height*2;
+}
+
+.match-padding-one-quarter {
+  height: $height/4;
+}

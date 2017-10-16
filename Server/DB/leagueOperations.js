@@ -93,9 +93,9 @@ function insertLeague(c, league) {
 }
 
 //UPDATE OPERATIONS
-function updateLeagueStage(c, leagueId, stage) {
+function updateLeagueStageAndRaceTo(c, leagueId, stage, raceTo) {
   return new Promise((resolve, reject) => {
-    var queryString = "UPDATE leagues SET stage='"+stage+"' WHERE id = '"+leagueId+"';"
+    var queryString = "UPDATE leagues SET stage='"+stage+"', raceTo = '"+raceTo+"' WHERE id = '"+leagueId+"';"
     c.query(queryString, function(error, rows) {
       if(error) {
         reject(error);
@@ -125,6 +125,6 @@ module.exports = {
   getAllLeagues: getAllLeagues,
   createLeague: createLeague,
   getLeague: getLeague,
-  updateLeagueStage: updateLeagueStage,
+  updateLeagueStageAndRaceTo: updateLeagueStageAndRaceTo,
   updatePlayerHandicap: updatePlayerHandicap
 }

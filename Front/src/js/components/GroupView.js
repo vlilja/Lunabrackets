@@ -1,5 +1,7 @@
 import React from "react";
 import Icons from "./Icons";
+import GroupBracket from "./GroupBracket";
+import Modal from "react-modal";
 
 export default class GroupView extends React.Component {
 
@@ -13,22 +15,26 @@ export default class GroupView extends React.Component {
   }
 
   mapGroups() {
-    return this.props.league.groups.map((group, idx) => {
-      return <li key={idx}>{group.name}</li>
-    })
+    var groups = [];
+      for(var key in this.props.league.groups) {
+        groups.push(<GroupBracket key={key} raceTo={this.props.league.raceTo} group={this.props.league.groups[key]} updateMatch={this.props.updateGroupStageMatch}/>);
+      }
+      return groups;
   }
 
   render() {
-    var element;
-    if (!this.props.league.groups) {
+    var element, mappedGroups;
+    if (!this.props.league.groups || this.props.updating) {
       element = <Icons type="LOADING" size="40px"/>
     } else {
-      const mappedGroups = this.mapGroups();
-      element = <ul>{mappedGroups}</ul>
+      mappedGroups = this.mapGroups();
     }
     return (
-      <div>
+      <div class="col-xs-12">
         {element}
+        <div class="col-xs-12">
+          {mappedGroups}
+        </div>
       </div>
     )
   }

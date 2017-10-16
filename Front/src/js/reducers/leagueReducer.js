@@ -4,11 +4,13 @@ export default function reducer(state = {
     loading: {
       list: false,
       single: false,
-      groups: false
+      groups: false,
+      update: false
     },
     creatingLeague: false,
     startingLeague: false,
     message: '',
+    showMessage: false,
     error: null
   },
   action) {
@@ -39,6 +41,7 @@ export default function reducer(state = {
     case "FETCH_LEAGUE":
       {
         return { ...state,
+          selectedLeague: null,
           loading: { ...state.loading,
             single: true
           }
@@ -122,6 +125,27 @@ export default function reducer(state = {
           }
         }
       }
+    case "FETCH_ALL_LEAGUE_GROUP_MATCHES":
+      {
+        return { ...state
+        }
+      }
+    case "FETCH_ALL_LEAGUE_GROUP_MATCHES_FULFILLED":
+      {
+        return { ...state,
+          selectedLeague: { ...this.state.selectedLeague,
+            groups: { ...this.state.selectedLeague.groups,
+              [action.payload.id]: group
+            }
+          }
+        }
+      }
+    case "FETCH_ALL_LEAGUE_GROUP_MATCHES_REJECTED":
+      {
+        return { ...state,
+          error: action.payload
+        }
+      }
     case "START_LEAGUE":
       {
         return {
@@ -140,6 +164,48 @@ export default function reducer(state = {
         return { ...state,
           error: action.payload,
           startingLeague: false
+        }
+      }
+    case "UPDATE_LEAGUE_MATCH":
+      {
+        return { ...state,
+          loading: { ...state.loading,
+            update: true
+          }
+        }
+      }
+    case "UPDATE_MATCH_FULFILLED":
+      {
+        return {
+          ...state,
+          loading: { ...state.loading,
+            update: false
+          },
+          error: null,
+          message: action.payload
+        }
+      }
+    case "UPDATE_MATCH_REJECTED":
+      {
+        return {
+          ...state,
+          loading: { ...state.loading,
+            update: false
+          },
+          error: action.payload,
+          message: 'Error updating match'
+        }
+      }
+    case "SHOW_MESSAGE":
+      {
+        return { ...state,
+          showMessage: true
+        }
+      }
+    case "HIDE_MESSAGE":
+      {
+        return { ...state,
+          showMessage: false
         }
       }
   }

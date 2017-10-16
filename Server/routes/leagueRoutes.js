@@ -48,8 +48,13 @@ router.get('/:leagueId', function(req, res) {
 })
 
 router.post('/:leagueId/start', function(req, res) {
-  leagueHandler.startLeague(req.params.leagueId, req.body.participants, req.body.groups);
-  res.json('moi');
+  leagueHandler.startLeague(req.params.leagueId, req.body.participants, req.body.groups, req.body.raceTo);
+})
+
+router.post('/:leagueId/start/qualifiers', function(req, res) {
+  leagueHandler.startQualifiers(req.params.leagueId, function() {
+    console.log('moi');
+  });res.json('moi');
 })
 
 router.get('/:leagueId/groups', function(req, res) {
@@ -70,6 +75,17 @@ router.get('/:leagueId/groups/:groupId/matches', function(req, res) {
       res.json(response);
     }
   });
+})
+
+router.post('/:leagueId/groups/:groupId/matches/:matchId', function(req, res) {
+  leagueHandler.updateGroupStageMatch(req.body.match, req.params.leagueId, function (response) {
+    if (response instanceof Error) {
+      console.log(response);
+      res.status(400).send(response.message);
+    } else {
+      res.json(response);
+    }
+  })
 })
 
 module.exports = router;
