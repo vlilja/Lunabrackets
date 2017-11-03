@@ -88,4 +88,14 @@ router.post('/:leagueId/groups/:groupId/matches/:matchId', function(req, res) {
   })
 })
 
+router.get('/:leagueId/groups/:groupId/results', function(req, res) {
+  leagueHandler.getGroupResults(req.params.groupId, function(response) {
+    if (response instanceof Error) {
+      res.json('Error fetching group results');
+    } else {
+      res.json(response);
+    }
+  });
+})
+
 module.exports = router;

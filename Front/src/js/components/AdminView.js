@@ -201,6 +201,8 @@ export default class AdminView extends React.Component {
             </div>
           </div>
         </div>
+        <div class="col-lg-12">
+        </div>
       </div>
     )
   }

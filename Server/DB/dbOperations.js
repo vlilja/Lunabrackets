@@ -1,8 +1,11 @@
 var tournament = require('./tournamentOperations');
-var user = require('./userOperations');
-var player = require('./playerOperations');
-var league = require('./leagueOperations');
-var group = require('./groupOperations');
+ user = require('./userOperations');
+ player = require('./playerOperations');
+ league = require('./leagueOperations');
+ group = require('./groupOperations');
+ qualifier = require('./qualifierOperations');
+ finals = require('./finalsOperations');
+ elimination = require('./eliminationOperations');
 
 
 module.exports = {
@@ -10,5 +13,8 @@ module.exports = {
   user:user,
   player:player,
   league:league,
-  group:group
+  group:group,
+  qualifier:qualifier,
+  finals:finals,
+  elimination: elimination
 }

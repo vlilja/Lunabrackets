@@ -9,8 +9,8 @@ export default class GroupBracket extends React.Component {
     super(props);
     this.state = {
       wins: [],
-      modalOpen:false,
-      modalContent:''
+      modalOpen: false,
+      modalContent: ''
     }
     props.group.players.forEach((player, idx) => {
       this.state.wins.push({id: player.id, wins: 0});
@@ -103,7 +103,9 @@ export default class GroupBracket extends React.Component {
         upperHalf = false;
       }
     })
-    var cell = <td key={selectedMatch.match_id} onClick={()=>{this.openModal(selectedMatch.match_id)}} data-match-id={selectedMatch.match_id}></td>
+    var cell = <td key={selectedMatch.match_id} onClick={() => {
+      this.openModal(selectedMatch.match_id)
+    }} data-match-id={selectedMatch.match_id}></td>
     if (selectedMatch.player_one_score && selectedMatch.player_two_score) {
       if (upperHalf) {
         if (selectedMatch.player_one_score > selectedMatch.player_two_score) {
@@ -112,7 +114,9 @@ export default class GroupBracket extends React.Component {
           })
           playerWins.wins++;
         }
-        cell = <td key={selectedMatch.match_id} onClick={()=>{this.openModal(selectedMatch.match_id)}} class={playerWins
+        cell = <td key={selectedMatch.match_id} onClick={() => {
+          this.openModal(selectedMatch.match_id)
+        }} class={playerWins
           ? 'win'
           : ''} data-match-id={selectedMatch.match_id}>{selectedMatch.player_one_score + ' – ' + selectedMatch.player_two_score}</td>
       } else {
@@ -122,7 +126,9 @@ export default class GroupBracket extends React.Component {
           })
           playerWins.wins++;
         }
-        cell = <td key={selectedMatch.match_id} onClick={()=>{this.openModal(selectedMatch.match_id)}} class={playerWins
+        cell = <td key={selectedMatch.match_id} onClick={() => {
+          this.openModal(selectedMatch.match_id)
+        }} class={playerWins
           ? 'win'
           : ''} data-match-id={selectedMatch.match_id}>{selectedMatch.player_two_score + ' – ' + selectedMatch.player_one_score}</td>
       }
@@ -131,31 +137,34 @@ export default class GroupBracket extends React.Component {
   }
 
   openModal(id) {
-    var match = this.props.group.matches.find((item) => {
-      return id === item.match_id;
-    })
-    var playerOne = this.props.group.players.find((player) => {
-      return match.player_one === player.id;
-    })
-    var playerTwo = this.props.group.players.find((player) => {
-      return match.player_two === player.id;
-    })
-    var content = <MatchForm match={match} raceTo={this.props.raceTo} playerOne={playerOne} playerTwo={playerTwo} update={this.updateMatch} closeModal={()=>{this.setState({modalOpen:false})}} />
-    this.setState({modalOpen:true, modalContent:content});
+    if (this.props.stage === 'group') {
+      var match = this.props.group.matches.find((item) => {
+        return id === item.match_id;
+      })
+      var playerOne = this.props.group.players.find((player) => {
+        return match.player_one === player.id;
+      })
+      var playerTwo = this.props.group.players.find((player) => {
+        return match.player_two === player.id;
+      })
+      var content = <MatchForm match={match} raceTo={this.props.raceTo} playerOne={playerOne} playerTwo={playerTwo} update={this.updateMatch} closeModal={() => {
+        this.setState({modalOpen: false})
+      }}/>
+      this.setState({modalOpen: true, modalContent: content});
+    }
   }
 
   render() {
     const grid = this.createGrid();
-    var elem = <div onClick={()=>{this.setState({modalOpen:false})}}>MODAL</div>
     return (
       <div>
         <h2>{this.props.group.name}</h2>{grid}
-          <Modal isOpen={this.state.modalOpen} className={{
-            base: 'col-xs-8 col-xs-offset-2 col-lg-4 col-lg-offset-4 small-modal'
-          }} contentLabel="Warning modal">
+        <Modal isOpen={this.state.modalOpen} className={{
+          base: 'col-xs-8 col-xs-offset-2 col-lg-4 col-lg-offset-4 small-modal'
+        }} contentLabel="Warning modal">
           {this.state.modalContent}
         </Modal>
-        </div>
+      </div>
     )
   }
 

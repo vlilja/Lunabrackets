@@ -146,6 +146,29 @@ export default function reducer(state = {
           error: action.payload
         }
       }
+    case "FETCH_LEAGUE_GROUP_RESULTS":
+      {
+        return { ...state,
+          error: action.payload
+        }
+      }
+    case "FETCH_LEAGUE_GROUP_RESULTS_FULFILLED":
+      {
+        return { ...state,
+          selectedLeague: { ...state.selectedLeague,
+            groupResults: { ...state.selectedLeague.groupResults,
+              [action.payload.id]: action.payload
+            },
+            error: null
+          }
+        }
+      }
+    case "FETCH_LEAGUE_GROUP_RESULTS_REJECTED":
+      {
+        return { ...state,
+          error: action.payload
+        }
+      }
     case "START_LEAGUE":
       {
         return {

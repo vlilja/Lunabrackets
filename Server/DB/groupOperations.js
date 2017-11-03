@@ -1,7 +1,7 @@
 //GET OPERATIONS
 function getGroupsByLeagueId(c, leagueId) {
   return new Promise((resolve, reject) => {
-    var queryString = "SELECT id, name FROM league_groups WHERE league_id = '" + leagueId + "'";
+    var queryString = "SELECT id, name, group_key FROM league_groups WHERE league_id = '" + leagueId + "';";
     c.query(queryString, function(error, rows) {
       if (error) {
         reject(error);
@@ -46,11 +46,24 @@ function getGroupMatches(c, groupId) {
   })
 }
 
+function getGroupResults(c, groupId) {
+  return new Promise((resolve, reject) => {
+    var queryString = "SELECT player_id, ranking FROM group_members WHERE group_id = '"+groupId+"'";
+    c.query(queryString, function(error, rows) {
+      if(error) {
+        reject(error);
+      }
+      else {
+        resolve({id: groupId, players:rows});
+      }
+    })
+  })
+}
 
 //INSERT OPERATIONS
-function insertGroup(c, leagueId, name) {
+function insertGroup(c, leagueId, name, key) {
   return new Promise((resolve, reject) => {
-    var queryString = "INSERT INTO league_groups(league_id, name) VALUE('" + leagueId + "','" + name + "')";
+    var queryString = "INSERT INTO league_groups(league_id, name, key) VALUE('" + leagueId + "','" + name + "','" + key + "')";
     c.query(queryString, function(error, rows) {
       if (error) {
         reject(error);
@@ -106,6 +119,23 @@ function updateGroupStageMatch(c, match, leagueId) {
   })
 }
 
+function updatePlayerGroupRanking(c, playerId, groupId, ranking) {
+  return new Promise((resolve, reject) => {
+    var queryString = "UPDATE group_members SET ranking = '"+ranking+"' WHERE player_id = '"+playerId+"' AND group_id = '"+groupId+"';"
+    c.query(queryString, function(error, rows) {
+      if (error) {
+        reject(error);
+      }
+      else if(rows.info.affectedRows === '0') {
+        reject('Error updating player, id: ' + playerId );
+      }
+      else {
+        resolve('Player ranking updated successfully');
+      }
+    });
+  })
+}
+
 module.exports = {
   insertGroup: insertGroup,
   insertGroupStageMatch: insertGroupStageMatch,
@@ -113,5 +143,7 @@ module.exports = {
   getGroupsByLeagueId: getGroupsByLeagueId,
   getGroupMembersByGroupId: getGroupMembersByGroupId,
   getGroupMatches: getGroupMatches,
-  updateGroupStageMatch: updateGroupStageMatch
+  getGroupResults: getGroupResults,
+  updateGroupStageMatch: updateGroupStageMatch,
+  updatePlayerGroupRanking: updatePlayerGroupRanking
 }

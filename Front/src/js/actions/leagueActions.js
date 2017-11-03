@@ -101,6 +101,27 @@ export function getLeagueGroups(leagueId) {
   }
 }
 
+export function getGroupResults(leagueId, groupId) {
+  return function(dispatch) {
+    dispatch({
+      type: 'FETCH_LEAGUE_GROUP_RESULTS',
+      payload: ''
+    })
+    axios.get(serverDetails.baseUrl + 'leagues/' + leagueId + '/groups/' + groupId + '/results').then((response) => {
+      dispatch({
+        type: 'FETCH_LEAGUE_GROUP_RESULTS_FULFILLED',
+        payload: response.data
+      })
+    })
+    .catch((err) => {
+      dispatch({
+        type: 'FETCH_LEAGUE_GROUP_RESULTS_REJECTED',
+        payload: err
+      })
+    })
+  }
+}
+
 export function getLeagueGroupMatches(leagueId, groupId) {
   return function(dispatch) {
     dispatch({
@@ -175,13 +196,13 @@ export function updateGroupStageMatch(leagueId, groupId, match) {
 
 function flashMessage(dispatch, time) {
   dispatch({
-    type:'SHOW_MESSAGE',
-    payload:''
+    type: 'SHOW_MESSAGE',
+    payload: ''
   })
   setTimeout(() => {
     dispatch({
-      type:'HIDE_MESSAGE',
-      payload:''
+      type: 'HIDE_MESSAGE',
+      payload: ''
     })
   }, time);
 }

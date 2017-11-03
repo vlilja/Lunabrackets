@@ -4,6 +4,9 @@ export default class QualifiersBracket extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+
+    }
     this.mapRounds = this.mapRounds.bind(this);
   }
 

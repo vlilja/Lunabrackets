@@ -17,7 +17,7 @@ export default class GroupView extends React.Component {
   mapGroups() {
     var groups = [];
       for(var key in this.props.league.groups) {
-        groups.push(<GroupBracket key={key} raceTo={this.props.league.raceTo} group={this.props.league.groups[key]} updateMatch={this.props.updateGroupStageMatch}/>);
+        groups.push(<GroupBracket key={key} stage={this.props.league.stage} raceTo={this.props.league.raceTo} group={this.props.league.groups[key]} updateMatch={this.props.updateGroupStageMatch}/>);
       }
       return groups;
   }

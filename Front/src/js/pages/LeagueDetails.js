@@ -48,7 +48,9 @@ export default class LeagueDetails extends React.Component {
   }
 
   getGroups() {
+    if(!this.props.league.groups){
     this.props.dispatch(getLeagueGroups(this.props.league.id));
+    }
   }
 
   setView(view) {
@@ -58,7 +60,7 @@ export default class LeagueDetails extends React.Component {
   initializeView() {
     switch (this.state.view) {
       case 'ready':
-        return <AdminView league={this.props.league} startLeague={this.startLeague}/>
+        return <AdminView league={this.props.league} startLeague={this.startLeague} getGroups={this.getGroups}/>
         break;
       case 'group':
         return <GroupView league={this.props.league} getGroups={this.getGroups} getGroupMatches={this.getGroupMatches} updateGroupStageMatch={this.updateGroupStageMatch} updating={this.props.updating}></GroupView>
