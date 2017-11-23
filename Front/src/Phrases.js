@@ -5,6 +5,7 @@ export default {
     stage: 'Stage',
     players: 'Players',
     raceTo: 'Race to',
+    group: 'Group',
     games: {
       eight: '8-ball',
       nine: '9-ball',
@@ -13,7 +14,9 @@ export default {
     },
     yes: 'Yes',
     no: 'No',
-    ndash: '–'
+    ndash: '–',
+    ranking: 'Ranking',
+    submit: 'Submit'
   },
   league: {
     heading: 'Leagues',
@@ -41,6 +44,7 @@ export default {
   leagueNavigation: {
     admin: 'Admin',
     results: 'Results',
+    elimination: 'Elimination',
     group: 'Group',
     qualifiers: 'Qualifiers',
     finals: 'Finals'
@@ -50,12 +54,23 @@ export default {
     leaguePanelHeading: 'League details',
     groupsHeading: 'Group names',
     handicapHeading: 'Adjust handicaps',
-    start: 'Start'
+    start: 'Start',
+    undeterminedRankingsHeading: 'Undetermined rankings'
   },
   groupView: {
     wins: 'Wins',
     matchScoreFormHeading: 'Enter match score',
     update:'Update'
+  },
+  eliminationView: {
+    bracketHeading: 'Elimination bracket'
+  },
+  qualifiersView: {
+    winnerSide: 'Winner side',
+    loserSide: 'Loser side'
+  },
+  finalsView: {
+    bracketHeading: 'Finals bracket'
   },
   errorMessages: {
     pageNotFound:'Sorry we couldn\'t find what u were looking for...',

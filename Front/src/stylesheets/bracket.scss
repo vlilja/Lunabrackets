@@ -1,8 +1,12 @@
 
-$height: 60px;
+$height: 90px;
 
-.qualifiers-bracket .panel {
+.qualifiers-bracket .panel, .elimination-bracket .panel, .finals-bracket .panel  {
   margin-bottom:0px;
+  font-size: 1.3em;
+  div {
+    min-height: 25px;
+  }
 }
 
 .match {

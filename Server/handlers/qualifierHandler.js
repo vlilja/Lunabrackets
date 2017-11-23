@@ -27,11 +27,54 @@ module.exports = {
     return Promise.all(promises);
   },
 
-  initializeMatch: function(dbClient, leagueId, matchKey, match ) {
-    var pOne = match.playerOne ? match.playerOne.id : null;
-    var pTwo = match.playerTwo ? match.playerTwo.id : null;
-    return db.qualifier.updateFirstRoundMatch(dbClient, leagueId, matchKey, pOne, pTwo);
+  updatePlayersToQualifier: function(dbClient, leagueId, placements, groupA, groupB, groupC, groupD) {
+    var promises = [];
+    var groups = [{key:'A', players:groupA},{key:'B', players:groupB}, {key:'C', players:groupC}, {key:'D', players:groupD}];
+    var matches = {};
+    placements.forEach((match) => {
+      matches[match.match_key] = {
+        playerOne: match.player_one,
+        playerTwo: match.player_two
+      };
+    })
+    groups.forEach((group) => {
+      group.players.forEach((player) => {
+        var seed = group.key+player.ranking;
+        for(var key in matches) {
+          if(matches[key].playerOne === seed) {
+            matches[key].playerOne = player;
+          }
+          if(matches[key].playerTwo === seed) {
+            matches[key].playerTwo = player;
+          }
+        }
+      })
+    })
+    for (var key in matches) {
+      promises.push(initializeMatch(dbClient, leagueId, key, matches[key]));
+    }
+    return promises;
+  },
+
+  getMatches: function(dbClient, leagueId) {
+    return db.qualifier.getMatches(dbClient, leagueId);
+  },
+
+  updateQualifiersMatch(dbClient, leagueId, matchKey, playerOne=0, playerTwo=0){
+    if(playerOne) {
+      return db.qualifier.updatePlayerOneToMatch(dbClient, leagueId, matchKey, playerOne);
+    }
+    else if(playerTwo) {
+      return db.qualifier.updatePlayerTwoToMatch(dbClient, leagueId, matchKey, playerTwo);
+    }
   }
+
+}
+
+function initializeMatch(dbClient, leagueId, matchKey, match) {
+  var pOne = match.playerOne.id ? match.playerOne.id : null;
+  var pTwo = match.playerTwo.id ? match.playerTwo.id : null;
+  return db.qualifier.updateFirstRoundMatch(dbClient, leagueId, matchKey, pOne, pTwo);
 }
 
 function createWinnerSideMatches() {

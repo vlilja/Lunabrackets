@@ -1,32 +1,26 @@
 import React from "react";
 import QualifiersBracket from "./QualifiersBracket";
-
+import Icons from "./Icons";
 
 export default class QualifiersView extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {}
+  }
 
-    this.state = {
-      players: [],
-      matches: []
-    }
-    for(var i = 0 ; i<16; i++) {
-      this.state.players.push({
-        id:i
-      })
-    }
-    for(var i = 0 ; i<26; i++) {
-      this.state.matches.push({
-        id:i+1
-      })
-    }
+  componentWillMount() {
+    this.props.getMatches();
   }
 
   render() {
-    return (<div>
-      <QualifiersBracket players={this.state.players} matches={this.state.matches}/>
-    </div>)
+    var elem = <Icons type="LOADING" size="32px" />
+    if(this.props.qualifiers) {
+      elem = <QualifiersBracket raceTo={this.props.league.raceTo} matches={this.props.qualifiers.matches} players={this.props.players}/>
+    }
+    return (
+      <div>{elem}</div>
+    )
   }
 
 }

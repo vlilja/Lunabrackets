@@ -41,6 +41,63 @@ module.exports ={
          }
        })
     })
+  },
+
+  updatePlayerOneToMatch(c, qualifierId, matchKey, playerOne) {
+    return new Promise((resolve, reject) => {
+      var queryString = "UPDATE qualifier_matches SET player_one = "+playerOne+"\
+      WHERE qualifier_id = "+qualifierId+" AND match_key = "+matchKey+";";
+      c.query(queryString, function(error, rows) {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(rows.info.insertId);
+        }
+      })
+    })
+  },
+
+  updatePlayerTwoToMatch(c, qualifierId, matchKey, playerTwo) {
+    return new Promise((resolve, reject) => {
+      var queryString = "UPDATE qualifier_matches SET player_two = "+playerTwo+"\
+      WHERE qualifier_id = "+qualifierId+" AND match_key = "+matchKey+";";
+      c.query(queryString, function(error, rows) {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(rows.info.insertId);
+        }
+      })
+    })
+  },
+
+  //GET OPERATIONS
+  getMatches(c, qualifierId) {
+    return new Promise((resolve, reject) => {
+      var queryString = "SELECT * FROM qualifier_matches WHERE qualifier_id = "+qualifierId+"";
+      c.query(queryString, function(error, rows) {
+        if(error) {
+          reject(error);
+        }
+        else {
+          resolve(rows);
+        }
+      })
+    })
+  },
+
+  getPlacements(c) {
+    return new Promise((resolve, reject) => {
+      var queryString = "SELECT match_key, player_one, player_two FROM qualifier_placements";
+      c.query(queryString, function(error, rows) {
+        if(error) {
+          reject(error);
+        }
+        else {
+          resolve(rows);
+        }
+      });
+    })
   }
 
 }

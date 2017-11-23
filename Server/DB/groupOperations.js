@@ -60,6 +60,20 @@ function getGroupResults(c, groupId) {
   })
 }
 
+function getUndetermined(c, leagueId) {
+  return new Promise((resolve, reject) => {
+    var queryString = "SELECT * FROM undetermined_group_rankings WHERE league_id = "+leagueId+"";
+    c.query(queryString, function(error, rows) {
+      if(error) {
+        reject(error);
+      }
+      else {
+        resolve(rows);
+      }
+    })
+  })
+}
+
 //INSERT OPERATIONS
 function insertGroup(c, leagueId, name, key) {
   return new Promise((resolve, reject) => {
@@ -73,6 +87,8 @@ function insertGroup(c, leagueId, name, key) {
     })
   })
 }
+
+
 
 function insertGroupMember(c, groupId, playerId) {
   return new Promise((resolve, reject) => {
@@ -136,6 +152,51 @@ function updatePlayerGroupRanking(c, playerId, groupId, ranking) {
   })
 }
 
+function insertToUndetermined(c, leagueId, groupKey, players, ranking) {
+  return new Promise((resolve, reject) => {
+    var queryString = "INSERT INTO undetermined_group_rankings(league_id, players, ranking, group_key)\
+     VALUES ("+leagueId+", '"+players+"', "+ranking+", '"+groupKey+"')";
+    c.query(queryString, function(error, rows) {
+      if(error){
+        reject(error);
+      }
+      else {
+        resolve(rows.info);
+      }
+    })
+  })
+}
+
+function updateUndeterminedRanking(c, leagueId, groupKey, playerId, ranking) {
+  return new Promise((resolve, reject) => {
+    var queryString = "UPDATE group_members INNER JOIN league_groups ON group_members.group_id = league_groups.id \
+    SET ranking = "+ranking+"\
+    WHERE league_id = "+leagueId+" AND group_key = '"+groupKey+"' AND player_id = "+playerId+";";
+    c.query(queryString, function(error, rows) {
+      if(error){
+        reject(error);
+      }
+      else {
+        resolve(rows.info);
+      }
+    })
+  })
+}
+
+function deleteUndeterminedRanking(c, leagueId, groupKey) {
+  return new Promise((resolve, reject) => {
+    var queryString = "DELETE FROM undetermined_group_rankings WHERE league_id = "+leagueId+" AND group_key = '"+groupKey+"'";
+    c.query(queryString, function(error, rows) {
+      if(error){
+        reject(error);
+      }
+      else {
+        resolve(rows.info);
+      }
+    })
+  })
+}
+
 module.exports = {
   insertGroup: insertGroup,
   insertGroupStageMatch: insertGroupStageMatch,
@@ -145,5 +206,9 @@ module.exports = {
   getGroupMatches: getGroupMatches,
   getGroupResults: getGroupResults,
   updateGroupStageMatch: updateGroupStageMatch,
-  updatePlayerGroupRanking: updatePlayerGroupRanking
+  updatePlayerGroupRanking: updatePlayerGroupRanking,
+  insertToUndetermined: insertToUndetermined,
+  getUndetermined: getUndetermined,
+  updateUndeterminedRanking: updateUndeterminedRanking,
+  deleteUndeterminedRanking: deleteUndeterminedRanking
 }

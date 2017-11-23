@@ -1,9 +1,9 @@
 import React from "react";
 import Icons from "./Icons";
-import FinalsBracket from "./FinalsBracket";
+import EliminationBracket from "./EliminationBracket";
 
 
-export default class FinalsView extends React.Component {
+export default class EliminationView extends React.Component {
 
   constructor(props){
     super(props);
@@ -17,7 +17,7 @@ export default class FinalsView extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    if(props.league && props.league.finals){
+    if(props.league && props.league.elimination){
       this.setState({loading:false});
     }
   }
@@ -28,7 +28,7 @@ export default class FinalsView extends React.Component {
       element = <Icons type="LOADING" size="32px" />
     }
     else {
-      element = <FinalsBracket matches={this.props.league.finals.matches} players={this.props.league.participants}/>
+      element = <EliminationBracket raceTo={this.props.league.raceTo} matches={this.props.league.elimination.matches} players={this.props.league.participants} update={this.props.update}/>
     }
     return (
       <div>{element}</div>

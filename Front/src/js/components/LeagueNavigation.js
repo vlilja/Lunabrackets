@@ -8,6 +8,7 @@ export default class LeagueNavigation extends React.Component {
     this.state = {
       ready:phrases.leagueNavigation.admin,
       results:phrases.leagueNavigation.results,
+      elimination:phrases.leagueNavigation.elimination,
       group:phrases.leagueNavigation.group,
       qualifiers:phrases.leagueNavigation.qualifiers,
       finals: phrases.leagueNavigation.finals

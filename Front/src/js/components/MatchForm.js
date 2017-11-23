@@ -27,7 +27,6 @@ export default class MatchForm extends React.Component {
     var target = e.target;
     var name = target.name
     var value = target.value;
-    console.log(value);
     try {
       if (Number(value) > Number(this.props.raceTo)) {
         value = this.props.raceTo;
@@ -41,8 +40,6 @@ export default class MatchForm extends React.Component {
 
   update() {
     var match = this.props.match;
-    console.log(this.state.playerOneScore);
-    console.log(this.props.raceTo);
     try {
       var p1 = {
         score: Number(this.state.playerOneScore),

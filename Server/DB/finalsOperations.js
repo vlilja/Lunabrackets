@@ -1,9 +1,9 @@
-module.exports ={
+module.exports = {
 
   //INSERT OPERATIONS
-  insertFinals: function(c ,leagueId) {
+  insertFinals: function(c, leagueId) {
     return new Promise((resolve, reject) => {
-      var queryString = "INSERT INTO finals(finals_id) VALUES('"+leagueId+"')";
+      var queryString = "INSERT INTO finals(finals_id) VALUES('" + leagueId + "')";
       c.query(queryString, function(error, rows) {
         if (error) {
           reject(error);
@@ -28,10 +28,10 @@ module.exports ={
     })
   },
 
-  insertGroupWinnerToFinal(c, finalsId, playerOne, match_key) {
+  updatePlayerOneToMatch(c, finalsId, matchKey, player) {
     return new Promise((resolve, reject) => {
-      var queryString = "UPDATE finals_matches SET player_one = '"+playerOne+"' \
-      WHERE finals_id = '"+finalsId+"' AND match_key = '"+match_key+"'";
+      var queryString = "UPDATE finals_matches SET player_one = '" + player + "' \
+      WHERE finals_id = '" + finalsId + "' AND match_key = '" + matchKey + "'";
       c.query(queryString, function(error, rows) {
         if (error) {
           reject(error);
@@ -40,6 +40,47 @@ module.exports ={
         }
       })
     })
+  },
+
+  updatePlayerTwoToMatch(c, finalsId, matchKey, player) {
+    return new Promise((resolve, reject) => {
+      var queryString = "UPDATE finals_matches SET player_two = '" + player + "' \
+      WHERE finals_id = '" + finalsId + "' AND match_key = '" + matchKey + "'";
+      c.query(queryString, function(error, rows) {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(rows.info.insertId);
+        }
+      })
+    })
+  },
+
+  getPlacements(c) {
+    return new Promise((resolve, reject) => {
+      var queryString = "SELECT match_key, player_one FROM finals_placements;";
+      c.query(queryString, function(error, rows) {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(rows);
+        }
+      })
+    })
+  },
+
+  getFinalsMatches(c, leagueId) {
+    return new Promise((resolve, reject) => {
+      var queryString = "SELECT * FROM finals_matches WHERE finals_id = " + leagueId + "";
+      c.query(queryString, function(error, rows) {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(rows);
+        }
+      })
+    })
   }
+
 
 }

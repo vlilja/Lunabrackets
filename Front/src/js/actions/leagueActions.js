@@ -108,17 +108,17 @@ export function getGroupResults(leagueId, groupId) {
       payload: ''
     })
     axios.get(serverDetails.baseUrl + 'leagues/' + leagueId + '/groups/' + groupId + '/results').then((response) => {
-      dispatch({
-        type: 'FETCH_LEAGUE_GROUP_RESULTS_FULFILLED',
-        payload: response.data
+        dispatch({
+          type: 'FETCH_LEAGUE_GROUP_RESULTS_FULFILLED',
+          payload: response.data
+        })
       })
-    })
-    .catch((err) => {
-      dispatch({
-        type: 'FETCH_LEAGUE_GROUP_RESULTS_REJECTED',
-        payload: err
+      .catch((err) => {
+        dispatch({
+          type: 'FETCH_LEAGUE_GROUP_RESULTS_REJECTED',
+          payload: err
+        })
       })
-    })
   }
 }
 
@@ -130,7 +130,7 @@ export function getLeagueGroupMatches(leagueId, groupId) {
     });
     axios.get(serverDetails.baseUrl + 'leagues/' + leagueId + '/groups/' + groupId + '/matches').then((response) => {
         dispatch({
-          type: 'FETCH_ALL_LEAGUE_GROUP_MATCHES_FULLFILLED',
+          type: 'FETCH_ALL_LEAGUE_GROUP_MATCHES_FULFILLED',
           payload: response.data
         })
       })
@@ -140,6 +140,113 @@ export function getLeagueGroupMatches(leagueId, groupId) {
           payload: err
         })
       })
+  }
+}
+
+export function getUndetermined(leagueId) {
+  return function(dispatch) {
+    dispatch({
+      type: 'FETCH_UNDETERMINED',
+      payload: ''
+    })
+    axios.get(serverDetails.baseUrl + 'leagues/' + leagueId + '/groups/undetermined').then((response) => {
+        dispatch({
+          type: 'FETCH_UNDETERMINED_FULFILLED',
+          payload: response.data
+        })
+      })
+      .catch((err) => {
+        dispatch({
+          type: 'FETCH_UNDETERMINED_REJECTED',
+          payload: err
+        })
+      })
+  }
+}
+
+export function updateUndetermined(leagueId, group) {
+  return function(dispatch) {
+    dispatch({
+      type: 'UPDATE_UNDETERMINED',
+      payload: ''
+    })
+    axios.post(serverDetails.baseUrl + 'leagues/' + leagueId + '/groups/undetermined', {group:group}).then((response) => {
+        dispatch({
+          type: 'UPDATE_UNDETERMINED_FULFILLED',
+          payload: response.data
+        })
+        dispatch(getUndetermined(leagueId));
+      })
+      .catch((err) => {
+        dispatch({
+          type: 'UPDATE_UNDETERMINED_REJECTED',
+          payload: err
+        })
+      })
+  }
+}
+
+
+export function getQualifierMatches(leagueId) {
+  return function(dispatch) {
+    dispatch({
+      type: 'FETCH_QUALIFIER_MATCHES',
+      payload: ''
+    })
+    axios.get(serverDetails.baseUrl + 'leagues/' + leagueId + '/qualifiers/matches').then((response) => {
+        dispatch({
+          type: 'FETCH_QUALIFIER_MATCHES_FULFILLED',
+          payload: response.data
+        })
+      })
+      .catch((err) => {
+        dispatch({
+          type: 'FETCH_QUALIFIER_MATCHES_REJECTED',
+          payload: err
+        })
+      })
+  }
+}
+
+export function getEliminationMatches(leagueId) {
+  return function(dispatch) {
+    dispatch({
+      type:'FETCH_ELIMINATION_MATCHES',
+      payload:''
+    })
+    axios.get(serverDetails.baseUrl + 'leagues/' + leagueId + '/elimination/matches').then((response) => {
+      dispatch({
+        type:'FETCH_ELIMINATION_MATCHES_FULFILLED',
+        payload:response.data
+      })
+    })
+    .catch((error) => {
+      dispatch({
+        type:'FETCH_ELIMINATION_MATCHES_REJECTED',
+        payload:response.data
+      })
+    })
+  }
+}
+
+export function getFinalsMatches(leagueId) {
+  return function(dispatch) {
+    dispatch({
+      type:'FETCH_FINALS_MATCHES',
+      payload:''
+    })
+    axios.get(serverDetails.baseUrl + 'leagues/' + leagueId + '/finals/matches').then((response) => {
+      dispatch({
+        type:'FETCH_FINALS_MATCHES_FULFILLED',
+        payload:response.data
+      })
+    })
+    .catch((error) => {
+      dispatch({
+        type:'FETCH_FINALS_MATCHES_REJECTED',
+        payload: response.data
+      })
+    })
   }
 }
 
@@ -191,6 +298,31 @@ export function updateGroupStageMatch(leagueId, groupId, match) {
         })
         flashMessage(dispatch, 2000);
       })
+  }
+}
+
+export function updateEliminationMatch(leagueId, match) {
+  return function(dispatch){
+    dispatch({
+      type: 'UPDATE_ELIMINATION_MATCH',
+      payload: ''
+    })
+    axios.post(serverDetails.baseUrl + 'leagues/'+leagueId+ '/elimination/matches/'+match.match_key, {
+      match:match
+    })
+    .then((response) => {
+      dispatch({
+        type:'UPDATE_ELIMINATION_MATCH_FULFILLED',
+        payload: response.data
+      })
+      dispatch(getEliminationMatches(leagueId));
+    })
+    .catch((error) => {
+      dispatch({
+        type:'UPDATE_ELIMINATION_MATCH_REJECTED',
+        payload:error
+      })
+    })
   }
 }
 

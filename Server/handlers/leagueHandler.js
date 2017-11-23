@@ -181,6 +181,19 @@ module.exports = {
       })
   },
 
+  getUndetermined(leagueId, cb) {
+    var promise = groupHandler.getUndetermined(dbClient, leagueId);
+    promise.then((response) => {
+        cb(response);
+      })
+      .catch((error) => {
+        console.log(error);
+        cb(new Error(error));
+      })
+  },
+
+
+
   updateGroupStageMatch: function(match, leagueId, cb) {
     var promise = db.group.updateGroupStageMatch(dbClient, match, leagueId);
     promise.then((response) => {
@@ -188,6 +201,37 @@ module.exports = {
       })
       .catch((error) => {
         cb(new Error(error));
+      })
+  },
+
+  fixUndeterminedRankings: function(leagueId, group, cb) {
+    var promise = transactionManager.startTransaction(dbClient);
+    promise.then((response) => {
+        return groupHandler.fixUndeterminedRankings(dbClient, leagueId, group)
+      })
+      .then((response) => {
+        //Get placements
+        var promises = [];
+        promises.push(db.finals.getPlacements(dbClient));
+        promises.push(db.qualifier.getPlacements(dbClient));
+        promises.push(db.elimination.getEliminationPlacements(dbClient));
+        return Promise.all(promises);
+      })
+      .then((response) => {
+        var placements = {
+          finals: response[0],
+          qualifiers: response[1],
+          elimination: response[2]
+        }
+        var promises = placePlayersByRanking(dbClient, leagueId, group, placements);
+        return Promise.all(promises);
+      })
+      .then((response) => {
+        transactionManager.endTransaction(dbClient, true, cb);
+      })
+      .catch((error) => {
+        console.log(error);
+        transactionManager.endTransaction(dbClient, false, cb);
       })
   },
 
@@ -273,18 +317,22 @@ module.exports = {
         return Promise.all(promises);
       })
       .then((response) => {
+        var promises = [];
+        //Get placements
+        promises.push(db.finals.getPlacements(dbClient));
+        promises.push(db.qualifier.getPlacements(dbClient));
+        promises.push(db.elimination.getEliminationPlacements(dbClient));
+        return Promise.all(promises);
+      })
+      .then((response) => {
+        var finalsPlacements = response[0];
+        var qualifierPlacements = response[1];
+        var eliminationPlacements = response[2];
         rankedGroups.forEach((group) => {
           var groupedByRank = _.groupBy(group.players, 'ranking');
           group.placements = determinePlacements(groupedByRank);
         })
         var promises = [];
-        //Set group winners to finals
-        for (var i = 0; i < rankedGroups.length; i++) {
-          var placements = rankedGroups[i].placements;
-          if (placements.toFinals) {
-            promises.push(finalsHandler.updateGroupWinnerToFinal(dbClient, leagueId, placements.toFinals, i + 1));
-          }
-        }
         //Groups by group keys
         var groupA = rankedGroups.find((group) => {
           return group.group_key === 'A';
@@ -298,16 +346,18 @@ module.exports = {
         var groupD = rankedGroups.find((group) => {
           return group.group_key === 'D';
         })
+        //Set group winners to finals
+        var finalsPromises = finalsHandler.updatePlayersToFinal(dbClient, leagueId, finalsPlacements, groupA.placements.toFinals, groupB.placements.toFinals, groupC.placements.toFinals, groupD.placements.toFinals);
+        promises = promises.concat(finalsPromises);
         //Set players to qualifiers
-        var matches = updatePlayersToQualifier(groupA.placements.toQualifiers, groupB.placements.toQualifiers, groupC.placements.toQualifiers, groupD.placements.toQualifiers);
-        for (var key in matches) {
-          promises.push(qualifierHandler.initializeMatch(dbClient, leagueId, key, matches[key]));
-        }
+        var qualifierPromises = qualifierHandler.updatePlayersToQualifier(dbClient, leagueId, qualifierPlacements, groupA.placements.toQualifiers, groupB.placements.toQualifiers, groupC.placements.toQualifiers, groupD.placements.toQualifiers);
+        promises = promises.concat(qualifierPromises);
         //Set players to elimination
-        var eliminationMatches = updatePlayersToElimination(groupA.placements.toElimination, groupB.placements.toElimination, groupC.placements.toElimination, groupD.placements.toElimination);
-        for (var key in eliminationMatches) {
-          promises.push(eliminationHandler.initializeMatch(dbClient, leagueId, key, eliminationMatches[key]));
-        }
+        var eliminationPromises = eliminationHandler.updatePlayersToElimination(dbClient, leagueId, eliminationPlacements, groupA.placements.toElimination, groupB.placements.toElimination, groupC.placements.toElimination, groupD.placements.toElimination);
+        promises = promises.concat(eliminationPromises);
+        //Set undetermined
+        var undetermined = groupHandler.createUndetermined(dbClient, leagueId, groupA.placements.undetermined, groupB.placements.undetermined, groupC.placements.undetermined, groupD.placements.undetermined);
+        promises = promises.concat(undetermined);
         return Promise.all(promises);
       })
       .then((response) => {
@@ -321,98 +371,100 @@ module.exports = {
           console.log(value);
         });
       })
-  }
+  },
+
+  getQualifierMatches(leagueId, cb) {
+    var promise = qualifierHandler.getMatches(dbClient, leagueId);
+    promise.then((response) => {
+        cb(response);
+      })
+      .catch((error) => {
+        console.log(error);
+        cb(new Error(error));
+      })
+  },
+  //ELIMINATION
+
+  getEliminationMatches(leagueId, cb) {
+    var promise = eliminationHandler.getEliminationMatches(dbClient, leagueId);
+    promise.then((response) => {
+      cb(response);
+    })
+    .catch((error) => {
+      console.log(error);
+      cb(new Error(error));
+    })
+  },
+
+  updateEliminationBracket(leagueId, match, cb) {
+    var promise = transactionManager.startTransaction(dbClient);
+    promise.then((response) => {
+      var promises = eliminationHandler.updateBracket(dbClient, leagueId, match);
+      return Promise.all(promises);
+    })
+    .then((response) => {
+      transactionManager.endTransaction(dbClient, true, cb, response);
+    })
+    .catch((error) => {
+      console.log('ERROR: '+error);
+      transactionManager.endTransaction(dbClient, false, cb);
+    })
+  },
+
+  //FINALS
+  getFinalsMatches(leagueId, cb) {
+    var promise = finalsHandler.getFinalsMatches(dbClient, leagueId);
+    promise.then((response) => {
+      cb(response);
+    })
+    .catch((error) => {
+      console.log(error);
+      cb(new Error(error));
+    })
+  },
+
+
 
 }
 
-function updatePlayersToQualifier(groupA, groupB, groupC, groupD) {
-  var groups = [groupA, groupB, groupC, groupD];
-  var matches = {};
-  for (var i = 1; i < 9; i++) {
-    matches[i] = {
-      playerOne: null,
-      playerTwo: null
-    };
-  }
-  //Helper function for iteration
-  function nextPointer(pointer) {
-    if (pointer === 3) {
-      return 0;
-    } else {
-      return pointer++;
+//HELPERS
+function placePlayersByRanking(dbClient, leagueId, group, placements) {
+  var promises = [];
+  for (var id in group.players) {
+    var ranking = Number(group.players[id].ranking);
+    if (ranking === 1) {
+      var seed = group.key + '1';
+      var match = placements.finals.find((match) => {
+        if (match.player_one === seed) {
+          return match;
+        }
+      })
+      promises.push(finalsHandler.updateFinalsMatch(dbClient, leagueId, match.match_key, id))
+    }
+    if (ranking > 1 && ranking <= 5) {
+      var seed = group.key + group.players[id].ranking;
+      placements.qualifiers.forEach((match) => {
+        if(match.player_one === seed) {
+          promises.push(qualifierHandler.updateQualifiersMatch(dbClient, leagueId, match.match_key, id, null));
+        }
+        if(match.player_two === seed) {
+          promises.push(qualifierHandler.updateQualifiersMatch(dbClient, leagueId, match.match_key, null, id));
+        }
+      })
+    }
+    if(ranking > 5) {
+      var seed = group.key + group.players[id].ranking;
+      placements.elimination.forEach((match) => {
+        if(match.player_one === seed) {
+          promises.push(eliminationHandler.updateEliminationMatch(dbClient, leagueId, match.match_key, id, null));
+        }
+        if(match.player_two === seed) {
+          promises.push(eliminationHandler.updateEliminationMatch(dbClient, leagueId, match.match_key, null, id));
+        }
+      })
     }
   }
-  //Place players to matches
-  for (var i = 1, j = 0; i <= Object.keys(matches).length; i = i + 2, j++) {
-    groupPointer = j;
-    k = i + 1;
-    matches[i].playerOne = groups[groupPointer].find((player) => {
-      return player.ranking === 2;
-    })
-    groupPointer = nextPointer(groupPointer);
-    matches[i].playerTwo = groups[groupPointer].find((player) => {
-      return player.ranking === 5;
-    })
-    groupPointer = nextPointer(groupPointer);
-    matches[k].playerOne = groups[groupPointer].find((player) => {
-      return player.ranking === 4;
-    })
-    groupPointer = nextPointer(groupPointer);
-    matches[k].playerTwo = groups[groupPointer].find((player) => {
-      return player.ranking === 3;
-    })
-  }
-  return matches;;
-}
-
-function updatePlayersToElimination(groupA, groupB, groupC, groupD) {
-  var matches = {};
-  var groups = [groupA, groupB, groupC, groupD];
-  for (var i = 1; i <= 8; i++) {
-    matches[i] = {
-      playerOne: null,
-      playerTwo: null
-    };
-  }
-  //Set player ones
-  for (var i = 0, match = 1, groupOne = 0, groupTwo = 2; i < 2; i++) {
-    matches[match].playerOne = groups[groupOne].find((player) => {
-      return player.ranking === 7;
-    })
-    match++;
-    matches[match].playerOne = groups[groupTwo].find((player) => {
-      return player.ranking === 7;
-    })
-    match++;
-    groupOne++;
-    groupTwo++;
-  }
-  //Set player two's
-  for (var i = 0, match = 1, groupOne = 3, groupTwo = 1; i < 2; i++) {
-    matches[match].playerTwo = groups[groupOne].find((player) => {
-      return player.ranking === 8;
-    })
-    match++;
-    matches[match].playerTwo = groups[groupTwo].find((player) => {
-      return player.ranking === 8;
-    })
-    match++;
-    groupOne--;
-    groupTwo--;
-  }
-  //Set second round
-  for (var i = 0, match = 5, groupIdx = 2; i < 2; i++) {
-    matches[match].playerOne = groups[groupIdx].find((player) => {
-      return player.ranking === 6;
-    })
-    match++;
-    matches[match].playerOne = groups[(groupIdx + 1)].find((player) => {
-      return player.ranking === 6;
-    })
-    match++;
-    groupIdx = groupIdx - 2;
-  }
-  return matches;
+  return promises;
 }
 
 function determinePlacements(groupByRank) {

@@ -30,10 +30,71 @@ module.exports = {
     return Promise.all(promises);
   },
 
-  initializeMatch: function(dbClient, leagueId, matchKey, match ) {
-    var pOne = match.playerOne ? match.playerOne.id : null;
-    var pTwo = match.playerTwo ? match.playerTwo.id : null;
-    return db.elimination.updateFirstRoundMatch(dbClient, leagueId, matchKey, pOne, pTwo);
+  updatePlayersToElimination: function (dbClient, leagueId, placements, groupA, groupB, groupC, groupD) {
+    var promises = [];
+    var groups = [{key:'A', players:groupA},{key:'B', players:groupB}, {key:'C', players:groupC}, {key:'D', players:groupD}];
+    var matches = {};
+    placements.forEach((match) => {
+      matches[match.match_key] = {
+        playerOne: match.player_one,
+        playerTwo: match.player_two
+      };
+    })
+    groups.forEach((group) => {
+      group.players.forEach((player) => {
+        var seed = group.key+player.ranking;
+        for(var key in matches) {
+          if(matches[key].playerOne === seed) {
+            matches[key].playerOne = player;
+          }
+          if(matches[key].playerTwo === seed) {
+            matches[key].playerTwo = player;
+          }
+        }
+      })
+    })
+    for (var key in matches) {
+      promises.push(initializeMatch(dbClient, leagueId, key, matches[key]));
+    }
+    return promises;
+  },
+
+  getEliminationMatches(dbClient, leagueId) {
+    return db.elimination.getEliminationMatches(dbClient, leagueId);
+  },
+
+  updateBracket(dbClient, leagueId, match) {
+    var promises = [];
+    var player;
+    promises.push(db.elimination.updateMatchScore(dbClient, leagueId, match));
+    if(match.player_one_score > match.player_two_score) {
+      player = match.player_one.player_id;
+    }
+    else {
+      player = match.player_two.player_id;
+    }
+    if(match.match_key.match(/^[1-4]$/g) || Number(match.match_key) % 2 === 0){
+      this.updateEliminationMatch(dbClient, leagueId, match.winner_next_match_key, null, player);
+    }
+    else {
+      this.updateEliminationMatch(dbClient, leagueId, match.winner_next_match_key, player, null);
+    }
+    return promises;
+  },
+
+  updateEliminationMatch(dbClient, leagueId, matchKey, playerOne=0, playerTwo=0) {
+    if(playerOne) {
+      return db.elimination.updatePlayerOneToMatch(dbClient, leagueId, matchKey, playerOne);
+    }
+    else if(playerTwo) {
+      return db.elimination.updatePlayerTwoToMatch(dbClient, leagueId, matchKey, playerTwo);
+    }
   }
 
+}
+
+function initializeMatch(dbClient, leagueId, matchKey, match) {
+  var pOne = (match.playerOne && match.playerOne.id) ? match.playerOne.id : null;
+  var pTwo = (match.playerTwo && match.playerTwo.id) ? match.playerTwo.id : null;
+  return db.elimination.updateFirstRoundMatch(dbClient, leagueId, matchKey, pOne, pTwo);
 }

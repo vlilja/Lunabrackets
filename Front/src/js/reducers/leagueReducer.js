@@ -169,6 +169,89 @@ export default function reducer(state = {
           error: action.payload
         }
       }
+    case "FETCH_UNDETERMINED":
+      {
+        return { ...state
+        }
+      }
+    case "FETCH_UNDETERMINED_FULFILLED":
+      {
+        return { ...state,
+          selectedLeague: { ...state.selectedLeague,
+            undetermined: action.payload
+          }
+        }
+      }
+    case "FETCH_UNDETERMINED_REJECTED":
+      {
+        return { ...state,
+          error: action.payload
+        }
+      }
+    case "FETCH_QUALIFIER_MATCHES":
+      {
+        return { ...state
+        }
+      }
+    case "FETCH_QUALIFIER_MATCHES_FULFILLED":
+      {
+        return { ...state,
+          selectedLeague: { ...state.selectedLeague,
+            qualifiers: {
+              matches: action.payload
+            }
+          }
+        }
+      }
+    case "FETCH_QUALIFIER_MATCHES_REJECTED":
+      {
+        return {
+          ...state,
+          error: action.payload
+        }
+      }
+    case "FETCH_ELIMINATION_MATCHES":
+      {
+        return { ...state
+        }
+      }
+    case "FETCH_ELIMINATION_MATCHES_FULFILLED":
+      {
+        return { ...state,
+          selectedLeague: { ...state.selectedLeague,
+            elimination: {
+              matches: action.payload
+            }
+          }
+        }
+      }
+    case "FETCH_ELIMINATION_MATCHES_REJECTED":
+      {
+        return { ...state,
+          error: action.payload
+        }
+      }
+    case "FETCH_FINALS_MATCHES":
+      {
+        return { ...state
+        }
+      }
+    case "FETCH_FINALS_MATCHES_FULFILLED":
+      {
+        return { ...state,
+          selectedLeague: { ...state.selectedLeague,
+            finals: {
+              matches: action.payload
+            }
+          }
+        }
+      }
+    case "FETCH_FINALS_MATCHES_REJECTED":
+      {
+        return { ...state,
+          error: action.payload
+        }
+      }
     case "START_LEAGUE":
       {
         return {
@@ -208,6 +291,24 @@ export default function reducer(state = {
           message: action.payload
         }
       }
+    case "UPDATE_UNDETERMINED":
+      {
+        return {
+          ...state
+        }
+      }
+    case "UPDATE_UNDETERMINED_FULFILLED":
+      {
+        return {
+          ...state
+        }
+      }
+    case "UPDATE_UNDETERMINED_REJECTED":
+      {
+        return {
+          ...state
+        }
+      }
     case "UPDATE_MATCH_REJECTED":
       {
         return {
@@ -219,6 +320,26 @@ export default function reducer(state = {
           message: 'Error updating match'
         }
       }
+    case "UPDATE_ELIMINATION_MATCH":
+    {
+      return {
+        ...state
+      }
+    }
+    case "UPDATE_ELIMINATION_MATCH_FULFILLED":
+    {
+      return {
+        ...state,
+        message: action.payload
+      }
+    }
+    case "UPDATE_ELIMINATION_MATCH":
+    {
+      return {
+        ...state,
+        error:action.payload
+      }
+    }
     case "SHOW_MESSAGE":
       {
         return { ...state,
