@@ -70,7 +70,10 @@ export default {
     loserSide: 'Loser side'
   },
   finalsView: {
-    bracketHeading: 'Finals bracket'
+    bracketHeading: 'Finals bracket',
+    quarterFinals: 'Quarterfinals',
+    semiFinals: 'Semifinals',
+    final: 'Final'
   },
   errorMessages: {
     pageNotFound:'Sorry we couldn\'t find what u were looking for...',

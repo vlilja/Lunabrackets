@@ -41,7 +41,7 @@ export default class Match extends React.Component {
             float: 'right'
           }}>{this.props.loserside}</span>
         </div>
-        <div style={{
+        <div class={match.player_one_score === this.props.raceTo ? "winner" : ''} style={{
           borderBottom: '1px solid black'
         }}>{match.player_one
             ? (match.player_one.firstName + ' ' + match.player_one.lastName)
@@ -50,7 +50,7 @@ export default class Match extends React.Component {
             float: 'right'
           }}>{match.player_one_score}</span>
         </div>
-        <div>{match.player_two
+        <div class={match.player_two_score === this.props.raceTo ? "winner" : ''} >{match.player_two
             ? match.player_two.firstName + ' ' + match.player_two.lastName
             : ''}
           <span style={{

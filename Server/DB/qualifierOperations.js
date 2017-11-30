@@ -46,7 +46,7 @@ module.exports ={
   updatePlayerOneToMatch(c, qualifierId, matchKey, playerOne) {
     return new Promise((resolve, reject) => {
       var queryString = "UPDATE qualifier_matches SET player_one = "+playerOne+"\
-      WHERE qualifier_id = "+qualifierId+" AND match_key = "+matchKey+";";
+      WHERE qualifier_id = "+qualifierId+" AND match_key = '"+matchKey+"';";
       c.query(queryString, function(error, rows) {
         if (error) {
           reject(error);
@@ -60,7 +60,20 @@ module.exports ={
   updatePlayerTwoToMatch(c, qualifierId, matchKey, playerTwo) {
     return new Promise((resolve, reject) => {
       var queryString = "UPDATE qualifier_matches SET player_two = "+playerTwo+"\
-      WHERE qualifier_id = "+qualifierId+" AND match_key = "+matchKey+";";
+      WHERE qualifier_id = "+qualifierId+" AND match_key = '"+matchKey+"';";
+      c.query(queryString, function(error, rows) {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(rows.info.insertId);
+        }
+      })
+    })
+  },
+
+  updateMatchScore: function(c, qualifierId, match) {
+    return new Promise((resolve, reject) => {
+      var queryString = "UPDATE qualifier_matches SET player_one_score = "+match.player_one_score+", player_two_score = "+match.player_two_score+" WHERE qualifier_id = "+qualifierId+" AND match_key = '"+match.match_key+"';";
       c.query(queryString, function(error, rows) {
         if (error) {
           reject(error);

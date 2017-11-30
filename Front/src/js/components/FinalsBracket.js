@@ -32,7 +32,7 @@ export default class FinalsBracket extends React.Component {
       firstRound.push(
         <div key={idx} class="col-xs-12">
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo}></Match>
+            <Match match={match} raceTo={this.props.raceTo} update={this.props.update}></Match>
           </div>
           <div class="match-padding-half col-xs-12"></div>
         </div>
@@ -47,7 +47,7 @@ export default class FinalsBracket extends React.Component {
         <div key={idx} class="col-xs-12">
           <div class="col-xs-12 match-padding-three-quarters"></div>
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo}></Match>
+            <Match match={match} raceTo={this.props.raceTo} update={this.props.update}></Match>
           </div>
           <div class="col-xs-12 match-padding-three-quarters"></div>
           <div class="col-xs-12 match-padding-half"></div>
@@ -64,7 +64,7 @@ export default class FinalsBracket extends React.Component {
           <div class="col-xs-12 match-padding-double"></div>
           <div class="col-xs-12 match-padding-one-quarter"></div>
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo}></Match>
+            <Match match={match} raceTo={this.props.raceTo} update={this.props.update}></Match>
           </div>
           <div class="col-xs-12 match-padding-double"></div>
           <div class="col-xs-12 match-padding-three-quarters"></div>
@@ -86,12 +86,21 @@ export default class FinalsBracket extends React.Component {
         <h2>{phrases.finalsView.bracketHeading}</h2>
         <div class="">
           <div id="firstround" class="col-lg-3">
+            <h3 style={{
+              textAlign: 'center'
+            }}>{phrases.finalsView.quarterFinals}</h3>
             {rounds.firstRound}
           </div>
           <div id="secondround" class="col-lg-3">
+            <h3 style={{
+              textAlign: 'center'
+            }}>{phrases.finalsView.semiFinals}</h3>
             {rounds.secondRound}
           </div>
           <div id="thirdround" class="col-lg-3">
+            <h3 style={{
+              textAlign: 'center'
+            }}>{phrases.finalsView.final}</h3>
             {rounds.thirdRound}
           </div>
         </div>

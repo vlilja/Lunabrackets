@@ -58,6 +58,13 @@ router.post('/:leagueId/start/qualifiers', function(req, res) {
   res.json('moi');
 })
 
+router.post('/:leagueId/start/finals', function(req, res) {
+  leagueHandler.startFinals(req.params.leagueId, function() {
+    console.log('moi');
+  });
+  res.json('moi');
+})
+
 router.get('/:leagueId/groups', function(req, res) {
   leagueHandler.getGroups(req.params.leagueId, function(response) {
     if (response instanceof Error) {
@@ -139,11 +146,43 @@ router.get('/:leagueId/elimination/matches/', function(req, res) {
   })
 })
 
+router.post('/:leagueId/qualifiers/matches/:matchKey', function(req, res) {
+  if(req.params.matchKey === req.body.match.match_key){
+  leagueHandler.updateQualifierBracket(req.params.leagueId, req.body.match, function(response) {
+    if(response instanceof Error) {
+      res.json('Error updating qualifiers match');
+    } else {
+      console.log(response);
+      res.json('Success');
+    }
+  })
+  }
+  else {
+    res.status(400).send('error');
+  }
+})
+
 router.post('/:leagueId/elimination/matches/:matchKey', function(req, res) {
   if(req.params.matchKey === req.body.match.match_key){
   leagueHandler.updateEliminationBracket(req.params.leagueId, req.body.match, function(response) {
     if(response instanceof Error) {
-      res.json('Error fetching elimination matches');
+      res.json('Error updating elimination match');
+    } else {
+      console.log(response);
+      res.json('Success');
+    }
+  })
+  }
+  else {
+    res.status(400).send('error');
+  }
+})
+
+router.post('/:leagueId/finals/matches/:matchKey', function(req, res) {
+  if(req.params.matchKey === req.body.match.match_key){
+  leagueHandler.updateFinalsBracket(req.params.leagueId, req.body.match, function(response) {
+    if(response instanceof Error) {
+      res.json('Error updating elimination match');
     } else {
       console.log(response);
       res.json('Success');

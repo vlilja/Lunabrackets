@@ -323,20 +323,69 @@ export default function reducer(state = {
     case "UPDATE_ELIMINATION_MATCH":
     {
       return {
-        ...state
+        ...state,
+        loading:{...state.loading, update:true}
       }
     }
     case "UPDATE_ELIMINATION_MATCH_FULFILLED":
     {
       return {
         ...state,
+        loading:{...state.loading, update:false},
         message: action.payload
       }
     }
-    case "UPDATE_ELIMINATION_MATCH":
+    case "UPDATE_ELIMINATION_MATCH_REJECTED":
     {
       return {
         ...state,
+        ...state.loading, update:false,
+        error:action.payload
+      }
+    }
+    case "UPDATE_QUALIFIER_MATCH":
+    {
+      return {
+        ...state,
+        loading:{...state.loading, update:true}
+      }
+    }
+    case "UPDATE_QUALIFIER_MATCH_FULFILLED":
+    {
+      return {
+        ...state,
+        loading:{...state.loading, update:false},
+        message: action.payload
+      }
+    }
+    case "UPDATE_QUALIFIER_MATCH_REJECTED":
+    {
+      return {
+        ...state,
+        ...state.loading, update:false,
+        error:action.payload
+      }
+    }
+    case "UPDATE_FINALS_MATCH":
+    {
+      return {
+        ...state,
+        loading:{...state.loading, update:true}
+      }
+    }
+    case "UPDATE_FINALS_MATCH_FULFILLED":
+    {
+      return {
+        ...state,
+        loading:{...state.loading, update:false},
+        message: action.payload
+      }
+    }
+    case "UPDATE_FINALS_MATCH_REJECTED":
+    {
+      return {
+        ...state,
+        ...state.loading, update:false,
         error:action.payload
       }
     }

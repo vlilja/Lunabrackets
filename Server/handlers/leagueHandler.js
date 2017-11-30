@@ -373,6 +373,42 @@ module.exports = {
       })
   },
 
+  startFinals: function(leagueId, cb) {
+    var promise = transactionManager.startTransaction(dbClient);
+    promise.then((response) => {
+      return qualifierHandler.getMatches(dbClient, leagueId);
+    })
+    .then((matches) => {
+      var players = [];
+      matches.forEach((match) => {
+        if(match.match_key === 'B1' || match.match_key === 'B2' || match.match_key === 'L11' || match.match_key === 'L12'){
+          if(Number(match.player_one_score) > Number(match.player_two_score)) {
+            players.push(match.player_one);
+          }
+          else {
+            players.push(match.player_two);
+          }
+        }
+      })
+      var promises = [];
+      players = _.shuffle(players);
+      players.forEach((player, idx) =>  {
+        promises.push(finalsHandler.updateFinalsMatch(dbClient, leagueId, idx+1, null, player));
+      })
+      if(promises.length !== 4){
+        throw new Error('Error starting Finals, players missing');
+      }
+      return Promise.all(promises);
+    })
+    .then((response) => {
+      transactionManager.endTransaction(dbClient, true, cb);
+    })
+    .catch((error) => {
+      console.log(error);
+      transactionManager.endTransaction(dbClient, false, cb, error);
+    })
+  },
+
   getQualifierMatches(leagueId, cb) {
     var promise = qualifierHandler.getMatches(dbClient, leagueId);
     promise.then((response) => {
@@ -383,6 +419,22 @@ module.exports = {
         cb(new Error(error));
       })
   },
+
+  updateQualifierBracket(leagueId, match, cb) {
+    var promise = transactionManager.startTransaction(dbClient);
+    promise.then((response) => {
+      var promises = qualifierHandler.updateBracket(dbClient, leagueId, match);
+      return Promise.all(promises);
+    })
+    .then((response) => {
+      transactionManager.endTransaction(dbClient, true, cb, response);
+    })
+    .catch((error) => {
+      console.log('ERROR: '+error);
+      transactionManager.endTransaction(dbClient, false, cb);
+    })
+  },
+
   //ELIMINATION
 
   getEliminationMatches(leagueId, cb) {
@@ -423,6 +475,20 @@ module.exports = {
     })
   },
 
+  updateFinalsBracket(leagueId, match, cb) {
+    var promise = transactionManager.startTransaction(dbClient);
+    promise.then((response) => {
+      var promises = finalsHandler.updateBracket(dbClient, leagueId, match);
+      return Promise.all(promises);
+    })
+    .then((response) => {
+      transactionManager.endTransaction(dbClient, true, cb, response);
+    })
+    .catch((error) => {
+      console.log('ERROR: '+error);
+      transactionManager.endTransaction(dbClient, false, cb);
+    })
+  },
 
 
 }

@@ -1,5 +1,7 @@
 import React from "react";
 import Match from "./Match";
+import Icons from "./Icons";
+import Modal from "react-modal";
 import _ from "lodash";
 import phrases from "../../Phrases";
 
@@ -7,7 +9,6 @@ export default class EliminationBracket extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {}
     this.update = this.update.bind(this);
     this.mapRounds = this.mapRounds.bind(this);
   }
@@ -62,7 +63,6 @@ export default class EliminationBracket extends React.Component {
     }).orderBy((match)=> {
       return Number(match.match_key)
     }).value();
-    console.log(thirdRoundMatches);
     var thirdRound = [];
     thirdRoundMatches.forEach((match, idx) => {
       thirdRound.push(

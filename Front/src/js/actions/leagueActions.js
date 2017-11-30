@@ -316,15 +316,72 @@ export function updateEliminationMatch(leagueId, match) {
         payload: response.data
       })
       dispatch(getEliminationMatches(leagueId));
+      flashMessage(dispatch, 2000);
     })
     .catch((error) => {
       dispatch({
         type:'UPDATE_ELIMINATION_MATCH_REJECTED',
         payload:error
       })
+      flashMessage(dispatch, 2000);
     })
   }
 }
+
+export function updateQualifierMatch(leagueId, match) {
+  return function(dispatch){
+    dispatch({
+      type: 'UPDATE_QUALIFIER_MATCH',
+      payload: ''
+    })
+    axios.post(serverDetails.baseUrl + 'leagues/'+leagueId+ '/qualifiers/matches/'+match.match_key, {
+      match:match
+    })
+    .then((response) => {
+      dispatch({
+        type:'UPDATE_QUALIFIER_MATCH_FULFILLED',
+        payload: response.data
+      })
+      dispatch(getQualifierMatches(leagueId));
+      flashMessage(dispatch, 2000);
+    })
+    .catch((error) => {
+      dispatch({
+        type:'UPDATE_QUALIFIER_MATCH_REJECTED',
+        payload:error
+      })
+      flashMessage(dispatch, 2000);
+    })
+  }
+}
+
+export function updateFinalsMatch(leagueId, match) {
+  return function(dispatch){
+    dispatch({
+      type: 'UPDATE_FINALS_MATCH',
+      payload: ''
+    })
+    axios.post(serverDetails.baseUrl + 'leagues/'+leagueId+ '/finals/matches/'+match.match_key, {
+      match:match
+    })
+    .then((response) => {
+      dispatch({
+        type:'UPDATE_FINALS_MATCH_FULFILLED',
+        payload: response.data
+      })
+      dispatch(getFinalsMatches(leagueId));
+      flashMessage(dispatch, 2000);
+    })
+    .catch((error) => {
+      dispatch({
+        type:'UPDATE_FINALS_MATCH_REJECTED',
+        payload:error
+      })
+      flashMessage(dispatch, 2000);
+    })
+  }
+}
+
 
 function flashMessage(dispatch, time) {
   dispatch({

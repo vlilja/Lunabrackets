@@ -1,7 +1,21 @@
 import React from "react";
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
-import {getLeague, startLeague, getLeagueGroups, getUndetermined, updateUndetermined, getLeagueGroupMatches, updateGroupStageMatch, getQualifierMatches, getEliminationMatches, getFinalsMatches, updateEliminationMatch} from "../actions/leagueActions";
+import {
+  getLeague,
+  startLeague,
+  getLeagueGroups,
+  getUndetermined,
+  updateUndetermined,
+  getLeagueGroupMatches,
+  updateGroupStageMatch,
+  getQualifierMatches,
+  getEliminationMatches,
+  getFinalsMatches,
+  updateEliminationMatch,
+  updateQualifierMatch,
+  updateFinalsMatch
+} from "../actions/leagueActions";
 import Icons from "../components/Icons";
 import LeagueNavigation from "../components/LeagueNavigation";
 import AdminView from "../components/AdminView";
@@ -33,6 +47,8 @@ export default class LeagueDetails extends React.Component {
     this.getUndetermined = this.getUndetermined.bind(this);
     this.updateUndetermined = this.updateUndetermined.bind(this);
     this.updateEliminationMatch = this.updateEliminationMatch.bind(this);
+    this.updateQualifierMatch = this.updateQualifierMatch.bind(this);
+    this.updateFinalsMatch = this.updateFinalsMatch.bind(this);
     this.getQualifierMatches = this.getQualifierMatches.bind(this);
     this.getEliminationMatches = this.getEliminationMatches.bind(this);
     this.getFinalsMatches = this.getFinalsMatches.bind(this);
@@ -56,8 +72,8 @@ export default class LeagueDetails extends React.Component {
   }
 
   getGroups() {
-    if(!this.props.league.groups){
-    this.props.dispatch(getLeagueGroups(this.props.league.id));
+    if (!this.props.league.groups) {
+      this.props.dispatch(getLeagueGroups(this.props.league.id));
     }
   }
 
@@ -71,6 +87,14 @@ export default class LeagueDetails extends React.Component {
 
   updateEliminationMatch(match) {
     this.props.dispatch(updateEliminationMatch(this.props.league.id, match));
+  }
+
+  updateQualifierMatch(match) {
+    this.props.dispatch(updateQualifierMatch(this.props.league.id, match));
+  }
+
+  updateFinalsMatch(match) {
+    this.props.dispatch(updateFinalsMatch(this.props.league.id, match));
   }
 
   getQualifierMatches() {
@@ -89,26 +113,25 @@ export default class LeagueDetails extends React.Component {
     this.setState({view: view});
   }
 
-
-
   initializeView() {
     switch (this.state.view) {
       case 'ready':
         return <AdminView league={this.props.league} startLeague={this.startLeague} getGroups={this.getGroups} getUndetermined={this.getUndetermined} updateUndetermined={this.updateUndetermined}/>
         break;
       case 'elimination':
-        return <EliminationView league={this.props.league} getMatches={this.getEliminationMatches} update={this.updateEliminationMatch} />
+        return <EliminationView league={this.props.league} getMatches={this.getEliminationMatches} update={this.updateEliminationMatch}/>
       case 'group':
         return <GroupView league={this.props.league} getGroups={this.getGroups} getGroupMatches={this.getGroupMatches} updateGroupStageMatch={this.updateGroupStageMatch} updating={this.props.updating}></GroupView>
         break;
       case 'qualifiers':
-        return <QualifiersView league={this.props.league} players={this.props.league.participants} getMatches={this.getQualifierMatches} qualifiers={this.props.league.qualifiers} />
+        return <QualifiersView league={this.props.league} players={this.props.league.participants} getMatches={this.getQualifierMatches} qualifiers={this.props.league.qualifiers} update={this.updateQualifierMatch}/>
         break;
       case 'finals':
-        return <FinalsView league={this.props.league} getMatches={this.getFinalsMatches} />
+        return <FinalsView league={this.props.league} getMatches={this.getFinalsMatches} update={this.updateFinalsMatch}/>
         break;
       default:
-        return <div>NOTDONE </div>
+        return <div>NOTDONE
+        </div>
         break;
     }
   }
@@ -118,19 +141,38 @@ export default class LeagueDetails extends React.Component {
   }
 
   render() {
-    var element;
+    var element,
+      modal;
+    if (this.props.updating) {
+      modal = <div class="modal-back-ground">
+        <div class='col-xs-4 col-xs-offset-4 small-modal dialog'>
+          <Icons type="LOADING" size="40px"/>
+        </div>
+      </div>
+    } else {
+      modal = <div class={this.props.showMessage ? "modal-back-ground fade show" :"modal-back-ground fade"}>
+        <div class={this.props.showMessage
+          ? 'col-xs-4 col-xs-offset-4 small-modal dialog fade show'
+          : 'col-xs-4 col-xs-offset-4 small-modal dialog fade'}><Icons type={this.props.error
+        ? 'ERROR'
+        : "SUCCESS"} size="40px" message={this.props.message}/></div>
+      </div>
+    }
     var view = this.initializeView();
     if (!this.props.league) {
       element = <Icons type="LOADING" size="40px"/>
     } else {
       element = <div>
         <h1 class="margin-bottom-double">{this.props.league.name}</h1>
-        <div class={this.props.showMessage
-          ? 'col-xs-4 col-xs-offset-2 small-modal dialog fade show'
-          : 'col-xs-4 col-xs-offset-2 small-modal dialog fade'}><Icons type={this.props.error
-        ? 'ERROR'
-        : "SUCCESS"} size="40px" message={this.props.message}/></div>
-      <LeagueNavigation view={this.state.view} views={['ready', 'results', 'elimination', 'group', 'qualifiers', 'finals']} setView={this.setView}/> {view}
+        {modal}
+        <LeagueNavigation view={this.state.view} views={[
+          'ready',
+          'results',
+          'elimination',
+          'group',
+          'qualifiers',
+          'finals'
+        ]} setView={this.setView}/> {view}
       </div>
     }
     return (

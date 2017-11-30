@@ -67,17 +67,17 @@ module.exports = {
     var promises = [];
     var player;
     promises.push(db.elimination.updateMatchScore(dbClient, leagueId, match));
-    if(match.player_one_score > match.player_two_score) {
+    if(Number(match.player_one_score) > Number(match.player_two_score)) {
       player = match.player_one.player_id;
     }
     else {
       player = match.player_two.player_id;
     }
     if(match.match_key.match(/^[1-4]$/g) || Number(match.match_key) % 2 === 0){
-      this.updateEliminationMatch(dbClient, leagueId, match.winner_next_match_key, null, player);
+      promises.push(this.updateEliminationMatch(dbClient, leagueId, match.winner_next_match_key, null, player));
     }
     else {
-      this.updateEliminationMatch(dbClient, leagueId, match.winner_next_match_key, player, null);
+      promises.push(this.updateEliminationMatch(dbClient, leagueId, match.winner_next_match_key, player, null));
     }
     return promises;
   },

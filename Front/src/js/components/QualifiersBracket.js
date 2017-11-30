@@ -54,7 +54,7 @@ export default class QualifiersBracket extends React.Component {
       firstRound.push(
         <div key={idx} class="col-xs-12">
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo}></Match>
+            <Match match={match} raceTo={this.props.raceTo} update={this.props.update}></Match>
           </div>
           <div class="match-padding-half col-xs-12"></div>
         </div>
@@ -69,7 +69,7 @@ export default class QualifiersBracket extends React.Component {
         <div key={idx} class="col-xs-12">
           <div class="col-xs-12 match-padding-three-quarters"></div>
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo}></Match>
+            <Match match={match} raceTo={this.props.raceTo} update={this.props.update}></Match>
           </div>
           <div class="col-xs-12 match-padding-three-quarters"></div>
           <div class="col-xs-12 match-padding-half"></div>
@@ -86,7 +86,7 @@ export default class QualifiersBracket extends React.Component {
           <div class="col-xs-12 match-padding-double"></div>
           <div class="col-xs-12 match-padding-one-quarter"></div>
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo}></Match>
+            <Match match={match} raceTo={this.props.raceTo} update={this.props.update}></Match>
           </div>
           <div class="col-xs-12 match-padding-double"></div>
           <div class="col-xs-12 match-padding-three-quarters"></div>
@@ -101,7 +101,7 @@ export default class QualifiersBracket extends React.Component {
       loserFirst.push(
         <div key={idx} class="col-xs-12">
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo}></Match>
+            <Match match={match} raceTo={this.props.raceTo} update={this.props.update}></Match>
           </div>
           <div class="match-padding-half col-xs-12"></div>
         </div>
@@ -116,7 +116,7 @@ export default class QualifiersBracket extends React.Component {
       loserSecond.push(
         <div key={idx} class="col-xs-12">
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo} loserside={'A' + (A - idx)}></Match>
+            <Match match={match} raceTo={this.props.raceTo} loserside={'A' + (A - idx)} update={this.props.update}></Match>
           </div>
           <div class="match-padding-half col-xs-12"></div>
         </div>
@@ -125,13 +125,15 @@ export default class QualifiersBracket extends React.Component {
     var loserThird = [];
     var loserThirdRoundMatches = _.chain(this.props.matches).filter((match) => {
       return match.match_key.match(/^L9|L10$/g)
-    }).orderBy('match_key').value();
+    }).orderBy((match)=> {
+      return Number(match.match_key.substring(1));
+    }).value();
     loserThirdRoundMatches.forEach((match, idx) => {
       loserThird.push(
         <div key={idx} class="col-xs-12">
           <div class="col-xs-12 match-padding-three-quarters"></div>
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo}></Match>
+            <Match match={match} raceTo={this.props.raceTo} update={this.props.update}></Match>
           </div>
           <div class="col-xs-12 match-padding-three-quarters"></div>
           <div class="col-xs-12 match-padding-half"></div>
@@ -141,14 +143,16 @@ export default class QualifiersBracket extends React.Component {
     var loserFourth = [];
     var loserFourthRoundMatches = _.chain(this.props.matches).filter((match) => {
       return match.match_key.match(/^L11|L12$/g)
-    }).orderBy('match_key').value();
+    }).orderBy((match)=> {
+      return Number(match.match_key.substring(1));
+    }).value();
     var B = 1;
     loserFourthRoundMatches.forEach((match, idx) => {
       loserFourth.push(
         <div key={idx} class="col-xs-12">
           <div class="col-xs-12 match-padding-three-quarters"></div>
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo} loserside={'B' + (B + idx)}></Match>
+            <Match match={match} raceTo={this.props.raceTo} loserside={'B' + (B + idx)} update={this.props.update}></Match>
           </div>
           <div class="col-xs-12 match-padding-three-quarters"></div>
           <div class="col-xs-12 match-padding-half"></div>

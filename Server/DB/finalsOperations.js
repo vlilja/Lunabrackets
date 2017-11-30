@@ -56,6 +56,19 @@ module.exports = {
     })
   },
 
+  updateMatchScore: function(c, finalsId, match) {
+    return new Promise((resolve, reject) => {
+      var queryString = "UPDATE finals_matches SET player_one_score = "+match.player_one_score+", player_two_score = "+match.player_two_score+" WHERE finals_id = "+finalsId+" AND match_key = '"+match.match_key+"';";
+      c.query(queryString, function(error, rows) {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(rows.info.insertId);
+        }
+      })
+    })
+  },
+
   getPlacements(c) {
     return new Promise((resolve, reject) => {
       var queryString = "SELECT match_key, player_one FROM finals_placements;";
