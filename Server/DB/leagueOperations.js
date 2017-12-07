@@ -1,33 +1,53 @@
 var transactionManager = require('./transactionManager');
 
+module.exports = {
 
 //GET OPERATIONS
-function getAllLeagues(c, cb) {
-  var queryString = "SELECT * FROM leagues";
-  c.query(queryString, function(err, rows) {
-    if(err){
-      cb(err);
-    }
-    else {
-      cb(rows);
-    }
+getAllLeagues: function(c) {
+  return new Promise((resolve, reject) => {
+    var queryString = "SELECT * FROM leagues";
+    c.query(queryString, function(err, rows) {
+      if(err){
+        reject(err);
+      }
+      else {
+        resolve(rows);
+      }
+    })
   })
-}
 
-function getLeague(c, leagueId, cb) {
-  var queryString = "SELECT * FROM leagues WHERE id='"+leagueId+"';"
-  c.query(queryString, function(err, rows) {
-    if(err){
-      cb(err);
-    }
-    else {
-      cb(rows[0]);
-    }
+},
+
+getLeague: function(c, leagueId) {
+  return new Promise((resolve, reject) => {
+    var queryString = "SELECT * FROM leagues WHERE id = '"+leagueId+"'";
+    c.query(queryString, function(err, rows) {
+      if(err){
+        reject(err);
+      }
+      else {
+        resolve(rows);
+      }
+    })
   })
-}
+},
+
+getLeagueParticipants: function (c, leagueId) {
+  return new Promise((resolve, reject) => {
+    var queryString = "SELECT * FROM league_participants INNER JOIN players ON league_participants.player_id = players.id WHERE league_id ='"+leagueId+"'";
+    c.query(queryString, function(err, rows) {
+      if(err){
+        reject(err);
+      }
+      else {
+        resolve(rows);
+      }
+    })
+  })
+},
 
 ///INSERT OPERATIONS
-function createLeague(c, league, cb) {
+createLeague: function(c, league, cb) {
   var promise = transactionManager.startTransaction(c);
   //Insert league
   promise.then((response) => {
@@ -43,9 +63,9 @@ function createLeague(c, league, cb) {
       console.log('NOT CALLED'+ error);
       transactionManager.endTransaction(c, false, cb);
     })
-}
+},
 
-function insertParticipants(c, leagueId, league) {
+insertParticipants: function (c, leagueId, league) {
   return new Promise((resolve, reject) => {
     var error = false;
     var promises = [];
@@ -61,9 +81,9 @@ function insertParticipants(c, leagueId, league) {
       reject(error);
     });
   });
-}
+},
 
-function insertPlayerToLeague(c, leagueId, playerId, playerHandicap) {
+insertPlayerToLeague: function (c, leagueId, playerId, playerHandicap) {
   return new Promise((resolve, reject) => {
     var queryString = "INSERT INTO league_participants(league_id, player_id, handicap) VALUES (" + leagueId + "," + playerId + "," + playerHandicap + ")";
     c.query(queryString, function(err, rows) {
@@ -77,9 +97,9 @@ function insertPlayerToLeague(c, leagueId, playerId, playerHandicap) {
       }
     })
   })
-}
+},
 
-function insertLeague(c, league) {
+insertLeague: function (c, league) {
   return new Promise((resolve, reject) => {
     var queryString = "INSERT INTO leagues(name, game) VALUES('" + league.name + "'," + league.game + ")";
     c.query(queryString, function(err, rows) {
@@ -90,10 +110,10 @@ function insertLeague(c, league) {
       }
     })
   })
-}
+},
 
 //UPDATE OPERATIONS
-function updateLeagueStageAndRaceTo(c, leagueId, stage, raceTo) {
+updateLeagueStageAndRaceTo: function (c, leagueId, stage, raceTo) {
   return new Promise((resolve, reject) => {
     var queryString = "UPDATE leagues SET stage='"+stage+"', raceTo = '"+raceTo+"' WHERE id = '"+leagueId+"';"
     c.query(queryString, function(error, rows) {
@@ -105,9 +125,23 @@ function updateLeagueStageAndRaceTo(c, leagueId, stage, raceTo) {
       }
     })
   })
-}
+},
 
-function updatePlayerHandicap(c, leagueId, playerId, handicap) {
+updateLeagueStage: function (c, leagueId, stage) {
+  return new Promise((resolve, reject) => {
+    var queryString = "UPDATE leagues SET stage='"+stage+" WHERE id = '"+leagueId+"';"
+    c.query(queryString, function(error, rows) {
+      if(error) {
+        reject(error);
+      }
+      else {
+        resolve(rows);
+      }
+    })
+  })
+},
+
+updatePlayerHandicap: function (c, leagueId, playerId, handicap) {
   return new Promise((resolve, reject) => {
     var queryString = "UPDATE league_participants SET handicap = '"+handicap+"' WHERE league_id = '"+leagueId+"' AND player_id = '"+playerId+"'";
     c.query(queryString, function(error, rows) {
@@ -119,12 +153,8 @@ function updatePlayerHandicap(c, leagueId, playerId, handicap) {
       }
     })
   })
-}
+},
 
-module.exports = {
-  getAllLeagues: getAllLeagues,
-  createLeague: createLeague,
-  getLeague: getLeague,
-  updateLeagueStageAndRaceTo: updateLeagueStageAndRaceTo,
-  updatePlayerHandicap: updatePlayerHandicap
+
+
 }

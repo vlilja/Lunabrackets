@@ -105,19 +105,19 @@ export default class EliminationBracket extends React.Component {
   render() {
     var rounds = this.mapRounds();
     return (
-      <div class="col-xs-12 elimination-bracket">
+      <div class="col-xs-12 bracket">
         <h2>{phrases.eliminationView.bracketHeading}</h2>
-        <div class="">
-          <div id="firstround" class="col-lg-3">
+        <div class="elimination-bracket">
+          <div id="round firstround" class="col-lg-3 col-xs-3">
             {rounds.firstRound}
           </div>
-          <div id="secondround" class="col-lg-3">
+          <div id="round secondround" class="col-lg-3 col-xs-3">
             {rounds.secondRound}
           </div>
-          <div id="thirdround" class="col-lg-3">
+          <div id="round thirdround" class="col-lg-3 col-xs-3">
             {rounds.thirdRound}
           </div>
-          <div id="fourthround" class="col-lg-3">
+          <div id="round fourthround" class="col-lg-3 col-xs-3">
             {rounds.fourthRound}
           </div>
         </div>

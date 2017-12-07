@@ -23,6 +23,8 @@ import EliminationView from "../components/EliminationView";
 import GroupView from "../components/GroupView";
 import QualifiersView from "../components/QualifiersView";
 import FinalsView from "../components/FinalsView";
+import helper from "../classes/helper";
+import phrases from "../../Phrases";
 
 @connect((store) => {
   return {
@@ -162,8 +164,12 @@ export default class LeagueDetails extends React.Component {
     if (!this.props.league) {
       element = <Icons type="LOADING" size="40px"/>
     } else {
+      var gameName = helper.determineGameName(this.props.league.game);
+      var imageName = helper.determineGameIcon(this.props.league.game);
+      var raceTo = this.props.league.raceTo ? this.props.league.raceTo : '?';
       element = <div>
-        <h1 class="margin-bottom-double">{this.props.league.name}</h1>
+        <h1 class="margin-bottom-double"> <img class="img" class="game-logo" src={"/images/"+imageName}/>{this.props.league.name+"  "}({gameName + " , " +phrases.general.raceTo+ " "+ raceTo})</h1>
+
         {modal}
         <LeagueNavigation view={this.state.view} views={[
           'ready',

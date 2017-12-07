@@ -10,7 +10,7 @@ export default class QualifiersBracket extends React.Component {
     super(props);
     this.state = {
       winnerSideVisible: true,
-      loserSideVisible: true,
+      loserSideVisible: true
     }
     this.toggleWinnerSide = this.toggleWinnerSide.bind(this);
     this.toggleLoserSide = this.toggleLoserSide.bind(this);
@@ -18,14 +18,18 @@ export default class QualifiersBracket extends React.Component {
     this.mapPlayerNames = this.mapPlayerNames.bind(this);
   }
 
-  toggleWinnerSide(){
-    var bool = this.state.winnerSideVisible ? false : true;
-    this.setState({winnerSideVisible:bool});
+  toggleWinnerSide() {
+    var bool = this.state.winnerSideVisible
+      ? false
+      : true;
+    this.setState({winnerSideVisible: bool});
   }
 
-  toggleLoserSide(){
-    var bool = this.state.loserSideVisible ? false : true;
-    this.setState({loserSideVisible:bool});
+  toggleLoserSide() {
+    var bool = this.state.loserSideVisible
+      ? false
+      : true;
+    this.setState({loserSideVisible: bool});
   }
 
   mapPlayerNames() {
@@ -125,7 +129,7 @@ export default class QualifiersBracket extends React.Component {
     var loserThird = [];
     var loserThirdRoundMatches = _.chain(this.props.matches).filter((match) => {
       return match.match_key.match(/^L9|L10$/g)
-    }).orderBy((match)=> {
+    }).orderBy((match) => {
       return Number(match.match_key.substring(1));
     }).value();
     loserThirdRoundMatches.forEach((match, idx) => {
@@ -143,7 +147,7 @@ export default class QualifiersBracket extends React.Component {
     var loserFourth = [];
     var loserFourthRoundMatches = _.chain(this.props.matches).filter((match) => {
       return match.match_key.match(/^L11|L12$/g)
-    }).orderBy((match)=> {
+    }).orderBy((match) => {
       return Number(match.match_key.substring(1));
     }).value();
     var B = 1;
@@ -176,56 +180,72 @@ export default class QualifiersBracket extends React.Component {
       ready;
     if (this.props.matches) {
       const rounds = this.mapRounds();
-      bracket = <div class="qualifiers-bracket col-xs-12" >
-        <div id="winnerside">
-          <h2 class="clickable" onClick={this.toggleWinnerSide}>{phrases.qualifiersView.winnerSide} <Icons type={this.state.winnerSideVisible ? 'ARROW-DOWN' : 'ARROW-RIGHT'} inline={true} color="black" size="32px"/></h2>
-          <div class="winnerside row" style={{display:(this.state.winnerSideVisible?'block':'none')}}>
-            <div id="first-round" class="col-lg-3">
-              <h3 style={{
-                textAlign: 'center'
-              }}>R1</h3>
-              {rounds.firstRound}
-            </div>
-            <div id="second-round" class="col-lg-3">
-              <h3 style={{
-                textAlign: 'center'
-              }}>W1</h3>
-              {rounds.secondRound}
-            </div>
-            <div id="third-round" class="col-lg-3">
-              <h3 style={{
-                textAlign: 'center'
-              }}>W2</h3>
-              {rounds.thirdRound}
+      bracket = <div class="bracket col-xs-12">
+        <div class="qualifiers-bracket">
+          <div id="winnerside">
+            <h2 class="clickable" onClick={this.toggleWinnerSide}>{phrases.qualifiersView.winnerSide}
+              <Icons type={this.state.winnerSideVisible
+                ? 'ARROW-DOWN'
+                : 'ARROW-RIGHT'} inline={true} color="black" size="32px"/></h2>
+              <div class="winnerside row" style={{
+              display: (this.state.winnerSideVisible
+                ? 'block'
+                : 'none')
+            }}>
+              <div id="first-round round" class="col-lg-3 col-xs-3">
+                <h3 style={{
+                  textAlign: 'center'
+                }}>R1</h3>
+                {rounds.firstRound}
+              </div>
+              <div id="second-round round" class="col-lg-3 col-xs-3">
+                <h3 style={{
+                  textAlign: 'center'
+                }}>W1</h3>
+                {rounds.secondRound}
+              </div>
+              <div id="third-round round" class="col-lg-3 col-xs-3">
+                <h3 style={{
+                  textAlign: 'center'
+                }}>W2</h3>
+                {rounds.thirdRound}
+              </div>
             </div>
           </div>
-        </div>
-        <div id="loserside" >
-          <h2 class="clickable" onClick={this.toggleLoserSide}>{phrases.qualifiersView.loserSide} <Icons type={this.state.loserSideVisible ? 'ARROW-DOWN' : 'ARROW-RIGHT'} inline={true} color="black" size="32px"/></h2>
-          <div class="loserside row" style={{display:(this.state.loserSideVisible?'block':'none')}}>
-            <div id="loserside-first-round" class="col-lg-3">
-              <h3 style={{
-                textAlign: 'center'
-              }}>L1</h3>
-              {rounds.loserFirst}
-            </div>
-            <div id="loserside-second-round" class="col-lg-3">
-              <h3 style={{
-                textAlign: 'center'
-              }}>L2</h3>
-              {rounds.loserSecond}
-            </div>
-            <div id="loserside-third-round" class="col-lg-3">
-              <h3 style={{
-                textAlign: 'center'
-              }}>L3</h3>
-              {rounds.loserThird}
-            </div>
-            <div id="loserside-fourth-round" class="col-lg-3">
-              <h3 style={{
-                textAlign: 'center'
-              }}>L4</h3>
-              {rounds.loserFourth}
+          <div id="loserside">
+            <h2 class="clickable" onClick={this.toggleLoserSide}>{phrases.qualifiersView.loserSide}
+              <Icons type={this.state.loserSideVisible
+                ? 'ARROW-DOWN'
+                : 'ARROW-RIGHT'} inline={true} color="black" size="32px"/></h2>
+            <div class="loserside row" style={{
+              display: (this.state.loserSideVisible
+                ? 'block'
+                : 'none')
+            }}>
+              <div id="loserside-first-round round" class="col-lg-3 col-xs-3">
+                <h3 style={{
+                  textAlign: 'center'
+                }}>L1</h3>
+                {rounds.loserFirst}
+              </div>
+              <div id="loserside-second-round round" class="col-lg-3 col-xs-3">
+                <h3 style={{
+                  textAlign: 'center'
+                }}>L2</h3>
+                {rounds.loserSecond}
+              </div>
+              <div id="loserside-third-round round" class="col-lg-3 col-xs-3">
+                <h3 style={{
+                  textAlign: 'center'
+                }}>L3</h3>
+                {rounds.loserThird}
+              </div>
+              <div id="loserside-fourth-round round" class="col-lg-3 col-xs-3">
+                <h3 style={{
+                  textAlign: 'center'
+                }}>L4</h3>
+                {rounds.loserFourth}
+              </div>
             </div>
           </div>
         </div>

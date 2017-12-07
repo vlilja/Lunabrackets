@@ -12,6 +12,19 @@ function getGroupsByLeagueId(c, leagueId) {
   })
 }
 
+function getGroupByGroupId(c, groupId) {
+  return new Promise((resolve, reject) => {
+    var queryString = "SELECT id, name, group_key FROM league_groups WHERE id ='"+groupId+"';"
+    c.query(queryString, function(error, rows) {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(rows);
+      }
+    })
+  })
+}
+
 function getGroupMembersByGroupId(c, groupId, leagueId) {
   return new Promise((resolve, reject) => {
     var queryString = "SELECT players.id, firstName, lastName, nickName, league_participants.handicap FROM\
@@ -32,15 +45,12 @@ function getGroupMembersByGroupId(c, groupId, leagueId) {
 
 function getGroupMatches(c, groupId) {
   return new Promise((resolve, reject) => {
-    var queryString = "SELECT id AS match_id, player_one_score, player_two_score, player_one, player_two FROM group_stage_matches WHERE group_id = '" + groupId + "'";
+    var queryString = "SELECT id, player_one_score, player_two_score, player_one, player_two FROM group_stage_matches WHERE group_id = '" + groupId + "'";
     c.query(queryString, function(error, rows) {
       if (error) {
         reject(error);
       } else {
-        resolve({
-          id: groupId,
-          matches: rows
-        });
+        resolve(rows);
       }
     })
   })
@@ -48,13 +58,13 @@ function getGroupMatches(c, groupId) {
 
 function getGroupResults(c, groupId) {
   return new Promise((resolve, reject) => {
-    var queryString = "SELECT player_id, ranking FROM group_members WHERE group_id = '"+groupId+"'";
+    var queryString = "SELECT player_id, place FROM group_members WHERE group_id = '"+groupId+"'";
     c.query(queryString, function(error, rows) {
       if(error) {
         reject(error);
       }
       else {
-        resolve({id: groupId, players:rows});
+        resolve(rows);
       }
     })
   })
@@ -116,17 +126,17 @@ function insertGroupStageMatch(c, groupId, playerOneId, playerTwoId) {
   })
 }
 
-function updateGroupStageMatch(c, match, leagueId) {
+function updateGroupStageMatch(c, leagueId, match) {
   return new Promise((resolve, reject) => {
-    var queryString = "UPDATE group_stage_matches INNER JOIN league_groups ON group_stage_matches.group_id = league_groups.id\
-     SET player_one_score = '" + match.player_one_score +"', player_two_score = '" + match.player_two_score + "'\
-     WHERE group_stage_matches.id='" + match.match_id + "' AND league_groups.league_id='" + leagueId + "';"
+     var queryString = "UPDATE group_stage_matches INNER JOIN league_groups ON group_stage_matches.group_id = league_groups.id \
+     SET player_one_score = "+match.playerOne.score+", player_two_score = "+match.playerTwo.score+"\
+      WHERE group_stage_matches.id = "+match.id+" AND league_id = "+leagueId+"";
     c.query(queryString, function(error, rows) {
       if (error) {
         reject(error);
       }
       else if(rows.info.affectedRows === '0') {
-        reject('No match found with match id: '+match.match_id+", league id: "+leagueId);
+        reject('No match found with match id: '+match.id);
       }
       else {
         resolve('Match updated successfully');
@@ -202,6 +212,7 @@ module.exports = {
   insertGroupStageMatch: insertGroupStageMatch,
   insertGroupMember: insertGroupMember,
   getGroupsByLeagueId: getGroupsByLeagueId,
+  getGroupByGroupId: getGroupByGroupId,
   getGroupMembersByGroupId: getGroupMembersByGroupId,
   getGroupMatches: getGroupMatches,
   getGroupResults: getGroupResults,

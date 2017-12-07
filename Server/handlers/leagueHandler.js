@@ -6,6 +6,13 @@ groupHandler = require('./groupHandler')
 qualifierHandler = require('./qualifierHandler')
 finalsHandler = require('./finalsHandler')
 eliminationHandler = require('./eliminationHandler')
+logger = require('winston');
+validator = require('../validators/validator');
+var League = require('../../Datamodel').League;
+var Match = require('../../Datamodel').Match;
+var Player = require('../../Datamodel').Player;
+var Group = require('../../Datamodel').Group;
+
 
 
 module.exports = {
@@ -118,56 +125,85 @@ module.exports = {
       })
   },
 
-  getGroups: function(leagueId, cb) {
-    var promise = db.group.getGroupsByLeagueId(dbClient, leagueId);
-    var formattedGroups = [];
-    promise.then((groups) => {
-        var promises = [];
-        groups.forEach((group, idx) => {
-          formattedGroups.push(group);
-          promises.push(db.group.getGroupMembersByGroupId(dbClient, group.id, leagueId));
-        });
-        return Promise.all(promises);
-      })
-      .then((response) => {
-        for (var i = 0; i < formattedGroups.length; i++) {
-          response.forEach((group, idx) => {
-            if (group.id === formattedGroups[i].id) {
-              formattedGroups[i].players = group.players;
-            }
-          })
-        }
-        cb(formattedGroups);
+  getLeagues: function(cb) {
+    var promise = db.league.getAllLeagues(dbClient);
+    promise.then((response) => {
+        logger.log('info', '[SUCCESS] getLeagues');
+        var leagues = [];
+        response.forEach((league) => {
+          leagues.push(new League(league.id, league.name, league.game, null, league.stage));
+        })
+        cb(leagues);
       })
       .catch((error) => {
-        console.log(error);
+        logger.log('error', error);
+        cb(new Error(error));
+      })
+  },
+
+  getLeague: function(leagueId, cb) {
+    var promises = [db.league.getLeague(dbClient, leagueId), db.league.getLeagueParticipants(dbClient, leagueId)];
+    var league;
+    Promise.all(promises).then((response) => {
+        var leagueArray = response[0];
+        var playerArray = response[1];
+        var players = [];
+        league = new League(leagueArray[0].id, leagueArray[0].name, leagueArray[0].game, null, leagueArray[0].stage);
+        playerArray.forEach((player) => {
+          players.push(new Player(player.id, player.firstName, player.lastName, player.nickName, player.handicap));
+        })
+        league.players = players;
+        logger.log('info', '[SUCCESS] getLeague', 'Params: {id:'+leagueId+'}')
+        cb(league);
+      })
+      .catch((error) => {
+        logger.log('error', error);
+        cb(new Error(error));
+      })
+  },
+
+
+  getGroups: function(leagueId, cb) {
+    var promise = db.group.getGroupsByLeagueId(dbClient, leagueId);
+    var groups = [];
+    promise.then((groupArray) => {
+        var promises = [];
+        groupArray.forEach((group, idx) => {
+          promises.push(db.group.getGroupMembersByGroupId(dbClient, group.id, leagueId));
+          groups.push(new Group(group.id, group.group_key, group.name, null, null));
+        })
+        return Promise.all(promises);
+      })
+      .then((playersByGroup) => {
+        groups.forEach((group, idx) => {
+          group.players = playersByGroup[idx];
+        })
+        logger.log('info', '[SUCCESS] getGroups', 'Params: {id:'+leagueId+'}');
+        cb(groups);
+      })
+      .catch((error) => {
+        logger.log('error', error);
         cb(new Error(error));
       })
   },
 
   getGroupMatches: function(leagueId, groupId, cb) {
-    var promise = db.group.getGroupsByLeagueId(dbClient, leagueId);
-    promise.then((response) => {
-        var match = false;
-        response.forEach((group) => {
-          if (group.id === groupId) {
-            match = true;
-          }
-        })
-        if (match) {
-          return db.group.getGroupMatches(dbClient, groupId);
-        } else {
-          throw 'No such group in this league';
-        }
+    var promise = db.group.getGroupByGroupId(dbClient, groupId);
+    var matches = [];
+    promise.then((group) => {
+      return db.group.getGroupMatches(dbClient, groupId);
+    })
+    .then((matchesArray) => {
+      matchesArray.forEach((match) => {
+        matches.push(new Match(match.id, null, null, null, match.player_one, match.player_two));
       })
-      .then((response) => {
-        cb(response);
-      })
-      .catch((error) => {
-        console.log(error);
-        cb(error);
-      })
-
+      logger.info('[SUCCESS] getGroupMatches', 'Params: {id: '+groupId+'}');
+      cb(matches);
+    })
+    .catch((error) => {
+      logger.error(error);
+      cb(new Error(error));
+    })
   },
 
   getGroupResults(groupId, cb) {
@@ -194,14 +230,21 @@ module.exports = {
 
 
 
-  updateGroupStageMatch: function(match, leagueId, cb) {
-    var promise = db.group.updateGroupStageMatch(dbClient, match, leagueId);
+  updateGroupStageMatch: function(leagueId, match, cb) {
+    match = Object.assign(new Match(), match);
+    if(validator.validateMatch(match)){
+    var promise = db.group.updateGroupStageMatch(dbClient, leagueId, match);
     promise.then((response) => {
+        logger.info('[SUCCESS] updateGroupStageMatch', 'Params: {leagueId: '+leagueId+', matchId: '+match.id+'}');
         cb(response);
       })
       .catch((error) => {
         cb(new Error(error));
       })
+    }
+    else {
+      cb(new Error('Match object not valid'));
+    }
   },
 
   fixUndeterminedRankings: function(leagueId, group, cb) {
@@ -361,6 +404,9 @@ module.exports = {
         return Promise.all(promises);
       })
       .then((response) => {
+        return db.league.updateLeagueStage(dbClient, leagueId, 'qualifiers');
+      })
+      .then((response) => {
         transactionManager.endTransaction(dbClient, true, function(value) {
           console.log(value);
         });
@@ -376,43 +422,49 @@ module.exports = {
   startFinals: function(leagueId, cb) {
     var promise = transactionManager.startTransaction(dbClient);
     promise.then((response) => {
-      return qualifierHandler.getMatches(dbClient, leagueId);
-    })
-    .then((matches) => {
-      var players = [];
-      matches.forEach((match) => {
-        if(match.match_key === 'B1' || match.match_key === 'B2' || match.match_key === 'L11' || match.match_key === 'L12'){
-          if(Number(match.player_one_score) > Number(match.player_two_score)) {
-            players.push(match.player_one);
+        return qualifierHandler.getMatches(dbClient, leagueId);
+      })
+      .then((matches) => {
+        var players = [];
+        matches.forEach((match) => {
+          if (match.match_key === 'B1' || match.match_key === 'B2' || match.match_key === 'L11' || match.match_key === 'L12') {
+            if (Number(match.player_one_score) > Number(match.player_two_score)) {
+              players.push(match.player_one);
+            } else {
+              players.push(match.player_two);
+            }
           }
-          else {
-            players.push(match.player_two);
-          }
+        })
+        var promises = [];
+        players = _.shuffle(players);
+        players.forEach((player, idx) => {
+          promises.push(finalsHandler.updateFinalsMatch(dbClient, leagueId, idx + 1, null, player));
+        })
+        if (promises.length !== 4) {
+          throw new Error('Error starting Finals, players missing');
         }
+        return Promise.all(promises);
       })
-      var promises = [];
-      players = _.shuffle(players);
-      players.forEach((player, idx) =>  {
-        promises.push(finalsHandler.updateFinalsMatch(dbClient, leagueId, idx+1, null, player));
+      .then((response) => {
+        return db.league.updateLeagueStage(dbClient, leagueId, 'finals');
       })
-      if(promises.length !== 4){
-        throw new Error('Error starting Finals, players missing');
-      }
-      return Promise.all(promises);
-    })
-    .then((response) => {
-      transactionManager.endTransaction(dbClient, true, cb);
-    })
-    .catch((error) => {
-      console.log(error);
-      transactionManager.endTransaction(dbClient, false, cb, error);
-    })
+      .then((response) => {
+        transactionManager.endTransaction(dbClient, true, cb);
+      })
+      .catch((error) => {
+        console.log(error);
+        transactionManager.endTransaction(dbClient, false, cb, error);
+      })
   },
 
   getQualifierMatches(leagueId, cb) {
     var promise = qualifierHandler.getMatches(dbClient, leagueId);
     promise.then((response) => {
-        cb(response);
+        var matches = [];
+        response.forEach((match) => {
+          matches.push(new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two))
+        })
+        cb(matches);
       })
       .catch((error) => {
         console.log(error);
@@ -423,16 +475,16 @@ module.exports = {
   updateQualifierBracket(leagueId, match, cb) {
     var promise = transactionManager.startTransaction(dbClient);
     promise.then((response) => {
-      var promises = qualifierHandler.updateBracket(dbClient, leagueId, match);
-      return Promise.all(promises);
-    })
-    .then((response) => {
-      transactionManager.endTransaction(dbClient, true, cb, response);
-    })
-    .catch((error) => {
-      console.log('ERROR: '+error);
-      transactionManager.endTransaction(dbClient, false, cb);
-    })
+        var promises = qualifierHandler.updateBracket(dbClient, leagueId, match);
+        return Promise.all(promises);
+      })
+      .then((response) => {
+        transactionManager.endTransaction(dbClient, true, cb, response);
+      })
+      .catch((error) => {
+        console.log('ERROR: ' + error);
+        transactionManager.endTransaction(dbClient, false, cb);
+      })
   },
 
   //ELIMINATION
@@ -440,54 +492,62 @@ module.exports = {
   getEliminationMatches(leagueId, cb) {
     var promise = eliminationHandler.getEliminationMatches(dbClient, leagueId);
     promise.then((response) => {
-      cb(response);
-    })
-    .catch((error) => {
-      console.log(error);
-      cb(new Error(error));
-    })
+        var matches = [];
+        response.forEach((match) => {
+          matches.push(new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two))
+        })
+        cb(matches);
+      })
+      .catch((error) => {
+        console.log(error);
+        cb(new Error(error));
+      })
   },
 
   updateEliminationBracket(leagueId, match, cb) {
     var promise = transactionManager.startTransaction(dbClient);
     promise.then((response) => {
-      var promises = eliminationHandler.updateBracket(dbClient, leagueId, match);
-      return Promise.all(promises);
-    })
-    .then((response) => {
-      transactionManager.endTransaction(dbClient, true, cb, response);
-    })
-    .catch((error) => {
-      console.log('ERROR: '+error);
-      transactionManager.endTransaction(dbClient, false, cb);
-    })
+        var promises = eliminationHandler.updateBracket(dbClient, leagueId, match);
+        return Promise.all(promises);
+      })
+      .then((response) => {
+        transactionManager.endTransaction(dbClient, true, cb, response);
+      })
+      .catch((error) => {
+        console.log('ERROR: ' + error);
+        transactionManager.endTransaction(dbClient, false, cb);
+      })
   },
 
   //FINALS
   getFinalsMatches(leagueId, cb) {
     var promise = finalsHandler.getFinalsMatches(dbClient, leagueId);
     promise.then((response) => {
-      cb(response);
-    })
-    .catch((error) => {
-      console.log(error);
-      cb(new Error(error));
-    })
+        var matches = [];
+        response.forEach((match) => {
+          matches.push(new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two))
+        })
+        cb(matches);
+      })
+      .catch((error) => {
+        console.log(error);
+        cb(new Error(error));
+      })
   },
 
   updateFinalsBracket(leagueId, match, cb) {
     var promise = transactionManager.startTransaction(dbClient);
     promise.then((response) => {
-      var promises = finalsHandler.updateBracket(dbClient, leagueId, match);
-      return Promise.all(promises);
-    })
-    .then((response) => {
-      transactionManager.endTransaction(dbClient, true, cb, response);
-    })
-    .catch((error) => {
-      console.log('ERROR: '+error);
-      transactionManager.endTransaction(dbClient, false, cb);
-    })
+        var promises = finalsHandler.updateBracket(dbClient, leagueId, match);
+        return Promise.all(promises);
+      })
+      .then((response) => {
+        transactionManager.endTransaction(dbClient, true, cb, response);
+      })
+      .catch((error) => {
+        console.log('ERROR: ' + error);
+        transactionManager.endTransaction(dbClient, false, cb);
+      })
   },
 
 
@@ -510,21 +570,21 @@ function placePlayersByRanking(dbClient, leagueId, group, placements) {
     if (ranking > 1 && ranking <= 5) {
       var seed = group.key + group.players[id].ranking;
       placements.qualifiers.forEach((match) => {
-        if(match.player_one === seed) {
+        if (match.player_one === seed) {
           promises.push(qualifierHandler.updateQualifiersMatch(dbClient, leagueId, match.match_key, id, null));
         }
-        if(match.player_two === seed) {
+        if (match.player_two === seed) {
           promises.push(qualifierHandler.updateQualifiersMatch(dbClient, leagueId, match.match_key, null, id));
         }
       })
     }
-    if(ranking > 5) {
+    if (ranking > 5) {
       var seed = group.key + group.players[id].ranking;
       placements.elimination.forEach((match) => {
-        if(match.player_one === seed) {
+        if (match.player_one === seed) {
           promises.push(eliminationHandler.updateEliminationMatch(dbClient, leagueId, match.match_key, id, null));
         }
-        if(match.player_two === seed) {
+        if (match.player_two === seed) {
           promises.push(eliminationHandler.updateEliminationMatch(dbClient, leagueId, match.match_key, null, id));
         }
       })

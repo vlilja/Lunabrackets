@@ -12,39 +12,20 @@ router.post('/', function(req, res) {
 });
 
 router.get('/', function(req, res) {
-  db.league.getAllLeagues(dbClient, function(response) {
+  leagueHandler.getLeagues((response) => {
     res.json(response);
-  });
+  })
 });
 
 router.get('/:leagueId', function(req, res) {
-  var leagueDetails = new Promise((resolve, reject) => {
-    db.league.getLeague(dbClient, req.params.leagueId, function(response) {
-      if (response instanceof Error) {
-        reject(response);
-      } else {
-        resolve(response);
-      }
-    })
-  })
-  var participants = new Promise((resolve, reject) => {
-    db.player.getPlayersByLeagueId(dbClient, req.params.leagueId, function(response) {
-      if (response instanceof Error) {
-        reject(response);
-      } else {
-        resolve(response);
-      }
-    })
-  })
-  Promise.all([leagueDetails, participants]).then((response) => {
-      var league = response[0];
-      league.participants = response[1];
+  var leagueId = Number(req.params.leagueId);
+  if (!isNaN(leagueId)) {
+    leagueHandler.getLeague(leagueId, (league) => {
       res.json(league);
     })
-    .catch((error) => {
-      console.log(error);
-      res.json(error);
-    })
+  } else {
+    res.status(400).send('Bad request');
+  }
 })
 
 router.post('/:leagueId/start', function(req, res) {
@@ -96,25 +77,37 @@ router.post('/:leagueId/groups/undetermined/', function(req, res) {
 })
 
 router.get('/:leagueId/groups/:groupId/matches', function(req, res) {
-  leagueHandler.getGroupMatches(req.params.leagueId, req.params.groupId, function(response) {
-    if (response instanceof Error) {
-      res.json('Error fetching groups');
-    } else {
-      res.json(response);
-    }
-  });
+  var leagueId = Number(req.params.leagueId);
+  var groupId = Number(req.params.groupId);
+  if (!isNaN(leagueId) && !isNaN(groupId)) {
+    leagueHandler.getGroupMatches(leagueId, groupId, function(response) {
+      if (response instanceof Error) {
+        res.json('Error fetching groups');
+      } else {
+        res.json(response);
+      }
+    });
+  } else {
+    res.status(400).send('Bad request');
+  }
 })
 
 router.post('/:leagueId/groups/:groupId/matches/:matchId', function(req, res) {
-  leagueHandler.updateGroupStageMatch(req.body.match, req.params.leagueId, function(response) {
-    if (response instanceof Error) {
-      console.log(response);
-      res.status(400).send(response.message);
-    } else {
-      res.json(response);
-    }
-  })
+  var match = req.body.match;
+  var leagueId = req.params.leagueId;
+  if (!isNaN(leagueId) && typeof match === 'object') {
+    leagueHandler.updateGroupStageMatch(leagueId, match, function(response) {
+      if (response instanceof Error) {
+        res.status(400).send(response.message);
+      } else {
+        res.json(response);
+      }
+    })
+  } else {
+    res.status(400).send('Bad request');
+  }
 })
+
 
 router.get('/:leagueId/groups/:groupId/results', function(req, res) {
   leagueHandler.getGroupResults(req.params.groupId, function(response) {
@@ -138,7 +131,7 @@ router.get('/:leagueId/qualifiers/matches', function(req, res) {
 
 router.get('/:leagueId/elimination/matches/', function(req, res) {
   leagueHandler.getEliminationMatches(req.params.leagueId, function(response) {
-    if(response instanceof Error) {
+    if (response instanceof Error) {
       res.json('Error fetching elimination matches');
     } else {
       res.json(response);
@@ -147,56 +140,53 @@ router.get('/:leagueId/elimination/matches/', function(req, res) {
 })
 
 router.post('/:leagueId/qualifiers/matches/:matchKey', function(req, res) {
-  if(req.params.matchKey === req.body.match.match_key){
-  leagueHandler.updateQualifierBracket(req.params.leagueId, req.body.match, function(response) {
-    if(response instanceof Error) {
-      res.json('Error updating qualifiers match');
-    } else {
-      console.log(response);
-      res.json('Success');
-    }
-  })
-  }
-  else {
+  if (req.params.matchKey === req.body.match.match_key) {
+    leagueHandler.updateQualifierBracket(req.params.leagueId, req.body.match, function(response) {
+      if (response instanceof Error) {
+        res.json('Error updating qualifiers match');
+      } else {
+        console.log(response);
+        res.json('Success');
+      }
+    })
+  } else {
     res.status(400).send('error');
   }
 })
 
 router.post('/:leagueId/elimination/matches/:matchKey', function(req, res) {
-  if(req.params.matchKey === req.body.match.match_key){
-  leagueHandler.updateEliminationBracket(req.params.leagueId, req.body.match, function(response) {
-    if(response instanceof Error) {
-      res.json('Error updating elimination match');
-    } else {
-      console.log(response);
-      res.json('Success');
-    }
-  })
-  }
-  else {
+  if (req.params.matchKey === req.body.match.match_key) {
+    leagueHandler.updateEliminationBracket(req.params.leagueId, req.body.match, function(response) {
+      if (response instanceof Error) {
+        res.json('Error updating elimination match');
+      } else {
+        console.log(response);
+        res.json('Success');
+      }
+    })
+  } else {
     res.status(400).send('error');
   }
 })
 
 router.post('/:leagueId/finals/matches/:matchKey', function(req, res) {
-  if(req.params.matchKey === req.body.match.match_key){
-  leagueHandler.updateFinalsBracket(req.params.leagueId, req.body.match, function(response) {
-    if(response instanceof Error) {
-      res.json('Error updating elimination match');
-    } else {
-      console.log(response);
-      res.json('Success');
-    }
-  })
-  }
-  else {
+  if (req.params.matchKey === req.body.match.match_key) {
+    leagueHandler.updateFinalsBracket(req.params.leagueId, req.body.match, function(response) {
+      if (response instanceof Error) {
+        res.json('Error updating elimination match');
+      } else {
+        console.log(response);
+        res.json('Success');
+      }
+    })
+  } else {
     res.status(400).send('error');
   }
 })
 
 router.get('/:leagueId/finals/matches/', function(req, res) {
   leagueHandler.getFinalsMatches(req.params.leagueId, function(response) {
-    if(response instanceof Error) {
+    if (response instanceof Error) {
       res.json('Error fetching finals matches');
     } else {
       res.json(response);

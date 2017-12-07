@@ -82,22 +82,22 @@ export default class FinalsBracket extends React.Component {
   render() {
     var rounds = this.mapRounds();
     return (
-      <div class="col-xs-12 finals-bracket">
+      <div class="col-xs-12 bracket">
         <h2>{phrases.finalsView.bracketHeading}</h2>
-        <div class="">
-          <div id="firstround" class="col-lg-3">
+        <div class="finals-bracket">
+          <div id="round firstround" class="col-lg-3 col-xs-4">
             <h3 style={{
               textAlign: 'center'
             }}>{phrases.finalsView.quarterFinals}</h3>
             {rounds.firstRound}
           </div>
-          <div id="secondround" class="col-lg-3">
+          <div id="round secondround" class="col-lg-3 col-xs-4">
             <h3 style={{
               textAlign: 'center'
             }}>{phrases.finalsView.semiFinals}</h3>
             {rounds.secondRound}
           </div>
-          <div id="thirdround" class="col-lg-3">
+          <div id="round thirdround" class="col-lg-3 col-xs-4">
             <h3 style={{
               textAlign: 'center'
             }}>{phrases.finalsView.final}</h3>

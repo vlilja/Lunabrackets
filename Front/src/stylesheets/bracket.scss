@@ -9,6 +9,20 @@ $height: 90px;
   }
 }
 
+@media only screen and (max-width: 800px) {
+    .bracket {
+      width:1200px;
+      overflow-x:scroll;
+    }
+    .bracket {
+      .round {
+        display: inline-block;
+      }
+    }
+}
+
+
+
 .match {
   height: $height;
   box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.18);

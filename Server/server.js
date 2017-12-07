@@ -1,7 +1,11 @@
 var express = require('express');
 var delay = require('express-delay');
 var bodyParser = require('body-parser');
+var Bracket = require('../Datamodel/Bracket');
+var SingleEliminationBracket = require('../Datamodel/SingleEliminationBracket');
+var DoubleEliminationBracket = require('../Datamodel/DoubleEliminationBracket');
 var app = express();
+
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -27,6 +31,5 @@ app.use(function(req, res, next) {
 });
 app.use(delay(700,1300));
 app.use(require('./routes'));
-
 app.listen(3001);
 console.log('Listening on port 3001...');
