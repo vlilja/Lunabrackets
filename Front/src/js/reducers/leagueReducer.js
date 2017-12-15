@@ -321,74 +321,91 @@ export default function reducer(state = {
         }
       }
     case "UPDATE_ELIMINATION_MATCH":
-    {
-      return {
-        ...state,
-        loading:{...state.loading, update:true}
+      {
+        return {
+          ...state,
+          loading: { ...state.loading,
+            update: true
+          }
+        }
       }
-    }
     case "UPDATE_ELIMINATION_MATCH_FULFILLED":
-    {
-      return {
-        ...state,
-        loading:{...state.loading, update:false},
-        message: action.payload
+      {
+        return {
+          ...state,
+          loading: { ...state.loading,
+            update: false
+          },
+          message: action.payload
+        }
       }
-    }
     case "UPDATE_ELIMINATION_MATCH_REJECTED":
-    {
-      return {
-        ...state,
-        ...state.loading, update:false,
-        error:action.payload
+      {
+        return {
+          ...state,
+          ...state.loading,
+          update: false,
+          error: action.payload
+        }
       }
-    }
     case "UPDATE_QUALIFIER_MATCH":
-    {
-      return {
-        ...state,
-        loading:{...state.loading, update:true}
+      {
+        return {
+          ...state,
+          loading: { ...state.loading,
+            update: true
+          }
+        }
       }
-    }
     case "UPDATE_QUALIFIER_MATCH_FULFILLED":
-    {
-      return {
-        ...state,
-        loading:{...state.loading, update:false},
-        message: action.payload
+      {
+        return {
+          ...state,
+          loading: { ...state.loading,
+            update: false
+          },
+          message: action.payload
+        }
       }
-    }
     case "UPDATE_QUALIFIER_MATCH_REJECTED":
-    {
-      return {
-        ...state,
-        ...state.loading, update:false,
-        error:action.payload
+      {
+        return {
+          ...state,
+          loading: { ...state.loading,
+            update: false
+          },
+          error: action.payload,
+          message: 'Error updating match'
+        }
       }
-    }
     case "UPDATE_FINALS_MATCH":
-    {
-      return {
-        ...state,
-        loading:{...state.loading, update:true}
+      {
+        return {
+          ...state,
+          loading: { ...state.loading,
+            update: true
+          }
+        }
       }
-    }
     case "UPDATE_FINALS_MATCH_FULFILLED":
-    {
-      return {
-        ...state,
-        loading:{...state.loading, update:false},
-        message: action.payload
+      {
+        return {
+          ...state,
+          loading: { ...state.loading,
+            update: false
+          },
+          message: action.payload
+        }
       }
-    }
     case "UPDATE_FINALS_MATCH_REJECTED":
-    {
-      return {
-        ...state,
-        ...state.loading, update:false,
-        error:action.payload
+      {
+        return {
+          ...state,
+          ...state.loading,
+          update: false,
+          error: action.payload
+        }
       }
-    }
     case "SHOW_MESSAGE":
       {
         return { ...state,

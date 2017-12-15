@@ -1,25 +1,14 @@
-var Bracket = require('./Bracket');
+  var Bracket = require('./Bracket');
 
 
-var DoubleEliminationBracket = function(matches, size) {
-  Bracket.call(this, matches, size);
+var DoubleEliminationBracket = function(matches, players, size) {
+  Bracket.call(this, matches, players, size);
   var brackets = constructor(matches, size);
   this.type = 'Double Elimination Bracket';
 
 
   this.upperBracket = brackets.upperBracket;
   this.lowerBracket = brackets.lowerBracket;
-
-  this.completeMatch = function(match) {
-    if (match instanceof Match) {
-      var result = match.getResult();
-      if (match.key.charAt(0) === 'L') {
-        var nextMatch = this.lowerBracket.find((next) => {
-          return match.winnerNextMatchKey === next.key;
-        })
-      }
-    }
-  }
 
 }
 
@@ -53,6 +42,13 @@ function constructor(matches, size) {
     number: num,
     matches: []
   };
+  var index = 0;
+  var winnerKeys = Object.keys(upperBracketRounds);
+  var loserKeys = Object.keys(lowerBracketRounds);
+  lowerBracketRounds[loserKeys[0]].playersFrom = winnerKeys[0];
+  for(var i = 1, k = 1; i < winnerKeys.length; i++, k = k+2){
+    lowerBracketRounds[loserKeys[k]].playersFrom = winnerKeys[i];
+  }
   matches.forEach((match) => {
     var key = match.key.charAt(0);
     if (key === 'L') {
@@ -72,7 +68,6 @@ function constructor(matches, size) {
   var i = 0;
   var rounds = [];
   var round = [];
-  console.log(lowerBracket.length);
   while(lowerBracket.length>0) {
     if(i < k){
     var match = lowerBracket.pop();
@@ -89,13 +84,15 @@ function constructor(matches, size) {
     }
   }
   rounds.push(round);
-  console.log(rounds);
   for(var key in lowerBracketRounds) {
-    lowerBracketRounds[key].matches = rounds.pop();
+    var matches = rounds.pop();
+    matches.sort((a, b) => {
+      return Number(a.key.substr(1)) - Number(b.key.substr(1));
+    });
+    lowerBracketRounds[key].matches = matches;
   }
   upperBracket = upperBracketRounds;
   lowerBracket = lowerBracketRounds;
-  console.log(lowerBracket.L1);
   return {
     upperBracket: upperBracket,
     lowerBracket: lowerBracket

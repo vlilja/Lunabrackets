@@ -84,6 +84,7 @@ export default class LeagueDetails extends React.Component {
   }
 
   updateUndetermined(group) {
+    console.log(group);
     this.props.dispatch(updateUndetermined(this.props.league.id, group));
   }
 
@@ -126,7 +127,7 @@ export default class LeagueDetails extends React.Component {
         return <GroupView league={this.props.league} getGroups={this.getGroups} getGroupMatches={this.getGroupMatches} updateGroupStageMatch={this.updateGroupStageMatch} updating={this.props.updating}></GroupView>
         break;
       case 'qualifiers':
-        return <QualifiersView league={this.props.league} players={this.props.league.participants} getMatches={this.getQualifierMatches} qualifiers={this.props.league.qualifiers} update={this.updateQualifierMatch}/>
+        return <QualifiersView league={this.props.league} players={this.props.league.players} getMatches={this.getQualifierMatches} qualifiers={this.props.league.qualifiers} update={this.updateQualifierMatch}/>
         break;
       case 'finals':
         return <FinalsView league={this.props.league} getMatches={this.getFinalsMatches} update={this.updateFinalsMatch}/>
@@ -164,8 +165,8 @@ export default class LeagueDetails extends React.Component {
     if (!this.props.league) {
       element = <Icons type="LOADING" size="40px"/>
     } else {
-      var gameName = helper.determineGameName(this.props.league.game);
-      var imageName = helper.determineGameIcon(this.props.league.game);
+      var gameName = helper.determineGameName(this.props.league.gameType);
+      var imageName = helper.determineGameIcon(this.props.league.gameType);
       var raceTo = this.props.league.raceTo ? this.props.league.raceTo : '?';
       element = <div>
         <h1 class="margin-bottom-double"> <img class="img" class="game-logo" src={"/images/"+imageName}/>{this.props.league.name+"  "}({gameName + " , " +phrases.general.raceTo+ " "+ raceTo})</h1>

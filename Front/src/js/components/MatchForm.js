@@ -7,12 +7,12 @@ export default class MatchForm extends React.Component {
     super(props);
     var playerOneScore,
       playerTwoScore;
-    if (props.match.player_one_score && props.match.player_two_score) {
-      playerOneScore = props.match.player_one_score;
-      playerTwoScore = props.match.player_two_score;
+    if (props.match.playerOne.score && props.match.playerTwo.score) {
+      playerOneScore = props.match.playerOne.score;
+      playerTwoScore = props.match.playerTwo.score;
     } else {
-      playerOneScore = Number(this.props.playerOne.handicap);
-      playerTwoScore = Number(this.props.playerTwo.handicap);
+      playerOneScore = Number(this.props.match.playerOne.details.handicap);
+      playerTwoScore = Number(this.props.match.playerTwo.details.handicap);
     }
     this.state = {
       playerOneScore: playerOneScore,
@@ -43,16 +43,15 @@ export default class MatchForm extends React.Component {
     try {
       var p1 = {
         score: Number(this.state.playerOneScore),
-        handicap: Number(this.props.playerOne.handicap)
+        handicap: Number(this.props.match.playerOne.details.handicap)
       }
       var p2 = {
         score: Number(this.state.playerTwoScore),
-        handicap: Number(this.props.playerTwo.handicap)
+        handicap: Number(this.props.match.playerTwo.details.handicap)
       }
       var raceTo = Number(this.props.raceTo);
       if ((p1.score === raceTo && (p2.score >= p2.handicap && p2.score < raceTo)) || (p2.score === raceTo && (p1.score >= p1.handicap && p1.score < raceTo))) {
-        match.player_one_score = this.state.playerOneScore;
-        match.player_two_score = this.state.playerTwoScore;
+        match.setScore(this.state.playerOneScore, this.state.playerTwoScore);
         this.props.update(match);
         this.props.closeModal();
       } else {
@@ -65,7 +64,9 @@ export default class MatchForm extends React.Component {
   }
 
   render() {
-    const {match, playerOne, playerTwo} = this.props;
+    const match = this.props.match;
+    const playerOne = match.playerOne.details;
+    const playerTwo = match.playerTwo.details;
     return (
       <div class="col-xs-12">
         <div class="row">

@@ -1,30 +1,56 @@
 var Bracket = require('./Bracket');
 
 
-var RoundRobinBracket = function(matches, size) {
-  Bracket.call(this, matches, size);
-  this.type = 'Single Elimination Bracket';
+var RoundRobinBracket = function(matches, size, players) {
+  Bracket.call(this, matches, players, size);
+  this.type = 'Round Robin Bracket';
+  this.grid = createGrid(this.matches, this.players);
+  this.scores = {}
+  this.players.forEach((player) => {
+    this.scores[player.id] = 0;
+  })
 
-  this.completeMatch = function(match) {
-    if(match instanceof Match) {
+  this.countScores = function() {
+    this.matches.forEach((match) => {
       var result = match.getResult();
       if(result) {
-        var winner = result.winner;
-        var nextMatch = this.matches.find((next) => {
-          return match.winnerNextMatchKey === next.key;
-        })
-        if(nextMatch) {
-          if(match.isMatchNumEven()){
-            nextMatch.setPlayerTwo(winner);
-          }
-          else {
-            nextMatch.setPlayerOne(winner);
-          }
-        }
+        this.scores[result.winner]++;
       }
+    })
+  }
+  this.countScores();
+
+  this.sortRows = function(playerOrder) {
+    var players = [];
+    while(playerOrder.length > 0){
+      var playerId = playerOrder.shift();
+      var player = this.players.find((p) => {
+        return p.id === playerId;
+      })
+      players.push(player);
     }
+    this.players = players;
+    this.grid = createGrid(this.matches, this.players);
   }
 
+}
+
+function createGrid(matches, players) {
+  var grid = [];
+  players.forEach((player) => {
+     var row = [];
+     players.forEach((p) => {
+       row.push({pOne:player.id, pTwo:p.id});
+     })
+     row.forEach((match) => {
+       match.match = matches.find((m) => {
+         return (m.playerOne.id === match.pOne && m.playerTwo.id === match.pTwo) ||
+         (m.playerTwo.id === match.pOne && m.playerOne.id === match.pTwo)
+       })
+     })
+     grid.push(row);
+  })
+  return grid;
 }
 
 RoundRobinBracket.prototype = Object.create(Bracket.prototype);

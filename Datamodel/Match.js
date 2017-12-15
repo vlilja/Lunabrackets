@@ -1,4 +1,4 @@
-module.exports = function Match(id, key, winnerNextMatchKey, loserNextMatchKey, playerOne, playerTwo, raceTo) {
+module.exports = function Match(id, key, winnerNextMatchKey, loserNextMatchKey, playerOne, playerTwo, raceTo, walkOver) {
   this.id = id;
   this.key = key || '';
   this.winnerNextMatchKey = winnerNextMatchKey || '';
@@ -14,6 +14,7 @@ module.exports = function Match(id, key, winnerNextMatchKey, loserNextMatchKey, 
     details: '',
     score: ''
   }
+  this.walkOver = walkOver || 0;
 
   this.isMatchNumEven = function() {
     var even = false;
@@ -43,15 +44,15 @@ module.exports = function Match(id, key, winnerNextMatchKey, loserNextMatchKey, 
   }
   this.getResult = function() {
     if (this.playerOne.score && this.playerTwo.score) {
-      if (this.playerOne.score > this.playerTwo.score) {
+      if (Number(this.playerOne.score) > Number(this.playerTwo.score)) {
         return {
-          winner: this.playerOne.details,
-          loser: this.playerTwo.details
+          winner: this.playerOne.id,
+          loser: this.playerTwo.id
         }
-      } else if (this.playerTwo.score > this.playerOne.score) {
+      } else if (Number(this.playerTwo.score) > Number(this.playerOne.score)) {
         return {
-          winner: this.playerTwo.details,
-          loser: this.playerOne.details
+          winner: this.playerTwo.id,
+          loser: this.playerOne.id
         }
       } else {
         return null;

@@ -15,7 +15,6 @@ export default class QualifiersBracket extends React.Component {
     this.toggleWinnerSide = this.toggleWinnerSide.bind(this);
     this.toggleLoserSide = this.toggleLoserSide.bind(this);
     this.mapRounds = this.mapRounds.bind(this);
-    this.mapPlayerNames = this.mapPlayerNames.bind(this);
   }
 
   toggleWinnerSide() {
@@ -32,29 +31,12 @@ export default class QualifiersBracket extends React.Component {
     this.setState({loserSideVisible: bool});
   }
 
-  mapPlayerNames() {
-    this.props.matches.forEach((match) => {
-      var pOne,
-        pTwo;
-      for (var i = 0; i < this.props.players.length; i++) {
-        if (this.props.players[i].player_id === match.player_one) {
-          match.player_one = this.props.players[i];
-        }
-        if (this.props.players[i].player_id === match.player_two) {
-          match.player_two = this.props.players[i];
-        }
-      }
-    })
-  }
-
   mapRounds() {
-    this.mapPlayerNames();
     var firstRound = [];
-    var firstRoundMatches = _.chain(this.props.matches).filter((match) => {
-      return match.match_key.match(/^[1-8]$/g)
-    }).orderBy('match_key').value();
-    var i = 0;
-    firstRoundMatches.forEach((match, idx) => {
+    var bracket = this.props.bracket;
+    console.log(bracket);
+    var firstRound = [];
+    bracket.upperBracket.R1.matches.forEach((match, idx) => {
       firstRound.push(
         <div key={idx} class="col-xs-12">
           <div class="panel match col-xs-12">
@@ -65,10 +47,7 @@ export default class QualifiersBracket extends React.Component {
       )
     })
     var secondRound = [];
-    var secondRoundMatches = _.chain(this.props.matches).filter((match) => {
-      return match.match_key.match(/^A[1-8]$/g)
-    }).orderBy('match_key').value();
-    secondRoundMatches.forEach((match, idx) => {
+    bracket.upperBracket.A.matches.forEach((match, idx) => {
       secondRound.push(
         <div key={idx} class="col-xs-12">
           <div class="col-xs-12 match-padding-three-quarters"></div>
@@ -81,10 +60,7 @@ export default class QualifiersBracket extends React.Component {
       )
     })
     var thirdRound = [];
-    var thirdRoundMatches = _.chain(this.props.matches).filter((match) => {
-      return match.match_key.match(/^B[1-8]$/g)
-    }).orderBy('match_key').value();
-    thirdRoundMatches.forEach((match, idx) => {
+    bracket.upperBracket.B.matches.forEach((match, idx) => {
       thirdRound.push(
         <div key={idx} class="col-xs-12">
           <div class="col-xs-12 match-padding-double"></div>
@@ -98,10 +74,7 @@ export default class QualifiersBracket extends React.Component {
       )
     })
     var loserFirst = [];
-    var loserFirstRoundMatches = _.chain(this.props.matches).filter((match) => {
-      return match.match_key.match(/^L[1-4]$/g)
-    }).orderBy('match_key').value();
-    loserFirstRoundMatches.forEach((match, idx) => {
+    bracket.lowerBracket.L1.matches.forEach((match, idx) => {
       loserFirst.push(
         <div key={idx} class="col-xs-12">
           <div class="panel match col-xs-12">
@@ -112,27 +85,18 @@ export default class QualifiersBracket extends React.Component {
       )
     })
     var loserSecond = [];
-    var loserSecondRoundMatches = _.chain(this.props.matches).filter((match) => {
-      return match.match_key.match(/^L[5-8]$/g)
-    }).orderBy('match_key').value();
-    var A = 4;
-    loserSecondRoundMatches.forEach((match, idx) => {
+    bracket.lowerBracket.L2.matches.forEach((match, idx) => {
       loserSecond.push(
         <div key={idx} class="col-xs-12">
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo} loserside={'A' + (A - idx)} update={this.props.update}></Match>
+            <Match match={match} raceTo={this.props.raceTo} loserside={bracket.lowerBracket.L2.playersFrom + String(idx+1)} update={this.props.update}></Match>
           </div>
           <div class="match-padding-half col-xs-12"></div>
         </div>
       )
     })
     var loserThird = [];
-    var loserThirdRoundMatches = _.chain(this.props.matches).filter((match) => {
-      return match.match_key.match(/^L9|L10$/g)
-    }).orderBy((match) => {
-      return Number(match.match_key.substring(1));
-    }).value();
-    loserThirdRoundMatches.forEach((match, idx) => {
+    bracket.lowerBracket.L3.matches.forEach((match, idx) => {
       loserThird.push(
         <div key={idx} class="col-xs-12">
           <div class="col-xs-12 match-padding-three-quarters"></div>
@@ -145,18 +109,12 @@ export default class QualifiersBracket extends React.Component {
       )
     })
     var loserFourth = [];
-    var loserFourthRoundMatches = _.chain(this.props.matches).filter((match) => {
-      return match.match_key.match(/^L11|L12$/g)
-    }).orderBy((match) => {
-      return Number(match.match_key.substring(1));
-    }).value();
-    var B = 1;
-    loserFourthRoundMatches.forEach((match, idx) => {
+    bracket.lowerBracket.L4.matches.forEach((match, idx) => {
       loserFourth.push(
         <div key={idx} class="col-xs-12">
           <div class="col-xs-12 match-padding-three-quarters"></div>
           <div class="panel match col-xs-12">
-            <Match match={match} raceTo={this.props.raceTo} loserside={'B' + (B + idx)} update={this.props.update}></Match>
+            <Match match={match} raceTo={this.props.raceTo} loserside={bracket.lowerBracket.L4.playersFrom + String(bracket.lowerBracket.L4.matches.length-idx)} update={this.props.update}></Match>
           </div>
           <div class="col-xs-12 match-padding-three-quarters"></div>
           <div class="col-xs-12 match-padding-half"></div>

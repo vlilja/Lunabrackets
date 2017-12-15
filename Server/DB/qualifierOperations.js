@@ -7,7 +7,7 @@ module.exports ={
       var queryString = "INSERT INTO qualifiers(qualifier_id) VALUES('"+leagueId+"')";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] insertQualifier' + error);
         } else {
           resolve(rows.info.insertId);
         }
@@ -21,7 +21,7 @@ module.exports ={
          VALUE('" + qualifierId + "','" + match.key + "','" + match.winnerProceeds + "','" + match.loserProceeds + "')";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] insertMatch' + error);
         } else {
           resolve(rows.info.insertId);
         }
@@ -35,7 +35,7 @@ module.exports ={
        WHERE qualifier_id = "+qualifierId+" AND match_key = "+matchKey+";"
        c.query(queryString, function(error, rows) {
          if (error) {
-           reject(error);
+           reject('[ERROR] updateFirstRoundMatch' + error);
          } else {
            resolve(rows.info.insertId);
          }
@@ -49,7 +49,7 @@ module.exports ={
       WHERE qualifier_id = "+qualifierId+" AND match_key = '"+matchKey+"';";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] updatePlayerOneToMatch' + error);
         } else {
           resolve(rows.info.insertId);
         }
@@ -63,7 +63,7 @@ module.exports ={
       WHERE qualifier_id = "+qualifierId+" AND match_key = '"+matchKey+"';";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] updatePlayerTwoToMatch' + error);
         } else {
           resolve(rows.info.insertId);
         }
@@ -73,10 +73,10 @@ module.exports ={
 
   updateMatchScore: function(c, qualifierId, match) {
     return new Promise((resolve, reject) => {
-      var queryString = "UPDATE qualifier_matches SET player_one_score = "+match.player_one_score+", player_two_score = "+match.player_two_score+" WHERE qualifier_id = "+qualifierId+" AND match_key = '"+match.match_key+"';";
+      var queryString = "UPDATE qualifier_matches SET player_one_score = "+match.playerOne.score+", player_two_score = "+match.playerTwo.score+" WHERE qualifier_id = "+qualifierId+" AND id = '"+match.id+"';";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] updateMatchScore' + error);
         } else {
           resolve(rows.info.insertId);
         }
@@ -90,7 +90,7 @@ module.exports ={
       var queryString = "SELECT * FROM qualifier_matches WHERE qualifier_id = "+qualifierId+"";
       c.query(queryString, function(error, rows) {
         if(error) {
-          reject(error);
+          reject('[ERROR] getMatches' + error);
         }
         else {
           resolve(rows);
@@ -104,7 +104,7 @@ module.exports ={
       var queryString = "SELECT match_key, player_one, player_two FROM qualifier_placements";
       c.query(queryString, function(error, rows) {
         if(error) {
-          reject(error);
+          reject('[ERROR] getPlacements' + error);
         }
         else {
           resolve(rows);

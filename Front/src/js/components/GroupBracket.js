@@ -8,164 +8,176 @@ export default class GroupBracket extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      wins: [],
       modalOpen: false,
-      modalContent: ''
+      modalContent: '',
+      sortByWins: false,
+      sortByPlace: false
     }
-    props.group.players.forEach((player, idx) => {
-      this.state.wins.push({id: player.id, wins: 0});
-    })
-    this.createGrid = this.createGrid.bind(this);
-    this.createCell = this.createCell.bind(this);
-    this.openModal = this.openModal.bind(this);
+    this.drawBracket = this.drawBracket.bind(this);
     this.updateMatch = this.updateMatch.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.sortPlayers = this.sortPlayers.bind(this);
   }
 
   updateMatch(match) {
     this.props.updateMatch(this.props.group.id, match);
   }
 
-  createGrid() {
-    var header = [];
-    var rows = [];
-    var cells = [];
-    this.state.wins.forEach((item) => {
-      item.wins = '0';
-    });
-    cells.push(
-      <th key={'corner'}></th>
-    );
-    for (var k = 0; k < this.props.group.players.length; k++) {
-      var name;
-      if (this.props.group.players[k].nickName) {
-        name = this.props.group.players[k].nickName;
-      } else {
-        name = this.props.group.players[k].firstName;
-      }
-      cells.push(
-        <th key={k}>{name}</th>
-      );
-    }
-    cells.push(
-      <th key={'wins'}>{phrases.groupView.wins}</th>
-    );
-    header.push(
-      <tr key={'headerrow'}>{cells}</tr>
-    )
-    for (var i = 0; i < this.props.group.players.length; i++) {
-      var player = this.props.group.players[i];
-      cells = [];
-      cells.push(
-        <td key={k}>{player.firstName + ' ' + player.lastName}
-          <span class="margin-left badge">{player.handicap}</span>
-        </td>
-      )
-      for (var k = 0; k < this.props.group.players.length + 1; k++) {
-        {
-          if(i === k) {
-            cells.push(
-              <td key={k} class="greyed-out"></td>
-            )
-          } else if (k === this.props.group.players.length) {
-            cells.push(
-              <td key={k + 'w'}>{this.state.wins[i].wins}</td>
-            )
-          } else {
-            var cell = this.createCell(player.id, this.props.group.players[k].id);
-            cells.push(cell)
-          }
-        }
-      }
-      rows.push(
-        <tr key={i}>{cells}</tr>
-      )
-    }
-    return (
-      <table class="table table-striped table-hover table-bordered group-bracket">
-        <thead>{header}</thead>
-        <tbody>
-          {rows}
-        </tbody>
-      </table>
-    )
-  }
-
-  createCell(playerOneId, playerTwoId) {
-    var matches = this.props.group.matches
-    var selectedMatch;
-    var upperHalf = true;
-    matches.forEach((match, idx) => {
-      if (match.player_one === playerOneId && match.player_two === playerTwoId) {
-        selectedMatch = match;
-      }
-      if (match.player_two === playerOneId && match.player_one === playerTwoId) {
-        selectedMatch = match;
-        upperHalf = false;
-      }
-    })
-    var cell = <td key={selectedMatch.match_id} onClick={() => {
-      this.openModal(selectedMatch.match_id)
-    }} data-match-id={selectedMatch.match_id}></td>
-    if (selectedMatch.player_one_score && selectedMatch.player_two_score) {
-      if (upperHalf) {
-        if (selectedMatch.player_one_score > selectedMatch.player_two_score) {
-          var playerWins = this.state.wins.find(function(item) {
-            return item.id === playerOneId;
-          })
-          playerWins.wins++;
-        }
-        cell = <td key={selectedMatch.match_id} onClick={() => {
-          this.openModal(selectedMatch.match_id)
-        }} class={playerWins
-          ? 'win'
-          : ''} data-match-id={selectedMatch.match_id}>{selectedMatch.player_one_score + ' – ' + selectedMatch.player_two_score}</td>
-      } else {
-        if (selectedMatch.player_two_score > selectedMatch.player_one_score) {
-          var playerWins = this.state.wins.find(function(item) {
-            return item.id === playerOneId;
-          })
-          playerWins.wins++;
-        }
-        cell = <td key={selectedMatch.match_id} onClick={() => {
-          this.openModal(selectedMatch.match_id)
-        }} class={playerWins
-          ? 'win'
-          : ''} data-match-id={selectedMatch.match_id}>{selectedMatch.player_two_score + ' – ' + selectedMatch.player_one_score}</td>
-      }
-    }
-    return cell;
-  }
-
-  openModal(id) {
+  openModal(matchId) {
     if (this.props.stage === 'group') {
-      var match = this.props.group.matches.find((item) => {
-        return id === item.match_id;
+      var match = this.props.bracket.matches.find((match) => {
+        return matchId === match.id;
       })
-      var playerOne = this.props.group.players.find((player) => {
-        return match.player_one === player.id;
-      })
-      var playerTwo = this.props.group.players.find((player) => {
-        return match.player_two === player.id;
-      })
-      var content = <MatchForm match={match} raceTo={this.props.raceTo} playerOne={playerOne} playerTwo={playerTwo} update={this.updateMatch} closeModal={() => {
+      var content = <MatchForm match={match} raceTo={this.props.raceTo} update={this.updateMatch} closeModal={() => {
         this.setState({modalOpen: false})
       }}/>
       this.setState({modalOpen: true, modalContent: content});
     }
   }
 
+  sortPlayers(rule) {
+    var players = this.props.bracket.players;
+    var order = [];
+    if (rule === "place") {
+      players.sort((a, b) => {
+        return a[rule] - b[rule]
+      });
+      players.forEach((player) => {
+        order.push(player.id)
+      });
+    }
+    if (rule === 'wins') {
+      var scores = [];
+      for (var key in this.props.bracket.scores) {
+        scores.push({playerId: key, score: this.props.bracket.scores[key]});
+      }
+      scores.sort((a, b) => {
+        return b.score - a.score;
+      })
+      scores.forEach((player) => {
+        order.push(player.playerId);
+      })
+    }
+    this.props.bracket.sortRows(order);
+    if (rule === 'wins') {
+      this.setState({sortByWins: true, sortByPlace: false});
+    }
+    if (rule === 'place') {
+      this.setState({sortByWins: false, sortByPlace: true});
+    }
+  }
+
+  drawBracket() {
+    //Table header
+    var headerCells = [];
+    headerCells.push(
+      <th key={'corner'}></th>
+    );
+    this.props.bracket.players.forEach((player, idx) => {
+      var name = player.nickName
+        ? player.nickName
+        : player.firstName;
+      headerCells.push(
+        <th key={idx}>{name}</th>
+      );
+    })
+    headerCells.push(
+      <th key={'wins'} onClick={() => {
+        this.sortPlayers('wins')
+      }}>{phrases.groupView.wins}
+        <span class="right">
+          <i class={this.state.sortByWins
+            ? "fa fa-angle-down"
+            : "fa fa-angle-right"} aria-hidden="true"></i>
+        </span>
+      </th>
+    );
+    if (this.props.stage !== 'group') {
+      headerCells.push(
+        <th key={'place'} onClick={() => {
+          this.sortPlayers('place')
+        }}>{phrases.groupView.place}
+          <span class="right">
+            <i class={this.state.sortByPlace
+              ? "fa fa-angle-down"
+              : "fa fa-angle-right"} aria-hidden="true"></i>
+          </span>
+        </th>
+      )
+    }
+    //Table rows
+    var rows = [];
+    this.props.bracket.grid.forEach((row, idx) => {
+      var cells = [];
+      var player = this.props.bracket.players.find((player) => {
+        return player.id === row[0].pOne;
+      })
+      cells.push(
+        <td key={'name'}>{player.firstName + ' ' + player.lastName}</td>
+      );
+      row.forEach((match, idx) => {
+        if (!match.match) {
+          cells.push(
+            <td key={idx} class="greyed-out"></td>
+          )
+        } else {
+          var score;
+          var result = match.match.getResult();
+          if (result) {
+            var win = result.winner === match.pOne
+              ? 'win'
+              : '';
+            if (match.pOne === match.match.playerOne.id) {
+              score = match.match.playerOne.score + phrases.general.ndash + match.match.playerTwo.score;
+            } else {
+              score = match.match.playerTwo.score + phrases.general.ndash + match.match.playerOne.score;
+            }
+          }
+          cells.push(
+            <td class={win} key={idx} onClick={() => {
+              this.openModal(match.match.id)
+            }}>{score}</td>
+          )
+        }
+      })
+      cells.push(
+        <td key={'wins'}>{this.props.bracket.scores[player.id]}</td>
+      )
+      if (this.props.stage !== 'group') {
+        cells.push(
+          <td key={'place'}>{player.place}</td>
+        )
+      }
+      rows.push(
+        <tr key={idx}>{cells}</tr>
+      );
+    })
+    return {header: headerCells, body: rows};
+  }
+
   render() {
-    const grid = this.createGrid();
+    var table = this.drawBracket();
     return (
       <div>
-        <h2>{this.props.group.name}</h2>{grid}
+        <h2>{this.props.group.name + ' (' + this.props.group.key + ')'}</h2>
+        <table class="table table-striped table-hover table-bordered group-bracket">
+          <thead>
+            <tr>{table.header}</tr>
+          </thead>
+          <tbody>
+            {table.body}
+          </tbody>
+        </table>
         <Modal isOpen={this.state.modalOpen} className={{
           base: 'col-xs-8 col-xs-offset-2 col-lg-4 col-lg-offset-4 small-modal'
+        }} overlayClassName={{
+          base: 'modal-back-ground'
         }} contentLabel="Warning modal">
           {this.state.modalContent}
         </Modal>
       </div>
     )
+
   }
 
 }

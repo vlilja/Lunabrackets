@@ -3,12 +3,13 @@ import phrases from "../../Phrases";
 import helper from "../classes/helper";
 import Icons from "./Icons";
 import _ from "lodash";
+import UndeterminedRankingsForm from "./UndeterminedRankingsForm";
 
 export default class AdminView extends React.Component {
 
   constructor(props) {
     super(props);
-    var players = props.league.participants.slice();
+    var players = props.league.players.slice();
     this.state = {
       gameName: '',
       raceTo: '1',
@@ -48,20 +49,20 @@ export default class AdminView extends React.Component {
           [name]: value
         }
       });
-    }
-    else if(name.match(/[A|B|C|Ð]-undetermined-./g)) {
+    } else if (name.match(/[A|B|C|Ð]-undetermined-./g)) {
+      console.log(value);
       var groupKey = name.charAt(0);
       var group = this.state.undetermined[groupKey];
       var playerId = name.split('-').pop();
-      if(!value || value < group.minRanking || value > group.maxRanking){
+      if (!value || value < group.minRanking || value > group.maxRanking) {
         value = group.minRanking;
       }
-      group.players[playerId].ranking=value;
+      group.players[playerId].ranking = value;
       this.setState({
-        ...this.state.undetermined, [groupKey]:group
+        ...this.state.undetermined,
+        [groupKey]: group
       })
-    }
-    else {
+    } else {
       this.setState({[name]: value});
     }
   }
@@ -77,24 +78,29 @@ export default class AdminView extends React.Component {
 
   componentWillMount() {
     this.setGameName(this.props.league.game);
-    if (this.props.league && this.props.league.stage === 'qualifiers') {
-      this.setState({loading:true});
-      this.props.getUndetermined();
-    }
   }
 
   componentWillReceiveProps(props) {
-    if(props.league && props.league.undetermined && !this.state.undetermined) {
+    if (props.league && props.league.undetermined && !this.state.undetermined) {
       var undetermined = props.league.undetermined.slice();
       var undeterminedByGroup = {}
       undetermined.forEach((undetermined) => {
         var players = undetermined.players.split(',');
-        undeterminedByGroup = {...undeterminedByGroup, [undetermined.group_key]:{minRanking:Number(undetermined.ranking), maxRanking:(Number(undetermined.ranking)+players.length-1), players:{}}};
+        undeterminedByGroup = {
+          ...undeterminedByGroup,
+          [undetermined.group_key]: {
+            maxRanking: (Number(undetermined.ranking) - (players.length - 1)),
+            minRanking: (Number(undetermined.ranking)),
+            players: {}
+          }
+        };
         for (var i = 0; i < players.length; i++) {
-          undeterminedByGroup[undetermined.group_key].players[players[i]] = {ranking:undetermined.ranking};
+          undeterminedByGroup[undetermined.group_key].players[players[i]] = {
+            ranking: undetermined.ranking
+          };
         }
       })
-      this.setState({undetermined: undeterminedByGroup, loading:false});
+      this.setState({undetermined: undeterminedByGroup, loading: false});
     }
   }
 
@@ -151,25 +157,24 @@ export default class AdminView extends React.Component {
   }
 
   submitUndetermined(groupKey) {
+    var invalid = false;
     var group = this.state.undetermined[groupKey];
     var groupByRank = _.groupBy(group.players, 'ranking');
-    var invalid = false;
-    if(Object.keys(groupByRank).length === 3){
-      for(var player in group.players) {
-        if(group.players[player].ranking < group.minRanking || group.players[player].ranking > group.maxRanking) {
-          invalid = true;
-        }
-      }
-    }
-    else {
+    var rankKeys = Object.keys(groupByRank);
+    var playerKeys = Object.keys(group.players);
+    if(rankKeys.length !== playerKeys.length) {
       invalid = true;
     }
-    if(invalid) {
-      console.log('invalid');
+    for (var player in group.players) {
+      if (group.players[player].ranking < group.minRanking || group.players[player].ranking > group.maxRanking) {
+        invalid = true;
+      }
     }
-    else {
-      this.setState({loading:true, undetermined:null});
-      this.props.updateUndetermined({key:groupKey, players:group.players});
+    if (invalid) {
+      console.log('invalid');
+    } else {
+      this.setState({loading: true, undetermined: null});
+      this.props.updateUndetermined({key: groupKey, players: group.players});
     }
     _
   }
@@ -213,14 +218,14 @@ export default class AdminView extends React.Component {
         var list = [];
         for (var i = 0; i < players.length; i++) {
           var player = this.state.players.find((player) => {
-            return players[i] === player.player_id;
+            return players[i] === player.id;
           })
           list.push(
             <div key={group + i} class="col-xs-12">
               <label class="col-xs-5">{player.firstName + " " + player.lastName}</label>
               <div class="col-xs-offset-1 col-xs-2">{phrases.general.ranking}:</div>
               <div class="col-xs-3">
-                <input class="form-control" type="number" name={group+'-undetermined-'+players[i]} min={this.state.undetermined[group].minRanking} onChange={this.handleInputChange} max={this.state.undetermined[group].maxRanking} value={this.state.undetermined[group].players[players[i]].ranking}></input>
+                <input class="form-control" type="number" name={group + '-undetermined-' + players[i]} min={this.state.undetermined[group].minRanking} onChange={this.handleInputChange} max={this.state.undetermined[group].maxRanking} value={this.state.undetermined[group].players[players[i]].ranking}></input>
               </div>
             </div>
           );
@@ -232,7 +237,9 @@ export default class AdminView extends React.Component {
               {list}
             </div>
             <div class="panel-footer">
-              <button class="btn btn-primary" onClick={()=>{this.submitUndetermined(group)}} >{phrases.general.submit}</button>
+              <button class="btn btn-primary" onClick={() => {
+                this.submitUndetermined(group)
+              }}>{phrases.general.submit}</button>
             </div>
           </div>
         </div>
@@ -254,7 +261,7 @@ export default class AdminView extends React.Component {
               <div class="form-group">
                 <label>{phrases.general.game + ': ' + this.state.gameName}</label><br/>
                 <label>{phrases.general.stage + ': ' + this.props.league.stage}</label><br/>
-                <label>{phrases.general.players + ': ' + this.props.league.participants.length + " / 32"}</label><br/>
+                <label>{phrases.general.players + ': ' + this.props.league.players.length + " / 32"}</label><br/>
                 <label class="margin-right" for="raceTo">{phrases.general.raceTo + ": "}</label>
                 {this.props.league.stage === 'ready'
                   ? <input type="number" min="1" onChange={this.handleInputChange} name="raceTo" style={{
@@ -301,9 +308,8 @@ export default class AdminView extends React.Component {
             </div>
           </div>
         </div>
-        <div class="col-lg-12">
-          <h2>{phrases.adminView.undeterminedRankingsHeading}</h2>
-          {this.state.loading ? <Icons type="LOADING" size="32px" /> : mappedUndetermined}
+        <div class="col-xs-12">
+          {this.props.league.stage === 'qualifiers' ? <UndeterminedRankingsForm updateUndetermined={this.props.updateUndetermined} players={this.props.league.players} getUndetermined={this.props.getUndetermined} undetermined={this.props.league.undetermined} /> : ''}
         </div>
       </div>
     )

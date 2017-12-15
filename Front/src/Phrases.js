@@ -16,6 +16,7 @@ export default {
     no: 'No',
     ndash: '–',
     ranking: 'Ranking',
+    place: 'Place',
     submit: 'Submit'
   },
   league: {
@@ -59,6 +60,7 @@ export default {
   },
   groupView: {
     wins: 'Wins',
+    place: 'Place',
     matchScoreFormHeading: 'Enter match score',
     update:'Update'
   },
@@ -74,6 +76,10 @@ export default {
     quarterFinals: 'Quarterfinals',
     semiFinals: 'Semifinals',
     final: 'Final'
+  },
+  walkOverForm: {
+    heading: 'Walk over',
+    message: 'Walk over for'
   },
   errorMessages: {
     pageNotFound:'Sorry we couldn\'t find what u were looking for...',

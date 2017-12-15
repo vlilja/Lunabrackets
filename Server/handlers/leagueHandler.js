@@ -131,7 +131,7 @@ module.exports = {
         logger.log('info', '[SUCCESS] getLeagues');
         var leagues = [];
         response.forEach((league) => {
-          leagues.push(new League(league.id, league.name, league.game, null, league.stage));
+          leagues.push(new League(league.id, league.name, league.game, null, league.raceTo, league.stage));
         })
         cb(leagues);
       })
@@ -148,7 +148,7 @@ module.exports = {
         var leagueArray = response[0];
         var playerArray = response[1];
         var players = [];
-        league = new League(leagueArray[0].id, leagueArray[0].name, leagueArray[0].game, null, leagueArray[0].stage);
+        league = new League(leagueArray[0].id, leagueArray[0].name, leagueArray[0].game, null, leagueArray[0].raceTo, leagueArray[0].stage);
         playerArray.forEach((player) => {
           players.push(new Player(player.id, player.firstName, player.lastName, player.nickName, player.handicap));
         })
@@ -195,7 +195,9 @@ module.exports = {
     })
     .then((matchesArray) => {
       matchesArray.forEach((match) => {
-        matches.push(new Match(match.id, null, null, null, match.player_one, match.player_two));
+        var m = new Match(match.id, null, null, null, match.player_one, match.player_two);
+        m.setScore(match.player_one_score, match.player_two_score);
+        matches.push(m);
       })
       logger.info('[SUCCESS] getGroupMatches', 'Params: {id: '+groupId+'}');
       cb(matches);
@@ -321,10 +323,10 @@ module.exports = {
       .then((response) => {
         //Count player wins
         return new Promise((resolve, reject) => {
-          for (var i = 0; i < response.length; i = i + 2) {
-            response[i].matches.forEach((match) => {
+          for (var i = 0, k=0; i < response.length; i = i + 2, k++) {
+            response[i].forEach((match) => {
               if (match.player_one_score > match.player_two_score) {
-                var player = response[i + 1].players.find((player) => {
+                var player = response[i + 1].find((player) => {
                   return player.id === match.player_one;
                 })
                 if (!player.wins) {
@@ -332,7 +334,7 @@ module.exports = {
                 }
                 player.wins++;
               } else {
-                var player = response[i + 1].players.find((player) => {
+                var player = response[i + 1].find((player) => {
                   return player.id === match.player_two;
                 })
                 if (!player.wins) {
@@ -341,10 +343,8 @@ module.exports = {
                 player.wins++;
               }
             })
-            var rankedGroup = determineGroupRankings(response[i + 1].players, response[i].matches);
-            var group = rankedGroups.find((group) => {
-              return group.id === response[i].id;
-            });
+            var rankedGroup = determineGroupRankings(response[i + 1], response[i]);
+            var group = rankedGroups[k];
             group.players = _.orderBy(rankedGroup, ['ranking'], ['asc'])
           }
           resolve(rankedGroups)
@@ -407,12 +407,11 @@ module.exports = {
         return db.league.updateLeagueStage(dbClient, leagueId, 'qualifiers');
       })
       .then((response) => {
-        transactionManager.endTransaction(dbClient, true, function(value) {
-          console.log(value);
-        });
+        logger.info('[SUCCESS] startQualifiers' + 'Params: {leagueId: '+leagueId+'}');
+        transactionManager.endTransaction(dbClient, true, cb);
       })
       .catch((error) => {
-        console.log("ERROR: " + error);
+        logger.error(error);
         transactionManager.endTransaction(dbClient, false, function(value) {
           console.log(value);
         });
@@ -462,27 +461,32 @@ module.exports = {
     promise.then((response) => {
         var matches = [];
         response.forEach((match) => {
-          matches.push(new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two))
+          var m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two);
+          m.setScore(match.player_one_score, match.player_two_score);
+          matches.push(m);
         })
+        logger.info('[SUCCESS] getQualifierMatches', 'Params: {leagueId: '+leagueId+'}');
         cb(matches);
       })
       .catch((error) => {
-        console.log(error);
+        logger.error(error);
         cb(new Error(error));
       })
   },
 
   updateQualifierBracket(leagueId, match, cb) {
+    match = Object.assign(new Match(), match);
     var promise = transactionManager.startTransaction(dbClient);
     promise.then((response) => {
         var promises = qualifierHandler.updateBracket(dbClient, leagueId, match);
         return Promise.all(promises);
       })
       .then((response) => {
+        logger.info('[SUCCESS] updateQualifierBracket', 'Params: {leagueId: '+leagueId+', matchId: '+match.id+'}');
         transactionManager.endTransaction(dbClient, true, cb, response);
       })
       .catch((error) => {
-        console.log('ERROR: ' + error);
+        logger.error(error);
         transactionManager.endTransaction(dbClient, false, cb);
       })
   },
@@ -525,7 +529,9 @@ module.exports = {
     promise.then((response) => {
         var matches = [];
         response.forEach((match) => {
-          matches.push(new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two))
+          var m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over);
+          m.setScore(match.player_one_score, match.player_two_score);
+          matches.push(m)
         })
         cb(matches);
       })
@@ -536,16 +542,18 @@ module.exports = {
   },
 
   updateFinalsBracket(leagueId, match, cb) {
+    match = Object.assign(new Match(), match);
     var promise = transactionManager.startTransaction(dbClient);
     promise.then((response) => {
         var promises = finalsHandler.updateBracket(dbClient, leagueId, match);
         return Promise.all(promises);
       })
       .then((response) => {
+        logger.info('[SUCCESS] updateFinalsBracket', 'Params: {leagueId: '+leagueId+', matchId: '+match.id+'}');
         transactionManager.endTransaction(dbClient, true, cb, response);
       })
       .catch((error) => {
-        console.log('ERROR: ' + error);
+        logger.error(error);
         transactionManager.endTransaction(dbClient, false, cb);
       })
   },
@@ -556,8 +564,8 @@ module.exports = {
 //HELPERS
 function placePlayersByRanking(dbClient, leagueId, group, placements) {
   var promises = [];
-  for (var id in group.players) {
-    var ranking = Number(group.players[id].ranking);
+  group.players.forEach((player) => {
+    var ranking = Number(player.ranking);
     if (ranking === 1) {
       var seed = group.key + '1';
       var match = placements.finals.find((match) => {
@@ -565,31 +573,31 @@ function placePlayersByRanking(dbClient, leagueId, group, placements) {
           return match;
         }
       })
-      promises.push(finalsHandler.updateFinalsMatch(dbClient, leagueId, match.match_key, id))
+      promises.push(finalsHandler.updateFinalsMatch(dbClient, leagueId, match.match_key, player.details.id))
     }
     if (ranking > 1 && ranking <= 5) {
-      var seed = group.key + group.players[id].ranking;
+      var seed = group.key + player.ranking;
       placements.qualifiers.forEach((match) => {
         if (match.player_one === seed) {
-          promises.push(qualifierHandler.updateQualifiersMatch(dbClient, leagueId, match.match_key, id, null));
+          promises.push(qualifierHandler.updateQualifiersMatch(dbClient, leagueId, match.match_key, player.details.id, null));
         }
         if (match.player_two === seed) {
-          promises.push(qualifierHandler.updateQualifiersMatch(dbClient, leagueId, match.match_key, null, id));
+          promises.push(qualifierHandler.updateQualifiersMatch(dbClient, leagueId, match.match_key, null, player.details.id));
         }
       })
     }
     if (ranking > 5) {
-      var seed = group.key + group.players[id].ranking;
+      var seed = group.key + player.ranking;
       placements.elimination.forEach((match) => {
         if (match.player_one === seed) {
-          promises.push(eliminationHandler.updateEliminationMatch(dbClient, leagueId, match.match_key, id, null));
+          promises.push(eliminationHandler.updateEliminationMatch(dbClient, leagueId, match.match_key, player.details.id, null));
         }
         if (match.player_two === seed) {
-          promises.push(eliminationHandler.updateEliminationMatch(dbClient, leagueId, match.match_key, null, id));
+          promises.push(eliminationHandler.updateEliminationMatch(dbClient, leagueId, match.match_key, null, player.details.id));
         }
       })
     }
-  }
+  })
   return promises;
 }
 
@@ -648,8 +656,11 @@ function determineSubGroupRankings(players, matches, rank, rankedArray) {
   var mutualWins = getMutualWins(players, mutualMatches);
   mutualWins = _.groupBy(mutualWins, 'wins');
   var keys = Object.keys(mutualWins);
-  //Three people tied
+  //Multiple people tied
   if (keys.length === 1) {
+    if(Number(rank) === mutualWins[keys[0]].length) {
+      rank = rank-mutualWins[keys[0]].length+1;
+    }
     mutualWins[keys[0]].forEach((item) => {
       var player = _.remove(players, (player) => {
         return player.id === item.id;

@@ -1,6 +1,7 @@
 import React from "react";
 import Icons from "./Icons";
 import FinalsBracket from "./FinalsBracket";
+import {SingleEliminationBracket} from "lunabrackets-datamodel";
 
 
 export default class FinalsView extends React.Component {
@@ -24,11 +25,12 @@ export default class FinalsView extends React.Component {
 
   render() {
     var element;
-    if(this.state.loading){
-      element = <Icons type="LOADING" size="32px" />
+    if(this.state.loading || !this.props.league.finals){
+      element = <Icons type="LOADING" size="40px" />
     }
     else {
-      element = <FinalsBracket matches={this.props.league.finals.matches} players={this.props.league.participants} raceTo={this.props.league.raceTo} update={this.props.update}/>
+      var bracket = new SingleEliminationBracket(this.props.league.finals.matches, this.props.league.players, 8);
+      element = <FinalsBracket matches={this.props.league.finals.matches} players={this.props.league.players} bracket={bracket} raceTo={this.props.league.raceTo} update={this.props.update}/>
     }
     return (
       <div>{element}</div>

@@ -5,7 +5,7 @@ module.exports = {
       var queryString = "INSERT INTO eliminations(elimination_id) VALUES(" + eliminationId + ")";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] insertElimination' + error);
         } else {
           resolve(rows);
         }
@@ -19,7 +19,7 @@ module.exports = {
       VALUES(" + eliminationId + ", " + match.key + ", " + match.winnerProceeds + ")";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] insertEliminationMatch' + error);
         } else {
           resolve(rows);
         }
@@ -33,7 +33,7 @@ module.exports = {
        WHERE elimination_id = " + eliminationId + " AND match_key = " + matchKey + ";"
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] updateFirstRoundMatch' + error);
         } else {
           resolve(rows.info.insertId);
         }
@@ -46,7 +46,7 @@ module.exports = {
       var queryString = "UPDATE elimination_matches SET player_one = " + player + " WHERE elimination_id = " + eliminationId + " AND match_key='" + matchKey + "';";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] updatePlayerOneToMatch' + error);
         } else {
           resolve(rows.info.insertId);
         }
@@ -59,7 +59,7 @@ module.exports = {
       var queryString = "UPDATE elimination_matches SET player_two = " + player + " WHERE elimination_id = " + eliminationId + " AND match_key='" + matchKey + "';";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] updatePlayerTwoToMatch' + error);
         } else {
           resolve(rows.info.insertId);
         }
@@ -72,7 +72,7 @@ module.exports = {
       var queryString = "UPDATE elimination_matches SET player_one_score = "+match.player_one_score+", player_two_score = "+match.player_two_score+" WHERE elimination_id = "+eliminationId+" AND match_key = '"+match.match_key+"';";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] updateMatchScore' + error);
         } else {
           resolve(rows.info.insertId);
         }
@@ -85,7 +85,7 @@ module.exports = {
       var queryString = "SELECT match_key, player_one, player_two FROM elimination_placements;"
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] getEliminationPlacements' + error);
         } else {
           resolve(rows);
         }
@@ -98,7 +98,7 @@ module.exports = {
       var queryString = "SELECT * FROM elimination_matches WHERE elimination_id = " + leagueId + "";
       c.query(queryString, function(error, rows) {
         if (error) {
-          reject(error);
+          reject('[ERROR] getEliminationMatches' + error);
         } else {
           resolve(rows);
         }

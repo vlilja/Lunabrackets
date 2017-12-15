@@ -37,9 +37,9 @@ module.exports = {
 
   fixUndeterminedRankings: function(dbClient, leagueId, group) {
     var promises = [];
-    for(var id in group.players) {
-      promises.push(db.group.updateUndeterminedRanking(dbClient, leagueId, group.key, id, group.players[id].ranking));
-    }
+    group.players.forEach((player) => {
+      promises.push(db.group.updateUndeterminedRanking(dbClient, leagueId, group.key, player.details.id, player.ranking));
+    })
     promises.push(db.group.deleteUndeterminedRanking(dbClient, leagueId, group.key));
     return Promise.all(promises);
   }
