@@ -161,17 +161,19 @@ router.post('/:leagueId/qualifiers/matches/:matchId', function(req, res) {
   }
 })
 
-router.post('/:leagueId/elimination/matches/:matchKey', function(req, res) {
-  if (req.params.matchKey === req.body.match.match_key) {
-    leagueHandler.updateEliminationBracket(req.params.leagueId, req.body.match, function(response) {
+router.post('/:leagueId/elimination/matches/:matchId', function(req, res) {
+  var match = req.body.match;
+  var leagueId = req.params.leagueId;
+  if (!isNaN(leagueId) && typeof match === 'object') {
+    leagueHandler.updateEliminationBracket(leagueId, match, function(response) {
       if (response instanceof Error) {
-        res.json('Error updating elimination match');
+        res.status(400).send('Error updating elimination match');
       } else {
         res.json('Success');
       }
     })
   } else {
-    res.status(400).send('error');
+    res.status(400).send('Bad request');
   }
 })
 

@@ -233,9 +233,13 @@ export function getEliminationMatches(leagueId) {
       payload: ''
     })
     axios.get(serverDetails.baseUrl + 'leagues/' + leagueId + '/elimination/matches').then((response) => {
+      var matches = [];
+      response.data.forEach((match) => {
+        matches.push(Object.assign(new Match(), match));
+      })
         dispatch({
           type: 'FETCH_ELIMINATION_MATCHES_FULFILLED',
-          payload: response.data
+          payload: matches
         })
       })
       .catch((error) => {
@@ -329,7 +333,7 @@ export function updateEliminationMatch(leagueId, match) {
       type: 'UPDATE_ELIMINATION_MATCH',
       payload: ''
     })
-    axios.post(serverDetails.baseUrl + 'leagues/' + leagueId + '/elimination/matches/' + match.match_key, {
+    axios.post(serverDetails.baseUrl + 'leagues/' + leagueId + '/elimination/matches/' + match.id, {
         match: match
       })
       .then((response) => {
@@ -346,6 +350,7 @@ export function updateEliminationMatch(leagueId, match) {
           payload: error
         })
         flashMessage(dispatch, 2000);
+        dispatch(getEliminationMatches(leagueId));
       })
   }
 }
@@ -368,6 +373,7 @@ export function updateQualifierMatch(leagueId, match) {
         flashMessage(dispatch, 2000);
       })
       .catch((error) => {
+        console.log(error);
         dispatch({
           type: 'UPDATE_QUALIFIER_MATCH_REJECTED',
           payload: error

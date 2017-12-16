@@ -65,19 +65,17 @@ module.exports = {
 
   updateBracket(dbClient, leagueId, match) {
     var promises = [];
-    var player;
     promises.push(db.elimination.updateMatchScore(dbClient, leagueId, match));
-    if(Number(match.player_one_score) > Number(match.player_two_score)) {
-      player = match.player_one.player_id;
+    var result = match.getResult();
+    if(!result){
+      throw new Error('Match not finished');
+    }
+    console.log(result);
+    if(match.key.match(/^[1-4]$/g) || Number(match.match_key) % 2 === 0){
+      promises.push(this.updateEliminationMatch(dbClient, leagueId, match.winnerNextMatchKey, null, result.winner));
     }
     else {
-      player = match.player_two.player_id;
-    }
-    if(match.match_key.match(/^[1-4]$/g) || Number(match.match_key) % 2 === 0){
-      promises.push(this.updateEliminationMatch(dbClient, leagueId, match.winner_next_match_key, null, player));
-    }
-    else {
-      promises.push(this.updateEliminationMatch(dbClient, leagueId, match.winner_next_match_key, player, null));
+      promises.push(this.updateEliminationMatch(dbClient, leagueId, match.winnerNextMatchKey, result.winner, null));
     }
     return promises;
   },

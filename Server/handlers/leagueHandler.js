@@ -498,27 +498,32 @@ module.exports = {
     promise.then((response) => {
         var matches = [];
         response.forEach((match) => {
-          matches.push(new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two))
+          var m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over);
+          m.setScore(match.player_one_score, match.player_two_score);
+          matches.push(m);
         })
+        logger.info('[SUCCESS] getEliminationMatches', 'Params: {leagueId: '+leagueId+'}')
         cb(matches);
       })
       .catch((error) => {
-        console.log(error);
+        logger.error(error);
         cb(new Error(error));
       })
   },
 
   updateEliminationBracket(leagueId, match, cb) {
+    match = Object.assign(new Match(), match);
     var promise = transactionManager.startTransaction(dbClient);
     promise.then((response) => {
         var promises = eliminationHandler.updateBracket(dbClient, leagueId, match);
         return Promise.all(promises);
       })
       .then((response) => {
+        logger.info('[SUCCESS] updateEliminationBracket', 'Params: {leagueId: '+leagueId+', matchId: '+match.id+'}');
         transactionManager.endTransaction(dbClient, true, cb, response);
       })
       .catch((error) => {
-        console.log('ERROR: ' + error);
+        logger.error(error);
         transactionManager.endTransaction(dbClient, false, cb);
       })
   },

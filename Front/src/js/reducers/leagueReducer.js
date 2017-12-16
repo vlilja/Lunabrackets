@@ -343,9 +343,11 @@ export default function reducer(state = {
       {
         return {
           ...state,
-          ...state.loading,
-          update: false,
-          error: action.payload
+          loading: { ...state.loading,
+            update: false
+          },
+          error: action.payload,
+          message: 'Error updating match'
         }
       }
     case "UPDATE_QUALIFIER_MATCH":

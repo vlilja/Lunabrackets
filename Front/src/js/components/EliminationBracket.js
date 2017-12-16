@@ -18,23 +18,9 @@ export default class EliminationBracket extends React.Component {
   }
 
   mapRounds() {
-    var matches = this.props.matches;
-    var players = this.props.players;
-    matches.forEach((match) => {
-      players.forEach((player) => {
-        if (match.player_one === player.player_id) {
-          match.player_one = player;
-        }
-        if (match.player_two === player.player_id) {
-          match.player_two = player;
-        }
-      })
-    })
-    var firstRoundMatches = _.chain(matches).filter((match) => {
-      return match.match_key.match(/^[1-4]$/g)
-    }).orderBy('match_key').value();
+    var bracket = this.props.bracket;
     var firstRound = [];
-    firstRoundMatches.forEach((match, idx) => {
+    bracket.rounds.R1.forEach((match, idx) => {
       firstRound.push(
         <div key={idx} class="col-xs-12">
           <div class="panel match col-xs-12">
@@ -44,11 +30,8 @@ export default class EliminationBracket extends React.Component {
         </div>
       )
     })
-    var secondRoundMatches = _.chain(matches).filter((match) => {
-      return match.match_key.match(/^[5-8]$/g)
-    }).orderBy(('match_key')).value();
     var secondRound = [];
-    secondRoundMatches.forEach((match, idx) => {
+    bracket.rounds.A.forEach((match, idx) => {
       secondRound.push(
         <div key={idx} class="col-xs-12">
           <div class="panel match col-xs-12">
@@ -58,13 +41,8 @@ export default class EliminationBracket extends React.Component {
         </div>
       )
     })
-    var thirdRoundMatches = _.chain(matches).filter((match) => {
-      return match.match_key.match(/^9|10$/g)
-    }).orderBy((match)=> {
-      return Number(match.match_key)
-    }).value();
     var thirdRound = [];
-    thirdRoundMatches.forEach((match, idx) => {
+    bracket.rounds.B.forEach((match, idx) => {
       thirdRound.push(
         <div key={idx} class="col-xs-12">
           <div class="col-xs-12 match-padding-three-quarters"></div>
@@ -76,11 +54,8 @@ export default class EliminationBracket extends React.Component {
         </div>
       )
     })
-    var fourthRoundMatches = _.chain(matches).filter((match) => {
-      return match.match_key.match(/^11$/g)
-    }).orderBy('match_key').value();
     var fourthRound = [];
-    fourthRoundMatches.forEach((match, idx) => {
+    bracket.rounds.C.forEach((match, idx) => {
       fourthRound.push(
         <div key={idx} class="col-xs-12">
           <div class="col-xs-12 match-padding-double"></div>

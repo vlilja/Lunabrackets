@@ -5,6 +5,7 @@ var group = require('./Group');
 var rrbracket = require('./RoundRobinBracket');
 var debracket = require('./DoubleEliminationBracket');
 var sebracket = require('./SingleEliminationBracket');
+var mebracket = require('./MegaEliminationBracket');
 
 module.exports = {
   League: league,
@@ -13,5 +14,6 @@ module.exports = {
   Group:group,
   RoundRobinBracket: rrbracket,
   DoubleEliminationBracket: debracket,
-  SingleEliminationBracket: sebracket
+  SingleEliminationBracket: sebracket,
+  MegaEliminationBracket: mebracket
 }

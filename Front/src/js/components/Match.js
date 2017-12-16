@@ -40,7 +40,6 @@ export default class Match extends React.Component {
 
   render() {
     const match = this.props.match;
-    console.log(this.props.match);
     return (
       <div onClick={this.openModal}>
         <div class="margin-bottom">
