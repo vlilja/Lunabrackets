@@ -1,16 +1,14 @@
-import { combineReducers } from "redux";
-import { routerReducer } from 'react-router-redux'
-import user from "./userReducer";
-import player from "./playerReducer";
-import view from "./viewReducer";
-import tournament from "./tournamentReducer";
-import league from "./leagueReducer";
+import { combineReducers } from 'redux';
+import { routerReducer } from 'react-router-redux';
+import user from './userReducer';
+import player from './playerReducer';
+import league from './leagueReducer';
+import season from './seasonReducer';
 
 export default combineReducers({
   user,
   player,
-  view,
-  tournament,
   league,
-  routing: routerReducer
-})
+  season,
+  routing: routerReducer,
+});

@@ -10,21 +10,27 @@ export default {
       eight: '8-ball',
       nine: '9-ball',
       ten: '10-ball',
-      straight: 'Straight pool'
+      straight: 'Straight pool',
     },
     yes: 'Yes',
     no: 'No',
     ndash: '–',
     ranking: 'Ranking',
     place: 'Place',
-    submit: 'Submit'
+    submit: 'Submit',
+  },
+  season: {
+    heading: 'Seasons',
+    active: 'Active',
+    inactive: 'Inactive',
+    sum: 'Sum',
   },
   league: {
     heading: 'Leagues',
-    infoText: 'League is a game mode for maximum of 32 players that consists of three stages: round-robin group stage, double elimination stage and the final single elimination stage. <br><br>At first the players are\
-    divided to 4 groups where they play against each other. Winner of each group will advance straight to the final single elimination stage and last two are eliminated from the competition. <br><br>\
-    The rest will move on to the double elimination stage and seeded to the bracket according to their placements. From the double elimination state 4 players will advance to the final stage and rest are eliminated. <br><br> In the final stage, each group stage winner will\
-    be drawn an opponent from the double-elimination stage winners.',
+    infoText: 'League is a game mode for maximum of 32 players that consists of three stages: round-robin group stage, double elimination stage and the final single elimination stage. At first the players are\n\n' +
+    'divided to 4 groups where they play against each other. Winner of each group will advance straight to the final single elimination stage and last two are eliminated from the competition.\n' +
+    'The rest will move on to the double elimination stage and seeded to the bracket according to their placements. From the double elimination state 4 players will advance to the final stage and rest are eliminated. In the final stage, each group stage winner will\n' +
+    'be drawn an opponent from the double-elimination stage winners.',
   },
   leagueForm: {
     heading: 'Create new league',
@@ -35,12 +41,12 @@ export default {
     name: 'Name',
     game: 'Game',
     add: 'Add',
-    remove:' Remove',
+    remove: ' Remove',
     availablePlayers: 'Available players',
     selectedPlayers: 'Selected players',
-    infoCreatingLeagueHeading : 'Creating league',
+    infoCreatingLeagueHeading: 'Creating league',
     warningHeading: 'Warning',
-    warningMessage: 'There are less than 32 players in the league and it will cause games with walk overs. Do you want to proceed and still create this league?'
+    warningMessage: 'There are less than 32 players in the league and it will cause games with walk overs. Do you want to proceed and still create this league?',
   },
   leagueNavigation: {
     admin: 'Admin',
@@ -48,7 +54,7 @@ export default {
     elimination: 'Elimination',
     group: 'Group',
     qualifiers: 'Qualifiers',
-    finals: 'Finals'
+    finals: 'Finals',
   },
   adminView: {
     heading: 'Administration',
@@ -56,36 +62,45 @@ export default {
     groupsHeading: 'Group names',
     handicapHeading: 'Adjust handicaps',
     start: 'Start',
-    undeterminedRankingsHeading: 'Undetermined rankings'
+    undeterminedRankingsHeading: 'Undetermined rankings',
   },
   groupView: {
     wins: 'Wins',
     place: 'Place',
     matchScoreFormHeading: 'Enter match score',
-    update:'Update'
+    update: 'Update',
+    groupStageNotStarted: 'Group stage has not started yet',
   },
   eliminationView: {
-    bracketHeading: 'Elimination bracket'
+    bracketHeading: 'Elimination bracket',
+    eliminationNotStarted: 'Mega elimination has not started yet',
   },
   qualifiersView: {
     winnerSide: 'Winner side',
-    loserSide: 'Loser side'
+    loserSide: 'Loser side',
+    qualifiersNotStarted: 'Qualifiers have not started yet',
   },
   finalsView: {
     bracketHeading: 'Finals bracket',
     quarterFinals: 'Quarterfinals',
     semiFinals: 'Semifinals',
-    final: 'Final'
+    finalsNotStarted: 'Finals have not started yet',
+    final: 'Final',
+  },
+  resultsView: {
+    heading: 'League results',
+    points: 'Points',
+    leagueNotFinished: 'League is still not finished!',
   },
   walkOverForm: {
     heading: 'Walk over',
-    message: 'Walk over for'
+    message: 'Walk over for',
   },
   errorMessages: {
-    pageNotFound:'Sorry we couldn\'t find what u were looking for...',
+    pageNotFound: 'Sorry we couldn\'t find what u were looking for...',
     missingName: 'Missing tournament name',
     missingPlayers: 'Missing players',
     handicapError: 'Fix handicaps',
-    invalidScore: 'Who won? Fix scores'
-  }
-}
+    invalidScore: 'Who won? Fix scores',
+  },
+};

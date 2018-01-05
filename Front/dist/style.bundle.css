@@ -1,0 +1,226 @@
+$yellow: #f5c000;
+$light-yellow: #f4eb42;
+$black: #1a1a1a;
+$white: #f2f2f2;
+$light-dark-grey: #bdb7b7;
+$dark-grey: #868686;
+$green: #50f442;
+$orange: #f4a11a;
+$red: #e23f16;
+$light-grey: rgba(221, 221, 221, .7);
+$pink: #f4429e;
+@mixin linear-gradient($color1, $color2) {
+    background: -webkit-linear-gradient($color1, $color2); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient($color1, $color2); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient($color1, $color2); /* For Firefox 3.6 to 15 */
+    background: linear-gradient($color1, $color2); /* Standard syntax (must be last) */
+}
+
+.tooltip-inner {
+  min-width:400px;
+}
+
+.margin-top {
+  margin-top:10px;
+}
+
+.margin-top-double {
+  margin-top:20px;
+}
+
+.margin-left {
+  margin-left: 10px;
+}
+
+.margin-left-double {
+  margin-left: 20px;
+}
+
+.margin-right {
+  margin-right: 10px;
+}
+
+.margin-bottom {
+  margin-bottom: 10px;
+}
+
+.margin-bottom-double {
+  margin-bottom: 20px;
+}
+.small-modal{
+      border-radius: 5px;
+      top: 35%;
+      padding: 10px 10px 10px 10px;
+      background-color: white;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+      z-index: 100;
+}
+
+.modal-back-ground {
+    position: fixed; /* Stay in place */
+    z-index: 99; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  line-height: 60px; /* Vertically center the text there */
+  background-color: #f5f5f5;
+}
+
+@media only screen and (max-width: 800px) {
+  .footer{
+    width:1200px;
+  }
+
+}
+
+.error-message {
+  color:red;
+}
+ul.scrollable {
+  overflow-y: scroll;
+  max-height: 500px;
+}
+
+ul.pointer > li {
+  cursor:pointer;
+}
+
+ul.pointer > li:hover {
+  color:$yellow;
+}
+.stage-indicator {
+  background-color: $light-yellow;
+  text-align: center;
+
+
+}
+
+.stage-indicator.selected {
+  background-color: red;
+}
+.group-bracket td:first-child {
+  text-align: left;
+}
+
+.group-bracket td {
+  text-align: center;
+}
+
+.greyed-out {
+  background-color: $dark-grey;
+}
+
+.win {
+  background-color: $light-yellow;
+}
+
+$height: 90px;
+
+.qualifiers-bracket .panel, .elimination-bracket .panel, .finals-bracket .panel  {
+  margin-bottom:0px;
+  font-size: 1.3em;
+  div {
+    min-height: 25px;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+    .bracket {
+      width:1200px;
+      overflow-x:scroll;
+    }
+    .bracket {
+      .round {
+        display: inline-block;
+      }
+    }
+}
+
+
+
+.match {
+  height: $height;
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.18);
+}
+
+.match-padding-half {
+  height: $height/2;
+}
+
+.match-padding-three-quarters {
+  height: $height/4*3;
+}
+
+.match-padding-double {
+  height: $height*2;
+}
+
+.match-padding-one-quarter {
+  height: $height/4;
+}
+
+.match .winner {
+  background-color: $light-yellow;
+}
+
+.dialog {
+  z-index:100;
+  position: fixed;
+  top:15%;
+}
+
+.fade {
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+  -o-transition: 0.5s;
+  transition: 0.5s;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.fade.show {
+  opacity:1;
+  visibility: visible;
+}
+
+.badge-dark {
+  background-color: $dark-grey;
+}
+
+.game-logo {
+  width:65px;
+  height: 65px;
+}
+html, body {
+  min-height: 100%;
+  min-width: 100%;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.right {
+  float:right;
+}

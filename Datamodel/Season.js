@@ -1,7 +1,8 @@
 
 
 
-module.exports =  function Season(name, leagues) {
+module.exports =  function Season(id, name, leagues, active) {
+      this.id = id || '';
       this.name = '' || name;
       this.leagues = leagues || [];
       this.setLeagues = function(leagues) {
@@ -9,5 +10,5 @@ module.exports =  function Season(name, leagues) {
           this.leagues = leagues;
         }
       }
-      this.standings = ''
+      this.active = active || 0;
 }

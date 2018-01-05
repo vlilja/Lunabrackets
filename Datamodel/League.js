@@ -1,4 +1,3 @@
-var Group = require('./Group');
 
 module.exports = function League(id, name, gameType, players, raceTo, stage) {
   this.id = id || '';

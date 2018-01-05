@@ -1,61 +1,68 @@
-var db = require('../DB/dbOperations');
+const db = require('../DB/dbOperations');
+
+function initializeMatch(dbClient, leagueId, matchKey, match) {
+  const pOne = (match.playerOne && match.playerOne.id) ? match.playerOne.id : null;
+  const pTwo = (match.playerTwo && match.playerTwo.id) ? match.playerTwo.id : null;
+  return db.elimination.updateFirstRoundMatch(dbClient, leagueId, matchKey, pOne, pTwo);
+}
 
 module.exports = {
 
-  createElimination: function(dbClient, leagueId) {
+  createElimination(dbClient, leagueId) {
     return db.elimination.insertElimination(dbClient, leagueId);
   },
 
-  createEliminationMatches: function(dbClient, leagueId) {
-    var matches = [];
-    //First round
-    matches.push({key:'1', winnerProceeds:'5'})
-    matches.push({key:'2', winnerProceeds:'6'})
-    matches.push({key:'3', winnerProceeds:'7'})
-    matches.push({key:'4', winnerProceeds:'8'})
-    //Second round
-    matches.push({key:'5', winnerProceeds:'9'})
-    matches.push({key:'6', winnerProceeds:'9'})
-    matches.push({key:'7', winnerProceeds:'10'})
-    matches.push({key:'8', winnerProceeds:'10'})
-    //Third round
-    matches.push({key:'9', winnerProceeds:'11'})
-    matches.push({key:'10', winnerProceeds:'11'})
-    //Fourth round
-    matches.push({key:'11', winnerProceeds:null})
-    var promises = [];
+  createEliminationMatches(dbClient, leagueId) {
+    const matches = [];
+    // First round
+    matches.push({ key: '1', winnerProceeds: '5' });
+    matches.push({ key: '2', winnerProceeds: '6' });
+    matches.push({ key: '3', winnerProceeds: '7' });
+    matches.push({ key: '4', winnerProceeds: '8' });
+    // Second round
+    matches.push({ key: '5', winnerProceeds: '9' });
+    matches.push({ key: '6', winnerProceeds: '9' });
+    matches.push({ key: '7', winnerProceeds: '10' });
+    matches.push({ key: '8', winnerProceeds: '10' });
+    // Third round
+    matches.push({ key: '9', winnerProceeds: '11' });
+    matches.push({ key: '10', winnerProceeds: '11' });
+    // Fourth round
+    matches.push({ key: '11', winnerProceeds: null });
+    const promises = [];
     matches.forEach((match) => {
       promises.push(db.elimination.insertEliminationMatch(dbClient, leagueId, match));
-    })
+    });
     return Promise.all(promises);
   },
 
-  updatePlayersToElimination: function (dbClient, leagueId, placements, groupA, groupB, groupC, groupD) {
-    var promises = [];
-    var groups = [{key:'A', players:groupA},{key:'B', players:groupB}, {key:'C', players:groupC}, {key:'D', players:groupD}];
-    var matches = {};
+  updatePlayersToElimination(dbClient, leagueId, placements, groupA, groupB, groupC, groupD) {
+    const promises = [];
+    const groups = [{ key: 'A', players: groupA }, { key: 'B', players: groupB }, { key: 'C', players: groupC }, { key: 'D', players: groupD }];
+    const matches = {};
     placements.forEach((match) => {
       matches[match.match_key] = {
         playerOne: match.player_one,
-        playerTwo: match.player_two
+        playerTwo: match.player_two,
       };
-    })
+    });
+    const matchKeys = Object.keys(matches);
     groups.forEach((group) => {
       group.players.forEach((player) => {
-        var seed = group.key+player.ranking;
-        for(var key in matches) {
-          if(matches[key].playerOne === seed) {
+        const seed = group.key + player.ranking;
+        matchKeys.forEach((key) => {
+          if (matches[key].playerOne === seed) {
             matches[key].playerOne = player;
           }
-          if(matches[key].playerTwo === seed) {
+          if (matches[key].playerTwo === seed) {
             matches[key].playerTwo = player;
           }
-        }
-      })
-    })
-    for (var key in matches) {
+        });
+      });
+    });
+    matchKeys.forEach((key) => {
       promises.push(initializeMatch(dbClient, leagueId, key, matches[key]));
-    }
+    });
     return promises;
   },
 
@@ -64,35 +71,29 @@ module.exports = {
   },
 
   updateBracket(dbClient, leagueId, match) {
-    var promises = [];
+    const promises = [];
     promises.push(db.elimination.updateMatchScore(dbClient, leagueId, match));
-    var result = match.getResult();
-    if(!result){
+    const result = match.getResult();
+    if (!result) {
       throw new Error('Match not finished');
     }
-    console.log(result);
-    if(match.key.match(/^[1-4]$/g) || Number(match.match_key) % 2 === 0){
-      promises.push(this.updateEliminationMatch(dbClient, leagueId, match.winnerNextMatchKey, null, result.winner));
-    }
-    else {
-      promises.push(this.updateEliminationMatch(dbClient, leagueId, match.winnerNextMatchKey, result.winner, null));
+    const nextMatchKey = match.winnerNextMatchKey;
+    if (match.key.match(/^[1-4]$/g) || Number(match.key) % 2 === 0) {
+      promises.push(this.updateEliminationMatch(dbClient, leagueId, nextMatchKey, null, result.winner));
+    } else {
+      promises.push(this.updateEliminationMatch(dbClient, leagueId, nextMatchKey, result.winner, null));
     }
     return promises;
   },
 
-  updateEliminationMatch(dbClient, leagueId, matchKey, playerOne=0, playerTwo=0) {
-    if(playerOne) {
-      return db.elimination.updatePlayerOneToMatch(dbClient, leagueId, matchKey, playerOne);
+  updateEliminationMatch(dbClient, leagueId, matchKey, playerOne = 0, playerTwo = 0) {
+    let player;
+    if (playerOne) {
+      player = playerOne;
+    } else if (playerTwo) {
+      player = playerTwo;
     }
-    else if(playerTwo) {
-      return db.elimination.updatePlayerTwoToMatch(dbClient, leagueId, matchKey, playerTwo);
-    }
-  }
+    return db.elimination.updatePlayerOneToMatch(dbClient, leagueId, matchKey, player);
+  },
 
-}
-
-function initializeMatch(dbClient, leagueId, matchKey, match) {
-  var pOne = (match.playerOne && match.playerOne.id) ? match.playerOne.id : null;
-  var pTwo = (match.playerTwo && match.playerTwo.id) ? match.playerTwo.id : null;
-  return db.elimination.updateFirstRoundMatch(dbClient, leagueId, matchKey, pOne, pTwo);
-}
+};

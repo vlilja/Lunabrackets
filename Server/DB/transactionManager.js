@@ -1,31 +1,33 @@
 
 module.exports = {
 
-  startTransaction: function(c) {
+  startTransaction(c) {
     return new Promise((resolve, reject) => {
       console.log('Starting transaction');
-      c.query('START TRANSACTION', function(err, rows) {
+      c.query('START TRANSACTION', (err) => {
         if (err) {
           reject(err);
         } else {
           resolve('Started transaction');
         }
-      })
-    })
+      });
+    });
   },
 
-  endTransaction: function(c, success, cb, response = 0) {
+  endTransaction(c, success, cb, response = 0) {
     console.log('Ending transaction');
     if (success && !cb) {
       console.log('Ended in success');
-      c.query('COMMIT', function(err, rows) {
+      c.query('COMMIT', (err) => {
         if (err) {
+          console.log(err);
         }
+        console.log('committed');
       });
     }
     if (success) {
       console.log('Ended in success');
-      c.query('COMMIT', function(err, rows) {
+      c.query('COMMIT', (err, rows) => {
         if (err) {
           cb(err);
         }
@@ -34,13 +36,13 @@ module.exports = {
     }
     if (!success) {
       console.log('Ended in error');
-      c.query('ROLLBACK', function(err, rows) {
+      c.query('ROLLBACK', (err) => {
         if (err) {
           cb(new Error('Rollback failed'));
         }
         cb(new Error('Transaction failed'));
       });
     }
-  }
+  },
 
-}
+};

@@ -1,3 +1,4 @@
+var season = require('./Season');
 var league = require('./League');
 var match = require('./Match');
 var player = require('./Player');
@@ -8,6 +9,7 @@ var sebracket = require('./SingleEliminationBracket');
 var mebracket = require('./MegaEliminationBracket');
 
 module.exports = {
+  Season: season,
   League: league,
   Match: match,
   Player: player,

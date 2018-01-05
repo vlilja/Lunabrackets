@@ -1,20 +1,21 @@
-var tournament = require('./tournamentOperations');
- user = require('./userOperations');
- player = require('./playerOperations');
- league = require('./leagueOperations');
- group = require('./groupOperations');
- qualifier = require('./qualifierOperations');
- finals = require('./finalsOperations');
- elimination = require('./eliminationOperations');
+
+const user = require('./userOperations');
+const player = require('./playerOperations');
+const league = require('./leagueOperations');
+const group = require('./groupOperations');
+const qualifier = require('./qualifierOperations');
+const finals = require('./finalsOperations');
+const elimination = require('./eliminationOperations');
+const season = require('./seasonOperations');
 
 
 module.exports = {
-  tournament: tournament,
-  user:user,
-  player:player,
-  league:league,
-  group:group,
-  qualifier:qualifier,
-  finals:finals,
-  elimination: elimination
-}
+  user,
+  player,
+  league,
+  group,
+  qualifier,
+  finals,
+  elimination,
+  season,
+};

@@ -1,38 +1,53 @@
-var webpack = require('webpack');
-var path = require('path');
-const ETP= require('extract-text-webpack-plugin');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
+// Constant with our paths
+const paths = {
+  DIST: path.resolve(__dirname, 'dist'),
+  SRC: path.resolve(__dirname, 'src'),
+  JS: path.resolve(__dirname, 'src/js'),
+  SCSS: path.resolve(__dirname, 'src/scss'),
+};
+
+// Webpack configuration
 module.exports = {
-    context: path.join(__dirname, "src"),
-    entry: "./js/client.js",
-    module: {
-        loaders: [{
-            test: /\.jsx?$/,
-            exclude: /(node_modules|bower_components)/,
-            loader: 'babel-loader',
-            query: {
-                presets: ['react', 'es2015', 'stage-0'],
-                plugins: ['react-html-attrs', 'transform-runtime', 'transform-decorators-legacy', 'transform-class-properties'],
-            }
-          },
-          {
-          test: /\.scss$/,
-          loader: ETP.extract({
-            fallback: 'style-loader',
-            use: 'css-loader!sass-loader'
-          })
-          }
-      ]
-    },
-    output: {
-        path: __dirname + "/src/",
-        filename: "client.min.js"
-    },
-    devServer: {
-    port: 8080,
-    historyApiFallback: true
-    },
-    plugins: [
-        new ETP('styles.css')
+  entry: path.join(paths.JS, 'client.jsx'),
+  output: {
+    path: paths.DIST,
+    filename: 'app.bundle.js',
+    publicPath: '/',
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.join(paths.SRC, 'index.html'),
+    }),
+    new ExtractTextPlugin('style.bundle.css'),
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: [
+          'babel-loader',
+        ],
+      },
+      {
+        test: /\.scss$/,
+        loader: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: 'css-loader!sass-loader',
+        }),
+      },
     ],
+  },
+  resolve: {
+    extensions: ['.js', '.jsx', '.scss'],
+  },
+  devServer: {
+    port: 8080,
+    historyApiFallback: true,
+  },
+
 };

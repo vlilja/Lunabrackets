@@ -13,11 +13,19 @@
   "author": "Valtteri Lilja",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.15.0"
+    "body-parser": "^1.17.1",
+    "express": "^4.15.0",
+    "lodash": "^4.17.4",
+    "lunabrackets-datamodel": "../Datamodel/",
+    "mariasql": "^0.2.6",
+    "winston": "^2.4.0"
   },
   "devDependencies": {
-    "body-parser": "^1.17.1",
-    "express-delay": "^0.2.0",
-    "mariasql": "^0.2.6"
+    "eslint": "^4.14.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.5.1",
+    "express-delay": "^0.2.0"
   }
 }

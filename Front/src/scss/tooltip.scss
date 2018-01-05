@@ -1,0 +1,25 @@
+
+.lunabrackets-tooltip {
+
+  .message-container {
+    display: inline-block;
+    position: relative;
+
+  }
+
+  .message {
+    top: -65px;
+    left: 5px;
+    color:white;
+    padding: 5px;
+    border-radius: 10px;
+    width: 400px;
+    position: absolute;
+    font-size: 0.4em;
+    background-color: $dark-grey;
+    z-index: 1;
+  }
+
+
+
+}
