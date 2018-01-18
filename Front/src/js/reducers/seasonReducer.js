@@ -1,7 +1,8 @@
 export default function reducer(state = {
   seasons: [],
   selectedSeason: null,
-  loading: true,
+  message: '',
+  loading: false,
   error: null,
 }, action) {
   switch (action.type) {
@@ -73,6 +74,31 @@ export default function reducer(state = {
     {
       return {
         ...state,
+        error: action.payload,
+      };
+    }
+    case 'CREATE_SEASON':
+    {
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+    }
+    case 'CREATE_SEASON_FULFILLED':
+    {
+      return {
+        ...state,
+        message: action.payload,
+        loading: false,
+      };
+    }
+    case 'CREATE_SEASON_REJECTED':
+    {
+      return {
+        ...state,
+        message: 'Error creating season',
+        loading: false,
         error: action.payload,
       };
     }

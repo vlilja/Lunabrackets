@@ -9,6 +9,7 @@ import Players from './pages/Players';
 import Leagues from './pages/Leagues';
 import Seasons from './pages/Seasons';
 import LeagueForm from './pages/LeagueForm';
+import SeasonForm from './pages/SeasonForm';
 import NoMatch from './pages/NoMatch';
 import store from './store';
 import '../scss/base.scss';
@@ -25,6 +26,7 @@ ReactDOM.render(<Provider store={store}>
         <Route path="/leagues" component={Leagues} />
         <Route path="/seasons" component={Seasons} />
         <Route path="/new-league" component={LeagueForm} />
+        <Route path="/new-season" component={SeasonForm} />
         <Route component={NoMatch} />
       </Switch>
     </div>

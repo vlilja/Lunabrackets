@@ -32,6 +32,11 @@ export default {
     'The rest will move on to the double elimination stage and seeded to the bracket according to their placements. From the double elimination state 4 players will advance to the final stage and rest are eliminated. In the final stage, each group stage winner will\n' +
     'be drawn an opponent from the double-elimination stage winners.',
   },
+  seasonForm: {
+    heading: 'Create new season',
+    name: 'Name',
+    create: 'Create season',
+  },
   leagueForm: {
     heading: 'Create new league',
     mainFormHeading: 'Step One',
@@ -40,6 +45,7 @@ export default {
     formLegend: 'League',
     name: 'Name',
     game: 'Game',
+    season: 'Season',
     add: 'Add',
     remove: ' Remove',
     availablePlayers: 'Available players',
@@ -47,6 +53,13 @@ export default {
     infoCreatingLeagueHeading: 'Creating league',
     warningHeading: 'Warning',
     warningMessage: 'There are less than 32 players in the league and it will cause games with walk overs. Do you want to proceed and still create this league?',
+  },
+  leagueStartForm: {
+    leagueSettings: 'League settings',
+    groupNamesHeading: 'Group Names & Race to',
+    raceTo: 'Race to',
+    playerHandicaps: 'Player handicaps',
+    startLeague: 'Start league',
   },
   leagueNavigation: {
     admin: 'Admin',
@@ -61,6 +74,7 @@ export default {
     leaguePanelHeading: 'League details',
     groupsHeading: 'Group names',
     handicapHeading: 'Adjust handicaps',
+    currentStage: 'Current stage',
     start: 'Start',
     undeterminedRankingsHeading: 'Undetermined rankings',
   },
@@ -98,7 +112,8 @@ export default {
   },
   errorMessages: {
     pageNotFound: 'Sorry we couldn\'t find what u were looking for...',
-    missingName: 'Missing tournament name',
+    missingSeasonName: 'Missing season name',
+    missingName: 'Missing league name',
     missingPlayers: 'Missing players',
     handicapError: 'Fix handicaps',
     invalidScore: 'Who won? Fix scores',

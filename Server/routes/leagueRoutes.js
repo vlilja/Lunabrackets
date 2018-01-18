@@ -1,14 +1,17 @@
 
 const express = require('express');
-const db = require('../DB/dbOperations');
 const leagueHandler = require('../handlers/leagueHandler');
 
 const router = express.Router();
-const dbClient = require('../DB/dbconnect').initConnection();
 
 router.post('/', (req, res) => {
-  db.league.createLeague(dbClient, req.body, (response, additional) => {
-    res.json(additional);
+  const league = req.body;
+  leagueHandler.createLeague(league, (rows, response) => {
+    if (response instanceof Error) {
+      res.status(400).send('Error creating league');
+    } else {
+      res.json(response);
+    }
   });
 });
 
@@ -31,8 +34,18 @@ router.get('/:leagueId', (req, res) => {
 
 router.post('/:leagueId/start', (req, res) => {
   const { leagueId } = req.params;
-  const { participants, groups, raceTo } = req.body;
-  leagueHandler.startLeague(leagueId, participants, groups, raceTo);
+  const { players, groupNames, raceTo } = req.body;
+  if (!Number.isNaN(leagueId) && players.length > 0 && Number(raceTo) > 1) {
+    leagueHandler.startLeague(leagueId, players, groupNames, raceTo, (response) => {
+      if (response instanceof Error) {
+        res.status(400).send('Error starting the league');
+      } else {
+        res.json(response);
+      }
+    });
+  } else {
+    res.status(400).send('Bad request');
+  }
 });
 
 router.post('/:leagueId/finish', (req, res) => {

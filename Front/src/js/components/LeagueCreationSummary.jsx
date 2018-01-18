@@ -1,5 +1,4 @@
 import React from 'react';
-import Modal from 'react-modal';
 
 import phrases from '../../Phrases';
 import helper from '../helpers/helper';
@@ -11,30 +10,68 @@ export default class LeagueCreationSummary extends React.Component {
     this.state = {
       modalOpen: false,
     };
-    this.controlModal = this.controlModal.bind(this);
     this.createLeague = this.createLeague.bind(this);
     this.finish = this.finish.bind(this);
+    this.renderModal = this.renderModal.bind(this);
   }
 
   finish() {
     if (this.props.summary.participants.length < 32) {
-      this.controlModal(true);
+      this.setState({ modalOpen: true });
     } else {
       this.props.createLeague();
     }
   }
 
   createLeague() {
-    this.controlModal(false);
     this.props.createLeague();
   }
 
-  controlModal(bool) {
-    this.setState({ modalOpen: bool });
+  renderModal() {
+    let modal;
+    if (this.state.modalOpen) {
+      modal = (<div className="modal-back-ground">
+        <div className="col-xs-4 col-xs-offset-4 small-modal dialog">
+          <div>
+            <div className="col-xs-12">
+              <h2>{phrases.leagueForm.warningHeading}</h2>
+              <p style={{
+              fontSize: '1.1em',
+            }}
+              >{phrases.leagueForm.warningMessage}</p>
+            </div>
+            <div className="col-xs-12 margin-top">
+              <div className="col-xs-6">
+                <button
+                  className="btn btn-default"
+                  onClick={() => {
+                this.setState({ modalOpen: false });
+              }}
+                >{phrases.general.no}</button>
+              </div>
+              <div className="col-xs-6 text-right">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+ this.setState({ modalOpen: false });
+                  this.createLeague();
+}}
+                  style={{
+                float: 'right',
+              }}
+                >{phrases.general.yes}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>);
+    }
+    return modal;
   }
 
   render() {
     const { summary } = this.props;
+    const modal = this.renderModal();
     const pickedPlayers = summary.participants.map(player => (<li key={player.id} className="list-group-item">{player.firstName} {player.lastName}
       <span style={{
           float: 'right',
@@ -50,6 +87,7 @@ export default class LeagueCreationSummary extends React.Component {
     </li>));
     return (
       <div className="col-lg-8 col-lg-offset-1 col-sm-12">
+        {modal}
         <div className="well bs-component">
           <div className="form-horizontal">
             <fieldset>
@@ -58,6 +96,7 @@ export default class LeagueCreationSummary extends React.Component {
                 <div className="col-xs-12">
                   <h4>{phrases.leagueForm.name}{': '}{summary.name}</h4>
                   <h4>{phrases.leagueForm.game}{': '}{helper.determineGameName(summary.game)}</h4>
+                  <h4>{`${phrases.leagueForm.season}: ${summary.season}`}</h4>
                 </div>
               </div>
               <div className="form-group">
@@ -84,42 +123,6 @@ export default class LeagueCreationSummary extends React.Component {
             </fieldset>
           </div>
         </div>
-        <Modal
-          isOpen={this.state.modalOpen}
-          className={{
-          base: 'col-xs-8 col-xs-offset-2 col-lg-4 col-lg-offset-4 small-modal',
-        }}
-          contentLabel="Warning modal"
-        >
-          <div>
-            <div className="col-xs-12">
-              <h2>{phrases.leagueForm.warningHeading}</h2>
-              <p style={{
-                fontSize: '1.1em',
-              }}
-              >{phrases.leagueForm.warningMessage}</p>
-            </div>
-            <div className="col-xs-12 margin-top">
-              <div className="col-xs-6">
-                <button
-                  className="btn btn-default"
-                  onClick={() => {
-                  this.controlModal(false);
-                }}
-                >{phrases.general.no}</button>
-              </div>
-              <div className="col-xs-6 text-right">
-                <button
-                  className="btn btn-primary"
-                  onClick={this.createLeague}
-                  style={{
-                  float: 'right',
-                }}
-                >{phrases.general.yes}</button>
-              </div>
-            </div>
-          </div>
-        </Modal>
       </div>
     );
   }

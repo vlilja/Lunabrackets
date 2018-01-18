@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 export default class Frontpage extends React.Component {
 
   constructor(props) {

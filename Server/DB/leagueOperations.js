@@ -1,4 +1,3 @@
-const transactionManager = require('./transactionManager');
 
 module.exports = {
 
@@ -82,44 +81,23 @@ module.exports = {
   },
 
   // /INSERT OPERATIONS
-  createLeague(c, league, cb) {
-    const promise = transactionManager.startTransaction(c);
-    // Insert league
-    promise.then(() => this.insertLeague(c, league))
-      .then(response => this.insertParticipants(c, response.insertId, league))
-      .then(() => {
-        transactionManager.endTransaction(c, true, cb);
-      })
-      .catch((error) => {
-        console.log(`NOT CALLED${error}`);
-        transactionManager.endTransaction(c, false, cb);
-      });
-  },
 
-  insertParticipants(c, leagueId, league) {
-    return new Promise((resolve, reject) => {
-      const promises = [];
-      while (league.participants.length > 0) {
-        const participant = league.participants.pop();
-        promises.push(this.insertPlayerToLeague(c, leagueId, participant.id, participant.handicap));
-      }
-      Promise.all(promises).then(() => {
-        resolve();
-      })
-        .catch((error) => {
-          reject(error);
-        });
+  insertParticipants(c, leagueId, players) {
+    const promises = [];
+    players.forEach((player) => {
+      promises.push(this.insertPlayerToLeague(c, leagueId, player.id, player.handicap));
     });
+    return promises;
   },
 
   insertPlayerToLeague(c, leagueId, playerId, playerHandicap) {
     return new Promise((resolve, reject) => {
       const queryString = `INSERT INTO league_participants(league_id, player_id, handicap) VALUES (${leagueId},${playerId},${playerHandicap})`;
-      c.query(queryString, (error) => {
+      c.query(queryString, (error, rows) => {
         if (error) {
           reject(new Error(`[ERROR] insertPlayerToLeague${error}`));
         } else {
-          resolve();
+          resolve(rows.info.insertId);
         }
       });
     });
@@ -127,12 +105,13 @@ module.exports = {
 
   insertLeague(c, league) {
     return new Promise((resolve, reject) => {
-      const queryString = `INSERT INTO leagues(name, game) VALUES('${league.name}',${league.game})`;
+      const queryString = `INSERT INTO leagues(name, game, season_id) VALUES('${league.name}',${league.game}, ${league.season})`;
       c.query(queryString, (error, rows) => {
         if (error) {
           reject(new Error(`[ERROR] insertLeague${error}`));
         } else {
-          resolve(rows.info);
+          console.log(rows);
+          resolve(rows.info.insertId);
         }
       });
     });

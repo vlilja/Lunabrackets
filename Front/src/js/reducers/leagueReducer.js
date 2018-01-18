@@ -293,6 +293,7 @@ export default function reducer(
     {
       return {
         ...state,
+        loading: { ...state.loading, update: true },
         startingLeague: true,
       };
     }
@@ -300,6 +301,7 @@ export default function reducer(
     {
       return {
         ...state,
+        loading: { ...state.loading, update: false },
         startingLeague: false,
       };
     }
@@ -307,7 +309,9 @@ export default function reducer(
     {
       return {
         ...state,
+        loading: { ...state.loading, update: false },
         error: action.payload,
+        message: action.payload.response.data,
         startingLeague: false,
       };
     }

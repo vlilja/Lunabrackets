@@ -8,8 +8,8 @@ export default class MatchForm extends React.Component {
     let playerOneScore;
     let playerTwoScore;
     if (props.match.playerOne.score && props.match.playerTwo.score) {
-      playerOneScore = props.match.playerOne.score;
-      playerTwoScore = props.match.playerTwo.score;
+      playerOneScore = Number(props.match.playerOne.score);
+      playerTwoScore = Number(props.match.playerTwo.score);
     } else {
       playerOneScore = Number(this.props.match.playerOne.details.handicap);
       playerTwoScore = Number(this.props.match.playerTwo.details.handicap);
@@ -17,8 +17,10 @@ export default class MatchForm extends React.Component {
     this.state = {
       playerOneScore,
       playerTwoScore,
+      raceTo: Number(this.props.raceTo),
       invalidEntry: false,
     };
+    console.log(this.state);
     this.handleChange = this.handleChange.bind(this);
     this.update = this.update.bind(this);
   }
@@ -26,10 +28,10 @@ export default class MatchForm extends React.Component {
   handleChange(e) {
     const { target } = e;
     const { name } = target;
-    let { value } = target.value;
+    let { value } = target;
     try {
-      if (Number(value) > Number(this.props.raceTo)) {
-        value = this.props.raceTo;
+      if (Number(value) > this.state.raceTo) {
+        value = this.state.raceTo;
       }
     } catch (error) {
       value = 0;
@@ -57,6 +59,7 @@ export default class MatchForm extends React.Component {
         this.setState({ invalidEntry: true });
       }
     } catch (error) {
+      console.log(error);
       this.setState({ invalidEntry: true });
     }
   }
@@ -88,7 +91,7 @@ export default class MatchForm extends React.Component {
             <span className="badge">{playerOne.handicap}</span>
           </label>
           <div className="col-xs-2">
-            <input className="form-control" name="playerOneScore" type="number" min={0} max={this.props.raceTo} value={this.state.playerOneScore} onChange={this.handleChange} />
+            <input className="form-control" name="playerOneScore" type="number" min="0" max={this.props.raceTo} value={this.state.playerOneScore} onChange={this.handleChange} />
           </div>
           <div
             className="col-xs-1"
@@ -97,7 +100,7 @@ export default class MatchForm extends React.Component {
           }}
           >{phrases.general.ndash}</div>
           <div className="col-xs-2">
-            <input className="form-control" name="playerTwoScore" type="number" min={0} max={this.props.raceTo} value={this.state.playerTwoScore} onChange={this.handleChange} />
+            <input className="form-control" name="playerTwoScore" type="number" min="0" max={this.props.raceTo} value={this.state.playerTwoScore} onChange={this.handleChange} />
           </div>
           <label className="col-xs-3" htmlFor="playerTwoScore">{`${playerTwo.firstName} ${playerTwo.lastName}`}
             <br />

@@ -27,6 +27,19 @@ module.exports = {
     });
   },
 
+  getSeasonByName(c, name) {
+    return new Promise((resolve, reject) => {
+      const queryString = `SELECT * FROM seasons WHERE name = '${name}'`;
+      c.query(queryString, (error, rows) => {
+        if (error) {
+          reject(new Error(`[ERROR] getSeasonByName${error}`));
+        } else {
+          resolve(rows);
+        }
+      });
+    });
+  },
+
   // INSERT OPERATIONS
   insertSeason(c, season) {
     return new Promise((resolve, reject) => {

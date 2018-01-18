@@ -65,9 +65,11 @@ export function getSeasonResults(leagues) {
     });
     axios.all(requests).then((response) => {
       const leagueResults = [];
-      response.forEach((res) => {
-        leagueResults.push({ id: res.data[0].league_id, results: res.data });
-      });
+      if (response[0].data.length > 0) {
+        response.forEach((res) => {
+          leagueResults.push({ id: res.data[0].league_id, results: res.data });
+        });
+      }
       dispatch({
         type: 'GET_SEASON_RESULTS_FULFILLED',
         payload: leagueResults,
@@ -77,6 +79,30 @@ export function getSeasonResults(leagues) {
         dispatch({
           type: 'GET_SEASON_RESULTS_REJECTED',
           payload: 'Error fetching season results',
+        });
+      });
+  };
+}
+
+export function createSeason(season) {
+  return (dispatch) => {
+    dispatch({
+      type: 'CREATE_SEASON',
+      payload: '',
+    });
+    axios.post(`${serverDetails.baseUrl}seasons/`, {
+      season,
+    })
+      .then(() => {
+        dispatch({
+          type: 'CREATE_SEASON_FULFILLED',
+          payload: 'Season created successfully',
+        });
+      })
+      .catch((error) => {
+        dispatch({
+          type: 'CREATE_SEASON_REJECTED',
+          payload: error,
         });
       });
   };

@@ -188,100 +188,82 @@ function determineGroupRankings(players, matches) {
 }
 
 module.exports = {
-  /* Start a league */
-  startLeague(leagueId, participants, groupNames, raceTo) {
+
+  createLeague(league, cb) {
+    const leagueObj = Object.assign(new League(), league);
     const transaction = transactionManager.startTransaction(dbClient);
-    transaction.then(() => {
-      const promises = [];
-      let promise = new Promise((resolve, reject) => {
-        // validate stage
-        db.league.getLeague(dbClient, leagueId, (response) => {
-          if (response.stage !== 'ready') {
-            reject(new Error('League is already started'));
-          }
-          resolve('ok');
+    transaction.then(() => db.league.insertLeague(dbClient, leagueObj))
+      .then(leagueId => Promise.all(db.league.insertParticipants(dbClient, leagueId, leagueObj.players)))
+      .then(() => {
+        transactionManager.endTransaction(dbClient, true, cb, 'League created successfully');
+      })
+      .catch((error) => {
+        logger.error(error);
+        transactionManager.endTransaction(dbClient, false, cb, error);
+      });
+  },
+
+  startLeague(leagueId, players, groupNames, raceTo, cb) {
+    const promise = db.league.getLeague(dbClient, leagueId);
+    // validate stage
+    promise.then(league => new Promise((resolve, reject) => {
+      if (league[0].stage !== 'ready') {
+        reject(new Error('League is already started'));
+      }
+      resolve('ok');
+    }))
+      .then(() => transactionManager.startTransaction(dbClient))
+      .then(() => {
+      // Adjust player handicaps
+        const promises = [];
+        players.forEach((player) => {
+          promises.push(db.league.updatePlayerHandicap(dbClient, leagueId, player.id, player.handicap));
         });
-      });
-      promises.push(promise);
-      // set group names
-      const keys = ['A', 'B', 'C', 'D'];
-      let keyIdx = 0;
-      const groupNameKeys = Object.keys(groupNames);
-      groupNameKeys.forEach((key) => {
-        promise = db.group.insertGroup(dbClient, leagueId, groupNames[key], keys[keyIdx]);
-        promises.push(promise);
-        keyIdx += 1;
-      });
-      // adjust handicaps
-      participants.forEach((player) => {
-        promises.push(db.league.updatePlayerHandicap(dbClient, leagueId, player.player_id, player.handicap));
-      });
-      return Promise.all(promises);
-    }).then(insertedGroups =>
-      // shuffle groups
-      new Promise((resolve, reject) => {
-        const shuffledParticipants = _.shuffle(participants);
-        const groupOne = new Group(insertedGroups[1]);
-        const groupTwo = new Group(insertedGroups[2]);
-        const groupThree = new Group(insertedGroups[3]);
-        const groupFour = new Group(insertedGroups[4]);
-        const groups = [groupOne, groupTwo, groupThree, groupFour];
-        for (let i = 0, k = 0; i < shuffledParticipants.length; i += 1) {
-          groups[k].players.push(shuffledParticipants[i]);
-          k += 1;
-          if (k % 4 === 0) {
-            k = 0;
+        return Promise.all(promises);
+      })
+      .then(() =>
+      // Create groups
+        groupHandler.insertGroups(dbClient, leagueId, groupNames))
+      .then(insertedGroups =>
+      // Shuffle groups
+        new Promise((resolve, reject) => {
+          const shuffledPlayers = _.shuffle(players);
+          const groupOne = new Group(insertedGroups[0]);
+          const groupTwo = new Group(insertedGroups[1]);
+          const groupThree = new Group(insertedGroups[2]);
+          const groupFour = new Group(insertedGroups[3]);
+          const groups = [groupOne, groupTwo, groupThree, groupFour];
+          for (let i = 0, k = 0; i < shuffledPlayers.length; i += 1) {
+            groups[k].players.push(shuffledPlayers[i]);
+            k += 1;
+            if (k % 4 === 0) {
+              k = 0;
+            }
           }
-        }
-        groups.forEach((group) => {
-          if (group.players.length === 0) {
-            reject(new Error('Missing players from groups'));
-          }
-        });
-        resolve(groups);
-      })).then(groups =>
-      // create group matches
-      new Promise((resolve, reject) => {
-        try {
           groups.forEach((group) => {
-            for (let i = 0; i < group.players.length + 1; i += 1) {
-              for (let k = i + 1; k < group.players.length; k += 1) {
-                const match = {
-                  playerOne: group.players[i].player_id,
-                  playerTwo: group.players[k].player_id,
-                };
-                group.matches.push(match);
-              }
+            if (group.players.length === 0) {
+              reject(new Error('Missing players from groups'));
             }
           });
-        } catch (error) {
-          reject(error);
-        }
-        resolve(groups);
-      }))
+          resolve(groups);
+        }))
       .then((groups) => {
-        const promises = [];
+        let promises = [];
+        // Insert group members and matches
         groups.forEach((group) => {
-          group.players.forEach((player) => {
-            promises.push(db.group.insertGroupMember(dbClient, group.id, player.player_id));
-          });
-          group.matches.forEach((match) => {
-            promises.push(db.group.insertGroupStageMatch(dbClient, group.id, match.playerOne, match.playerTwo));
-          });
+          promises = promises.concat(groupHandler.addGroupMembers(dbClient, group.id, group.players));
+          promises = promises.concat(groupHandler.createGroupMatches(dbClient, group.id, group.players));
         });
         return Promise.all(promises);
       })
       .then(() => db.league.updateLeagueStageAndRaceTo(dbClient, leagueId, 'group', raceTo))
       .then(() => {
-        transactionManager.endTransaction(dbClient, true, (value) => {
-          console.log(value);
-        });
+        logger.info('[SUCCESS]', `Params: {id:${leagueId}}`);
+        transactionManager.endTransaction(dbClient, true, cb, 'League started successfully');
       })
       .catch((error) => {
-        console.log(error);
-        transactionManager.endTransaction(dbClient, false, (value) => {
-          console.log(value);
-        });
+        logger.error(error);
+        transactionManager.endTransaction(dbClient, false, cb, error);
       });
   },
 
@@ -553,7 +535,7 @@ module.exports = {
         transactionManager.endTransaction(dbClient, true, cb);
       })
       .catch((error) => {
-        console.log(error);
+        logger.error(error);
         transactionManager.endTransaction(dbClient, false, cb);
       });
   },

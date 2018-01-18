@@ -9,6 +9,7 @@ export default class LeaguePlayerForm extends React.Component {
     super(props);
     this.state = {
       selected: [],
+      modalOpen: false,
       loading: true,
     };
     this.mapList = this.mapList.bind(this);

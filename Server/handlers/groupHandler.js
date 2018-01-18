@@ -11,6 +11,42 @@ function createPlayerString(players) {
 
 module.exports = {
 
+  insertGroups(dbClient, leagueId, groupNames) {
+    const promises = [];
+    const groupNameKeys = Object.keys(groupNames);
+    groupNameKeys.forEach((key) => {
+      const promise = db.group.insertGroup(dbClient, leagueId, groupNames[key], key);
+      promises.push(promise);
+    });
+    return Promise.all(promises);
+  },
+
+  addGroupMembers(dbClient, groupId, players) {
+    const promises = [];
+    players.forEach((player) => {
+      promises.push(db.group.insertGroupMember(dbClient, groupId, player.id));
+    });
+    return promises;
+  },
+
+  createGroupMatches(dbClient, groupId, players) {
+    const matches = [];
+    const promises = [];
+    for (let i = 0; i < players.length + 1; i += 1) {
+      for (let k = i + 1; k < players.length; k += 1) {
+        const match = {
+          playerOne: players[i].id,
+          playerTwo: players[k].id,
+        };
+        matches.push(match);
+      }
+    }
+    matches.forEach((match) => {
+      promises.push(db.group.insertGroupStageMatch(dbClient, groupId, match.playerOne, match.playerTwo));
+    });
+    return promises;
+  },
+
   createUndetermined(dbClient, leagueId, groupA, groupB, groupC, groupD) {
     const promises = [];
     if (groupA) {

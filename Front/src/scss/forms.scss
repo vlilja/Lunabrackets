@@ -1,0 +1,23 @@
+$panelHeight: 450px;
+
+.start-form {
+
+  .panel {
+    height: $panelHeight;
+  }
+
+  .list-group {
+    overflow-y: scroll;
+    max-height: $panelHeight - 70;
+
+    .list-group-item {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+
+  }
+
+  .error {
+    background-color: pink;
+  }
+}

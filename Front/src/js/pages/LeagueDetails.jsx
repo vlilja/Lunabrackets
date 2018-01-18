@@ -115,8 +115,8 @@ class LeagueDetails extends React.Component {
     this.props.dispatch(updateGroupStageMatch(this.props.league.id, groupId, match));
   }
 
-  startLeague(participants, groups, raceTo) {
-    this.props.dispatch(startLeague(this.props.league.id, participants, groups, raceTo));
+  startLeague(participants, groupNames, raceTo) {
+    this.props.dispatch(startLeague(this.props.league.id, participants, groupNames, raceTo));
   }
 
   initializeView() {

@@ -46,10 +46,16 @@ module.exports = {
   createSeason(season, cb) {
     const seasonObj = Object.assign(new Season(), season);
     if (season.name) {
-      const promise = db.season.insertSeason(dbClient, seasonObj);
-      promise.then(() => {
-        cb('Season created successfully');
+      const promise = db.season.getSeasonByName(dbClient, season.name);
+      promise.then((response) => {
+        if (response.length !== 0) {
+          throw new Error('Season with that name already exists');
+        }
+        return db.season.insertSeason(dbClient, seasonObj);
       })
+        .then(() => {
+          cb('Season created successfully');
+        })
         .catch((error) => {
           logger.error(error);
           cb(error);

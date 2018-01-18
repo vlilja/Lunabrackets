@@ -82,7 +82,7 @@ function getUndetermined(c, leagueId) {
 // INSERT OPERATIONS
 function insertGroup(c, leagueId, name, key) {
   return new Promise((resolve, reject) => {
-    const queryString = `INSERT INTO league_groups(league_id, name, key) VALUE('${leagueId}','${name}','${key}')`;
+    const queryString = `INSERT INTO league_groups(league_id, name, group_key) VALUE('${leagueId}','${name}','${key}')`;
     c.query(queryString, (error, rows) => {
       if (error) {
         reject(new Error(`[ERROR] insertGroup${error}`));
@@ -97,6 +97,7 @@ function insertGroup(c, leagueId, name, key) {
 function insertGroupMember(c, groupId, playerId) {
   return new Promise((resolve, reject) => {
     const queryString = `INSERT INTO group_members(group_id, player_id) VALUE('${groupId}', '${playerId}')`;
+    console.log(queryString);
     c.query(queryString, (error, rows) => {
       if (error) {
         reject(new Error(`[ERROR] insertGroupMember${error}`));

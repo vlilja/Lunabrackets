@@ -35,7 +35,7 @@ export function createLeague(league) {
       .catch((err) => {
         dispatch({
           type: 'CREATE_LEAGUE_REJECTED',
-          payload: err,
+          payload: { error: err, message: 'Error creating league' },
         });
       });
   };
@@ -311,15 +311,15 @@ export function getFinalsMatches(leagueId) {
   };
 }
 
-export function startLeague(leagueId, participants, groups, raceTo) {
+export function startLeague(leagueId, players, groupNames, raceTo) {
   return (dispatch) => {
     dispatch({
       type: 'START_LEAGUE',
       payload: '',
     });
     axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/start`, {
-      participants,
-      groups,
+      players,
+      groupNames,
       raceTo,
     })
       .then((response) => {
@@ -327,12 +327,14 @@ export function startLeague(leagueId, participants, groups, raceTo) {
           type: 'START_LEAGUE_FULFILLED',
           payload: response.data,
         });
+        flashMessage(dispatch, 2000);
       })
       .catch((error) => {
         dispatch({
           type: 'START_LEAGUE_REJECTED',
           payload: error,
         });
+        flashMessage(dispatch, 2000);
       });
   };
 }

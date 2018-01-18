@@ -1,5 +1,6 @@
 import React from 'react';
-import Modal from 'react-modal';
+
+import Modal from './Modal';
 import phrases from '../../Phrases';
 import MatchForm from './MatchForm';
 
@@ -129,15 +130,13 @@ export default class GroupBracket extends React.Component {
             }
           }
           cells.push(<td
-            className={result.winner === match.pOne ? 'win' : ''}
-            key={match.match.id + player.id}
-          ><div
+            role="gridcell"
             onClick={() => {
-            this.openModal(match.match.id);
-          }}
-            role="button"
-            tabIndex={idx}
-          >{score} </div></td>);
+          this.openModal(match.match.id);
+}}
+            className={result && result.winner === match.pOne ? 'win' : ''}
+            key={match.match.id + player.id}
+          > {score} </td>);
         }
       });
       cells.push(<td key="wins">{this.props.bracket.scores[player.id]}</td>);
@@ -155,7 +154,7 @@ export default class GroupBracket extends React.Component {
     return (
       <div>
         <h2>{`${this.props.group.name} (${this.props.group.key})`}</h2>
-        <table className="table table-striped table-hover table-bordered group-bracket">
+        <table role="grid" className="table table-striped table-hover table-bordered group-bracket">
           <thead>
             <tr>{table.header}</tr>
           </thead>
@@ -164,14 +163,11 @@ export default class GroupBracket extends React.Component {
           </tbody>
         </table>
         <Modal
-          isOpen={this.state.modalOpen}
-          className={{
-          base: 'col-xs-8 col-xs-offset-2 col-lg-4 col-lg-offset-4 small-modal',
-        }}
-          overlayClassName={{
-          base: 'modal-back-ground',
-        }}
-          contentLabel="Warning modal"
+          open={this.state.modalOpen}
+          classes={[
+          'col-xs-8 col-xs-offset-2 col-lg-4 col-lg-offset-4 small-modal',
+          ]}
+          bgclasses={['modal-back-ground']}
         >
           {this.state.modalContent}
         </Modal>

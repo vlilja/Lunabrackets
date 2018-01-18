@@ -7,6 +7,7 @@ export default class LeagueMainForm extends React.Component {
     super(props);
     this.state = {};
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.renderOptions = this.renderOptions.bind(this);
   }
 
   handleInputChange(event) {
@@ -15,7 +16,17 @@ export default class LeagueMainForm extends React.Component {
     this.props.update({ name, value });
   }
 
+  renderOptions() {
+    const { seasons } = this.props;
+    const options = [];
+    seasons.forEach((season) => {
+      options.push((<option key={season.id} value={season.id}>{season.name}</option>));
+    });
+    return options;
+  }
+
   render() {
+    const options = this.renderOptions();
     return (
       <div className="col-lg-8 col-lg-offset-1 col-sm-12">
         <div className="well bs-component">
@@ -60,6 +71,16 @@ export default class LeagueMainForm extends React.Component {
                       {phrases.general.games.straight}
                     </label>
                   </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <span className="col-xs-2 control-label">{phrases.leagueForm.season}</span>
+                <div className="col-xs-10">
+                  <label htmlFor="season">
+                    <select name="season" value={this.props.season} onChange={this.handleInputChange} multiple="" className="form-control" id="season">
+                      {options}
+                    </select>
+                  </label>
                 </div>
               </div>
               <div className="col-lg-4 col-lg-offset-8 text-right">
