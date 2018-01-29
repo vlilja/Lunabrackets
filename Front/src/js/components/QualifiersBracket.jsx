@@ -78,7 +78,7 @@ export default class QualifiersBracket extends React.Component {
     bracket.lowerBracket.L2.matches.forEach((match, idx) => {
       loserSecond.push(<div key={match.id} className="col-xs-12">
         <div className="panel match col-xs-12">
-          <Match match={match} editable={editable} raceTo={this.props.raceTo} loserside={bracket.lowerBracket.L2.playersFrom + String(idx + 1)} update={this.props.update} />
+          <Match match={match} editable={editable} raceTo={this.props.raceTo} loserside={bracket.lowerBracket.L2.playersFrom + String(bracket.lowerBracket.L2.matches.length - idx)} update={this.props.update} />
         </div>
         <div className="match-padding-half col-xs-12" />
       </div>);
@@ -99,7 +99,7 @@ export default class QualifiersBracket extends React.Component {
       loserFourth.push(<div key={match.id} className="col-xs-12">
         <div className="col-xs-12 match-padding-three-quarters" />
         <div className="panel match col-xs-12">
-          <Match match={match} editable={editable} raceTo={this.props.raceTo} loserside={bracket.lowerBracket.L4.playersFrom + String(bracket.lowerBracket.L4.matches.length - idx)} update={this.props.update} />
+          <Match match={match} editable={editable} raceTo={this.props.raceTo} loserside={bracket.lowerBracket.L4.playersFrom + String(1 + idx)} update={this.props.update} />
         </div>
         <div className="col-xs-12 match-padding-three-quarters" />
         <div className="col-xs-12 match-padding-half" />
@@ -125,14 +125,15 @@ export default class QualifiersBracket extends React.Component {
         <div className="qualifiers-bracket">
           <div id="winnerside">
             <div onClick={this.toggleWinnerSide} role="presentation"><h2 className="clickable" >{phrases.qualifiersView.winnerSide}
-              <Icons
+              <span className="margin-left"><Icons
                 type={this.state.winnerSideVisible
                 ? 'ARROW-DOWN'
                 : 'ARROW-RIGHT'}
                 inline
                 color="black"
                 size="32px"
-              /></h2>
+              />
+              </span></h2>
             </div>
             <div
               className="winnerside row"
@@ -168,14 +169,14 @@ export default class QualifiersBracket extends React.Component {
           <div id="loserside">
             <div onClick={this.toggleLoserSide} role="presentation" >
               <h2 className="clickable" >{phrases.qualifiersView.loserSide}
-                <Icons
+                <span className="margin-left"><Icons
                   type={this.state.loserSideVisible
                 ? 'ARROW-DOWN'
                 : 'ARROW-RIGHT'}
                   inline
                   color="black"
                   size="32px"
-                /></h2>
+                /></span></h2>
             </div>
             <div
               className="loserside row"

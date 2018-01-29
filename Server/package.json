@@ -16,7 +16,7 @@
     "body-parser": "^1.17.1",
     "express": "^4.15.0",
     "lodash": "^4.17.4",
-    "lunabrackets-datamodel": "../Datamodel/",
+    "lunabrackets-datamodel": "file:../Datamodel",
     "mariasql": "^0.2.6",
     "winston": "^2.4.0"
   },

@@ -2,6 +2,7 @@ const db = require('../DB/dbOperations');
 const dbClient = require('../DB/dbconnect').initConnection();
 const _ = require('lodash');
 const transactionManager = require('../DB/transactionManager');
+const groupStageHelper = require('../helpers/groupStageHelper');
 const groupHandler = require('./groupHandler');
 const qualifierHandler = require('./qualifierHandler');
 const finalsHandler = require('./finalsHandler');
@@ -16,6 +17,7 @@ const {
 // HELPERS
 function placePlayersByRanking(leagueId, group, placements) {
   const promises = [];
+  console.log(placements);
   group.players.forEach((player) => {
     const ranking = Number(player.ranking);
     if (ranking === 1) {
@@ -25,6 +27,7 @@ function placePlayersByRanking(leagueId, group, placements) {
     }
     if (ranking > 1 && ranking <= 5) {
       const seed = group.key + player.ranking;
+      console.log(seed);
       placements.qualifiers.forEach((match) => {
         if (match.player_one === seed) {
           promises.push(qualifierHandler.updateQualifiersMatch(dbClient, leagueId, match.match_key, player.details.id, null));
@@ -36,6 +39,7 @@ function placePlayersByRanking(leagueId, group, placements) {
     }
     if (ranking > 5) {
       const seed = group.key + player.ranking;
+      console.log(seed);
       placements.elimination.forEach((match) => {
         if (match.player_one === seed) {
           promises.push(eliminationHandler.updateEliminationMatch(dbClient, leagueId, match.match_key, player.details.id, null));
@@ -47,144 +51,6 @@ function placePlayersByRanking(leagueId, group, placements) {
     }
   });
   return promises;
-}
-
-function determinePlacements(groupByRank) {
-  let toFinals = '';
-  const toQualifiers = [];
-  const toElimination = [];
-  const undetermined = [];
-  const groupByRankKeys = Object.keys(groupByRank);
-  groupByRankKeys.forEach((key) => {
-    if (key === '1') {
-      if (groupByRank[key].length === 1) {
-        ([toFinals] = groupByRank[key]);
-      } else {
-        undetermined.push(groupByRank[key]);
-      }
-    } else if (key > 1 && key < 6) {
-      if (groupByRank[key].length === 1) {
-        toQualifiers.push(groupByRank[key][0]);
-      } else {
-        undetermined.push(groupByRank[key]);
-      }
-    } else if (key > 5) {
-      if (groupByRank[key].length === 1) {
-        toElimination.push(groupByRank[key][0]);
-      } else {
-        undetermined.push(groupByRank[key]);
-      }
-    }
-  });
-  return {
-    toFinals,
-    toQualifiers,
-    toElimination,
-    undetermined,
-  };
-}
-
-function getMutualMatches(players, allGroupMatches) {
-  const mutualMatches = [];
-  for (let i = 0; i < players.length; i += 1) {
-    for (let k = i + 1; k < players.length; k += 1) {
-      mutualMatches.push(allGroupMatches.find(match => ((players[i].id === match.player_one && players[k].id === match.player_two) ||
-          (players[i].id === match.player_two && players[k].id === match.player_one))));
-    }
-  }
-  return mutualMatches;
-}
-
-function getMutualWins(players, mutualMatches) {
-  const mutualWins = [];
-  mutualMatches.forEach((match) => {
-    if (!mutualWins[match.player_one]) {
-      mutualWins[match.player_one] = {
-        wins: 0,
-      };
-    }
-    if (!mutualWins[match.player_two]) {
-      mutualWins[match.player_two] = {
-        wins: 0,
-      };
-    }
-    if (match.player_one_score > match.player_two_score) {
-      mutualWins[match.player_one].wins += 1;
-    } else {
-      mutualWins[match.player_two].wins += 1;
-    }
-  });
-  const playerWins = [];
-  const mutualWinsKeys = Object.keys(mutualWins);
-  mutualWinsKeys.forEach((key) => {
-    const player = players.find(p => key === p.id);
-    playerWins.push({
-      id: key,
-      player,
-      wins: mutualWins[key].wins,
-    });
-  });
-  return playerWins;
-}
-function determineSubGroupRankings(players, matches, rank, rankedArray) {
-  const mutualMatches = getMutualMatches(players, matches);
-  let mutualWins = getMutualWins(players, mutualMatches);
-  mutualWins = _.groupBy(mutualWins, 'wins');
-  const mutualWinsKeys = Object.keys(mutualWins);
-  // Multiple people tied
-  if (mutualWinsKeys.length === 1) {
-    if (Number(rank) === mutualWins[mutualWinsKeys[0]].length) {
-      rank = (rank - mutualWins[mutualWinsKeys[0]].length) + 1;
-    }
-    mutualWins[mutualWinsKeys[0]].forEach((item) => {
-      const player = _.remove(players, p => p.id === item.id);
-      player[0].ranking = rank;
-      rankedArray.push(player[0]);
-    });
-    return rankedArray;
-  }
-  mutualWinsKeys.forEach((key) => {
-    if (mutualWins[key].length === 1) {
-      // one player over the others in mutual matches
-      const player = _.remove(players, p => p.id === mutualWins[key][0].id);
-      player[0].ranking = rank;
-      rank -= 1;
-      rankedArray.push(player[0]);
-    } else if (mutualWins[key].length === 2) {
-      // two people tied, check their mutual match
-      const twoPlayers = [];
-      mutualWins[key].forEach((item) => {
-        const player = _.remove(players, p => p.id === item.id);
-        twoPlayers.push(player[0]);
-      });
-      determineSubGroupRankings(twoPlayers, matches, rank, rankedArray);
-      rank -= 2;
-    } else {
-      rank -= mutualWins[key].length;
-    }
-  });
-  if (players.length === 0) {
-    return rankedArray;
-  }
-  // Check remaining players tied
-  return determineSubGroupRankings(players, matches, rank + rankedArray.length, rankedArray);
-}
-
-function determineGroupRankings(players, matches) {
-  const groups = _.groupBy(players, 'wins');
-  let rankedGroup = [];
-  let rank = players.length;
-  const groupsKeys = Object.keys(groups);
-  groupsKeys.forEach((key) => {
-    if (groups[key].length === 1) {
-      groups[key][0].ranking = rank;
-      rankedGroup.push(groups[key][0]);
-    } else {
-      rankedGroup = rankedGroup.concat(determineSubGroupRankings(groups[key], matches, rank, []));
-    }
-    rank = players.length - rankedGroup.length;
-  });
-  return rankedGroup;
 }
 
 module.exports = {
@@ -457,14 +323,8 @@ module.exports = {
   },
 
   getGroupMatches(leagueId, groupId, cb) {
-    const promise = db.group.getGroupMatches(dbClient, groupId);
-    const matches = [];
-    promise.then((matchesArray) => {
-      matchesArray.forEach((match) => {
-        const m = new Match(match.id, null, null, null, match.player_one, match.player_two);
-        m.setScore(match.player_one_score, match.player_two_score);
-        matches.push(m);
-      });
+    const promise = groupHandler.getGroupMatches(dbClient, groupId);
+    promise.then((matches) => {
       logger.info('[SUCCESS] getGroupMatches', `Params: {id: ${groupId}}`);
       cb(matches);
     })
@@ -512,14 +372,15 @@ module.exports = {
   },
 
   fixUndeterminedRankings(leagueId, group, cb) {
+    console.log(group);
     const promise = transactionManager.startTransaction(dbClient);
     promise.then(() => groupHandler.fixUndeterminedRankings(dbClient, leagueId, group))
       .then(() => {
         // Get placements
         const promises = [];
-        promises.push(db.finals.getPlacements(dbClient));
-        promises.push(db.qualifier.getPlacements(dbClient));
-        promises.push(db.elimination.getEliminationPlacements(dbClient));
+        promises.push(finalsHandler.getPlacements(dbClient));
+        promises.push(qualifierHandler.getPlacements(dbClient));
+        promises.push(eliminationHandler.getPlacements(dbClient));
         return Promise.all(promises);
       })
       .then((response) => {
@@ -528,15 +389,15 @@ module.exports = {
           qualifiers: response[1],
           elimination: response[2],
         };
-        const promises = placePlayersByRanking(dbClient, leagueId, group, placements);
+        const promises = placePlayersByRanking(leagueId, group, placements);
         return Promise.all(promises);
       })
       .then(() => {
-        transactionManager.endTransaction(dbClient, true, cb);
+        transactionManager.endTransaction(dbClient, true, cb, 'Undetermined fixed successfully');
       })
       .catch((error) => {
         logger.error(error);
-        transactionManager.endTransaction(dbClient, false, cb);
+        transactionManager.endTransaction(dbClient, false, cb, 'Error fixing Undetermined');
       });
   },
 
@@ -556,100 +417,84 @@ module.exports = {
       .then(() => eliminationHandler.createEliminationMatches(dbClient, leagueId))
       .then(() =>
         // Get groups
-        db.group.getGroupsByLeagueId(dbClient, leagueId))
-      .then((response) => {
-        // Get group matches and players
-        response.forEach((group) => {
-          rankedGroups.push(group);
-        });
-        const promises = [];
-        response.forEach((group) => {
-          promises.push(db.group.getGroupMatches(dbClient, group.id));
-          promises.push(db.group.getGroupMembersByGroupId(dbClient, group.id, leagueId));
-        });
-        return Promise.all(promises);
-      })
-      .then(response =>
-        // Count player wins
-        new Promise((resolve) => {
-          for (let i = 0, k = 0; i < response.length; i += 2, k += 1) {
-            response[i].forEach((match) => {
-              if (match.player_one_score > match.player_two_score) {
-                const player = response[i + 1].find(p => p.id === match.player_one);
-                if (!player.wins) {
-                  player.wins = 0;
-                }
-                player.wins += 1;
-              } else {
-                const player = response[i + 1].find(p => p.id === match.player_two);
-                if (!player.wins) {
-                  player.wins = 0;
-                }
-                player.wins += 1;
-              }
+        groupHandler.getGroups(dbClient, leagueId)
+          .then((response) => {
+            // Get group matches and players
+            response.forEach((group) => {
+              rankedGroups.push(group);
             });
-            const rankedGroup = determineGroupRankings(response[i + 1], response[i]);
-            const group = rankedGroups[k];
-            group.players = _.orderBy(rankedGroup, ['ranking'], ['asc']);
-          }
-          resolve(rankedGroups);
-        }))
-      .then((resolvedRankedGroups) => {
-        const promises = [];
-        resolvedRankedGroups.forEach((group) => {
-          group.players.forEach((player) => {
-            promises.push(db.group.updatePlayerGroupRanking(dbClient, player.id, group.id, player.ranking));
-          });
-        });
-        return Promise.all(promises);
-      })
-      .then(() => {
-        const promises = [];
-        // Get placements
-        promises.push(db.finals.getPlacements(dbClient));
-        promises.push(db.qualifier.getPlacements(dbClient));
-        promises.push(db.elimination.getEliminationPlacements(dbClient));
-        return Promise.all(promises);
-      })
-      .then((response) => {
-        const finalsPlacements = response[0];
-        const qualifierPlacements = response[1];
-        const eliminationPlacements = response[2];
-        rankedGroups.forEach((group) => {
-          const groupedByRank = _.groupBy(group.players, 'ranking');
-          group.placements = determinePlacements(groupedByRank);
-        });
-        let promises = [];
-        // Groups by group keys
-        const groupA = rankedGroups.find(group => group.group_key === 'A');
-        const groupB = rankedGroups.find(group => group.group_key === 'B');
-        const groupC = rankedGroups.find(group => group.group_key === 'C');
-        const groupD = rankedGroups.find(group => group.group_key === 'D');
-        // Set group winners to finals
-        const finalsPromises = finalsHandler.updatePlayersToFinal(dbClient, leagueId, finalsPlacements, groupA.placements.toFinals, groupB.placements.toFinals, groupC.placements.toFinals, groupD.placements.toFinals);
-        promises = promises.concat(finalsPromises);
-        // Set players to qualifiers
-        const qualifierPromises = qualifierHandler.updatePlayersToQualifier(dbClient, leagueId, qualifierPlacements, groupA.placements.toQualifiers, groupB.placements.toQualifiers, groupC.placements.toQualifiers, groupD.placements.toQualifiers);
-        promises = promises.concat(qualifierPromises);
-        // Set players to elimination
-        const eliminationPromises = eliminationHandler.updatePlayersToElimination(dbClient, leagueId, eliminationPlacements, groupA.placements.toElimination, groupB.placements.toElimination, groupC.placements.toElimination, groupD.placements.toElimination);
-        promises = promises.concat(eliminationPromises);
-        // Set undetermined
-        const undetermined = groupHandler.createUndetermined(dbClient, leagueId, groupA.placements.undetermined, groupB.placements.undetermined, groupC.placements.undetermined, groupD.placements.undetermined);
-        promises = promises.concat(undetermined);
-        return Promise.all(promises);
-      })
-      .then(() => db.league.updateLeagueStage(dbClient, leagueId, 'qualifiers'))
-      .then(() => {
-        logger.info('[SUCCESS] startQualifiers', `Params: {leagueId: ${leagueId}}`);
-        transactionManager.endTransaction(dbClient, true, cb);
-      })
-      .catch((error) => {
-        logger.error(error);
-        transactionManager.endTransaction(dbClient, false, (value) => {
-          console.log(value);
-        });
-      });
+            const promises = [];
+            response.forEach((group) => {
+              promises.push(groupHandler.getGroupMatches(dbClient, group.id));
+              promises.push(groupHandler.getGroupMembers(dbClient, group.id, leagueId));
+            });
+            return Promise.all(promises);
+          })
+          .then(response =>
+            // Resolve group rankings
+            new Promise((resolve) => {
+              const groups = [];
+              for (let i = 0, k = 0; i < response.length; i += 2, k += 1) {
+                const matches = response[i];
+                const players = response[i + 1];
+                groups.push(groupStageHelper.determineRankings(matches, players));
+              }
+              resolve(groups);
+            }))
+          .then((groups) => {
+            let promises = [];
+            rankedGroups.forEach((group, idx) => {
+              group.players = groups[idx];
+              promises = promises.concat(groupHandler.updatePlayerGroupRankings(dbClient, group));
+            });
+            return Promise.all(promises);
+          })
+          .then(() => {
+            const promises = [];
+            // Get placements
+            promises.push(finalsHandler.getPlacements(dbClient));
+            promises.push(qualifierHandler.getPlacements(dbClient));
+            promises.push(eliminationHandler.getPlacements(dbClient));
+            return Promise.all(promises);
+          })
+          .then((response) => {
+            const finalsPlacements = response[0];
+            const qualifierPlacements = response[1];
+            const eliminationPlacements = response[2];
+            rankedGroups.forEach((group) => {
+              group.placements = groupStageHelper.determinePlacements(group);
+            });
+            let promises = [];
+            // Groups by group keys
+            const groupA = rankedGroups.find(group => group.group_key === 'A');
+            const groupB = rankedGroups.find(group => group.group_key === 'B');
+            const groupC = rankedGroups.find(group => group.group_key === 'C');
+            const groupD = rankedGroups.find(group => group.group_key === 'D');
+            // Set group winners to finals
+            const finalsPromises = finalsHandler.updatePlayersToFinal(dbClient, leagueId, finalsPlacements, groupA.placements.toFinals, groupB.placements.toFinals, groupC.placements.toFinals, groupD.placements.toFinals);
+            promises = promises.concat(finalsPromises);
+            // Set players to qualifiers
+            const qualifierPromises = qualifierHandler.updatePlayersToQualifier(dbClient, leagueId, qualifierPlacements, groupA.placements.toQualifiers, groupB.placements.toQualifiers, groupC.placements.toQualifiers, groupD.placements.toQualifiers);
+            promises = promises.concat(qualifierPromises);
+            // Set players to elimination
+            const eliminationPromises = eliminationHandler.updatePlayersToElimination(dbClient, leagueId, eliminationPlacements, groupA.placements.toElimination, groupB.placements.toElimination, groupC.placements.toElimination, groupD.placements.toElimination);
+            promises = promises.concat(eliminationPromises);
+            // Set undetermined
+            const undetermined = groupHandler.createUndetermined(dbClient, leagueId, groupA.placements.undetermined, groupB.placements.undetermined, groupC.placements.undetermined, groupD.placements.undetermined);
+            promises = promises.concat(undetermined);
+            return Promise.all(promises);
+          })
+          .then(() => db.league.updateLeagueStage(dbClient, leagueId, 'qualifiers'))
+          .then(() => {
+            logger.info('[SUCCESS] startQualifiers', `Params: {leagueId: ${leagueId}}`);
+            transactionManager.endTransaction(dbClient, true, cb);
+          })
+          .catch((error) => {
+            logger.error(error);
+            transactionManager.endTransaction(dbClient, false, (value) => {
+              console.log(value);
+            });
+          }));
   },
 
   startFinals(leagueId, cb) {

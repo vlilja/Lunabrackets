@@ -26,6 +26,30 @@ $height: 90px;
 .match {
   height: $height;
   box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.18);
+  .nametag {
+    position:relative;
+    display: block;
+    white-space: nowrap;
+    background-color: inherit;
+    .name {
+      max-width: 85%;
+      overflow: hidden;
+      background-color: inherit;
+    }
+    .name:hover {
+      z-index: 30;
+      position:absolute;
+      max-width: 1000px;
+      overflow: visible;
+    }
+    .score {
+      position: absolute;
+      top:0;
+      right: 0;
+      background-color: inherit;
+    }
+  }
+
 }
 
 .match-padding-half {

@@ -182,9 +182,9 @@ function updateUndeterminedRanking(c, leagueId, groupKey, playerId, ranking) {
   });
 }
 
-function deleteUndeterminedRanking(c, leagueId, groupKey) {
+function deleteUndeterminedRanking(c, undeterminedId) {
   return new Promise((resolve, reject) => {
-    const queryString = `DELETE FROM undetermined_group_rankings WHERE league_id = ${leagueId} AND group_key = '${groupKey}'`;
+    const queryString = `DELETE FROM undetermined_group_rankings WHERE id = ${undeterminedId}`;
     c.query(queryString, (error, rows) => {
       if (error) {
         reject(new Error(`[ERROR] deleteUndeterminedRanking ${error}`));

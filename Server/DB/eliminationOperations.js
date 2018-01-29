@@ -69,7 +69,7 @@ module.exports = {
 
   updateMatchScore(c, eliminationId, match) {
     return new Promise((resolve, reject) => {
-      const queryString = `UPDATE elimination_matches SET player_one_score = ${match.playerOne.score}, player_two_score = ${match.playerTwo.score} WHERE elimination_id = ${eliminationId} AND match_key = '${match.key}';`;
+      const queryString = `UPDATE elimination_matches SET player_one_score = ${match.playerOne.score}, player_two_score = ${match.playerTwo.score}, walk_over = ${match.walkOver} WHERE elimination_id = ${eliminationId} AND match_key = '${match.key}';`;
       c.query(queryString, (error, rows) => {
         if (error) {
           reject(new Error(`[ERROR] updateMatchScore${error}`));

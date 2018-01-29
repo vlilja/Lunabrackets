@@ -315,6 +315,33 @@ export default function reducer(
         startingLeague: false,
       };
     }
+    case 'START_QUALIFIERS':
+    {
+      return {
+        ...state,
+        loading: { ...state.loading, update: true },
+      };
+    }
+    case 'START_QUALIFIERS_FULFILLED':
+    {
+      return {
+        ...state,
+        loading: {
+          ...state.loading,
+          update: false,
+        },
+        message: action.payload,
+      };
+    }
+    case 'START_QUALIFIERS_REJECTED':
+    {
+      return {
+        ...state,
+        loading: { ...state.loading, update: false },
+        error: action.payload,
+        message: action.payload.response.data,
+      };
+    }
     case 'UPDATE_LEAGUE_MATCH':
     {
       return {
@@ -341,18 +368,33 @@ export default function reducer(
     {
       return {
         ...state,
+        loading: {
+          ...state.loading,
+          update: true,
+        },
       };
     }
     case 'UPDATE_UNDETERMINED_FULFILLED':
     {
       return {
         ...state,
+        loading: {
+          ...state.loading,
+          update: false,
+        },
+        message: action.payload,
       };
     }
     case 'UPDATE_UNDETERMINED_REJECTED':
     {
       return {
         ...state,
+        loading: {
+          ...state.loading,
+          update: false,
+        },
+        error: action.payload,
+        message: action.payload.response.data,
       };
     }
     case 'UPDATE_MATCH_REJECTED':

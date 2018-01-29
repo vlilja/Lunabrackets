@@ -59,7 +59,7 @@ router.post('/:leagueId/finish', (req, res) => {
   }
 });
 
-router.post('/:leagueId/start/qualifiers', (req, res) => {
+router.get('/:leagueId/start/qualifiers', (req, res) => {
   leagueHandler.startQualifiers(req.params.leagueId, (response) => {
     if (response instanceof Error) {
       res.status(400).send('Error starting qualifiers');
@@ -114,13 +114,19 @@ router.get('/:leagueId/groups/undetermined', (req, res) => {
 });
 
 router.post('/:leagueId/groups/undetermined/', (req, res) => {
-  leagueHandler.fixUndeterminedRankings(req.params.leagueId, req.body.group, (response) => {
-    if (response instanceof Error) {
-      res.status(400).send('Error updating undetermined');
-    } else {
-      res.json(response);
-    }
-  });
+  const { leagueId } = req.params;
+  const { group } = req.body;
+  if (!Number.isNaN(Number(leagueId))) {
+    leagueHandler.fixUndeterminedRankings(leagueId, group, (reows, response) => {
+      if (response instanceof Error) {
+        res.status(400).send('Error updating undetermined');
+      } else {
+        res.json(response);
+      }
+    });
+  } else {
+    res.status(400).send('Bad request');
+  }
 });
 
 router.get('/:leagueId/groups/:groupId/matches', (req, res) => {

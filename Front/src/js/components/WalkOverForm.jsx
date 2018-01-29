@@ -6,6 +6,13 @@ export default class WalkOverForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.update = this.update.bind(this);
+  }
+
+  update() {
+    this.props.closeModal();
+    this.props.match.setAsWalkOver();
+    this.props.update(this.props.match);
   }
 
   render() {

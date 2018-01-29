@@ -1,4 +1,5 @@
 const db = require('../DB/dbOperations');
+const { Match } = require('lunabrackets-datamodel');
 
 function createPlayerString(players) {
   let listedPlayers = '';
@@ -27,6 +28,36 @@ module.exports = {
       promises.push(db.group.insertGroupMember(dbClient, groupId, player.id));
     });
     return promises;
+  },
+
+  getGroups(dbClient, leagueId) {
+    return db.group.getGroupsByLeagueId(dbClient, leagueId);
+  },
+
+  getGroupMembers(dbClient, groupId, leagueId) {
+    return db.group.getGroupMembersByGroupId(dbClient, groupId, leagueId);
+  },
+
+  getGroupMatches(dbClient, groupId) {
+    return new Promise((resolve, reject) => {
+      const promise = db.group.getGroupMatches(dbClient, groupId);
+      const matches = [];
+      promise.then((matchesArray) => {
+        matchesArray.forEach((match) => {
+          const m = new Match(match.id, null, null, null, match.player_one, match.player_two);
+          m.setScore(match.player_one_score, match.player_two_score);
+          matches.push(m);
+        });
+        resolve(matches);
+      }).catch((error) => {
+        console.log(error);
+        reject(new Error('Error fetching group matches'));
+      });
+    });
+  },
+
+  getUndetermined(dbClient, leagueId) {
+    return db.group.getUndetermined(dbClient, leagueId);
   },
 
   createGroupMatches(dbClient, groupId, players) {
@@ -76,17 +107,21 @@ module.exports = {
     return promises;
   },
 
-  getUndetermined(dbClient, leagueId) {
-    return db.group.getUndetermined(dbClient, leagueId);
-  },
-
   fixUndeterminedRankings(dbClient, leagueId, group) {
     const promises = [];
     group.players.forEach((player) => {
       promises.push(db.group.updateUndeterminedRanking(dbClient, leagueId, group.key, player.details.id, player.ranking));
     });
-    promises.push(db.group.deleteUndeterminedRanking(dbClient, leagueId, group.key));
+    promises.push(db.group.deleteUndeterminedRanking(dbClient, group.id));
     return Promise.all(promises);
+  },
+
+  updatePlayerGroupRankings(dbClient, group) {
+    const promises = [];
+    group.players.forEach((player) => {
+      promises.push(db.group.updatePlayerGroupRanking(dbClient, player.id, group.id, player.ranking));
+    });
+    return promises;
   },
 
 };

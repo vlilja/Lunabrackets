@@ -61,6 +61,17 @@ export default {
     playerHandicaps: 'Player handicaps',
     startLeague: 'Start league',
   },
+  endGroupStageForm: {
+    heading: 'Group stage',
+    matchesComplete: 'Matches complete',
+    modalHeading: 'Incomplete matches',
+    modalText: 'There are still incomplete group matches. Do you still want to start the qualifiers?',
+    startQualifiers: 'Start qualifiers & elimination',
+  },
+  endQualifiersForm: {
+    heading: 'Qualifiers stage',
+    startFinals: 'Start finals',
+  },
   leagueNavigation: {
     admin: 'Admin',
     results: 'Results',
@@ -77,6 +88,8 @@ export default {
     currentStage: 'Current stage',
     start: 'Start',
     undeterminedRankingsHeading: 'Undetermined rankings',
+    noUndetermined: 'No undetermined rankings',
+    leagueComplete: 'This league has ended',
   },
   groupView: {
     wins: 'Wins',
@@ -110,8 +123,12 @@ export default {
     heading: 'Walk over',
     message: 'Walk over for',
   },
+  messages: {
+    matchUpdate: 'Match updated successfully',
+  },
   errorMessages: {
     pageNotFound: 'Sorry we couldn\'t find what u were looking for...',
+    fixRankings: 'Fix duplicate rankings',
     missingSeasonName: 'Missing season name',
     missingName: 'Missing league name',
     missingPlayers: 'Missing players',

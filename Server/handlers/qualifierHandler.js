@@ -138,6 +138,10 @@ module.exports = {
     return db.qualifier.getMatches(dbClient, leagueId);
   },
 
+  getPlacements(dbClient) {
+    return db.qualifier.getPlacements(dbClient);
+  },
+
   updateBracket(dbClient, leagueId, match) {
     const promises = [];
     let winner;
@@ -191,13 +195,13 @@ module.exports = {
   },
 
   updateQualifiersMatch(dbClient, leagueId, matchKey, playerOne = 0, playerTwo = 0) {
-    let player;
+    let promise;
     if (playerOne) {
-      player = playerOne;
+      promise = db.qualifier.updatePlayerOneToMatch(dbClient, leagueId, matchKey, playerOne);
     } else if (playerTwo) {
-      player = playerTwo;
+      promise = db.qualifier.updatePlayerTwoToMatch(dbClient, leagueId, matchKey, playerTwo);
     }
-    return db.qualifier.updatePlayerOneToMatch(dbClient, leagueId, matchKey, player);
+    return promise;
   },
 
 };

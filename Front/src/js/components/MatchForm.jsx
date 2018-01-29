@@ -20,7 +20,6 @@ export default class MatchForm extends React.Component {
       raceTo: Number(this.props.raceTo),
       invalidEntry: false,
     };
-    console.log(this.state);
     this.handleChange = this.handleChange.bind(this);
     this.update = this.update.bind(this);
   }

@@ -4,10 +4,11 @@ import {
   Group,
   Match,
 } from 'lunabrackets-datamodel';
+import phrases from '../../Phrases';
 
 import serverDetails from '../apiDetails';
 
-function flashMessage(dispatch, time) {
+function flashMessage(dispatch, time, reload = 0) {
   dispatch({
     type: 'SHOW_MESSAGE',
     payload: '',
@@ -17,6 +18,9 @@ function flashMessage(dispatch, time) {
       type: 'HIDE_MESSAGE',
       payload: '',
     });
+    if (reload) {
+      window.location.reload();
+    }
   }, time);
 }
 
@@ -224,6 +228,7 @@ export function updateUndetermined(leagueId, group) {
         type: 'UPDATE_UNDETERMINED_FULFILLED',
         payload: response.data,
       });
+      flashMessage(dispatch, 2000);
       dispatch(getUndetermined(leagueId));
     })
       .catch((err) => {
@@ -231,6 +236,8 @@ export function updateUndetermined(leagueId, group) {
           type: 'UPDATE_UNDETERMINED_REJECTED',
           payload: err,
         });
+        flashMessage(dispatch, 2000);
+        dispatch(getUndetermined(leagueId));
       });
   };
 }
@@ -339,6 +346,30 @@ export function startLeague(leagueId, players, groupNames, raceTo) {
   };
 }
 
+export function startQualifiers(leagueId) {
+  return (dispatch) => {
+    dispatch({
+      type: 'START_QUALIFIERS',
+      payload: '',
+    });
+    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/start/qualifiers`)
+      .then((response) => {
+        dispatch({
+          type: 'START_QUALIFIERS_FULFILLED',
+          payload: response.data,
+        });
+        flashMessage(dispatch, 2000, true);
+      })
+      .catch((error) => {
+        dispatch({
+          type: 'START_QUALIFIERS_REJECTED',
+          payload: error,
+        });
+        flashMessage(dispatch, 2000);
+      });
+  };
+}
+
 export function updateGroupStageMatch(leagueId, groupId, match) {
   return (dispatch) => {
     dispatch({
@@ -347,10 +378,10 @@ export function updateGroupStageMatch(leagueId, groupId, match) {
     });
     axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/groups/${groupId}/matches/${match.id}`, {
       match,
-    }).then((response) => {
+    }).then(() => {
       dispatch({
         type: 'UPDATE_MATCH_FULFILLED',
-        payload: response.data,
+        payload: phrases.messages.matchUpdate,
       });
       flashMessage(dispatch, 2000);
     })
@@ -360,6 +391,7 @@ export function updateGroupStageMatch(leagueId, groupId, match) {
           payload: err,
         });
         flashMessage(dispatch, 2000);
+        dispatch(getLeagueGroups(leagueId));
       });
   };
 }
@@ -373,10 +405,10 @@ export function updateEliminationMatch(leagueId, match) {
     axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/elimination/matches/${match.id}`, {
       match,
     })
-      .then((response) => {
+      .then(() => {
         dispatch({
           type: 'UPDATE_ELIMINATION_MATCH_FULFILLED',
-          payload: response.data,
+          payload: phrases.messages.matchUpdate,
         });
         dispatch(getEliminationMatches(leagueId));
         flashMessage(dispatch, 2000);
@@ -404,7 +436,7 @@ export function updateQualifierMatch(leagueId, match) {
       .then(() => {
         dispatch({
           type: 'UPDATE_QUALIFIER_MATCH_FULFILLED',
-          payload: 'Success',
+          payload: phrases.messages.matchUpdate,
         });
         dispatch(getQualifierMatches(leagueId));
         flashMessage(dispatch, 2000);
@@ -429,10 +461,10 @@ export function updateFinalsMatch(leagueId, match) {
     axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/finals/matches/${match.id}`, {
       match,
     })
-      .then((response) => {
+      .then(() => {
         dispatch({
           type: 'UPDATE_FINALS_MATCH_FULFILLED',
-          payload: response.data,
+          payload: phrases.messages.matchUpdate,
         });
         dispatch(getFinalsMatches(leagueId));
         flashMessage(dispatch, 2000);

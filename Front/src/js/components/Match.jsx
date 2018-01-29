@@ -13,6 +13,11 @@ export default class Match extends React.Component {
       modalContent: null,
     };
     this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+  }
+
+  closeModal() {
+    this.setState({ modalOpen: false });
   }
 
   openModal() {
@@ -39,11 +44,10 @@ export default class Match extends React.Component {
           player = match.playerTwo.details;
         }
         content = (<WalkOverForm
+          match={match}
           player={player}
-          update={() => {}}
-          closeModal={() => {
-          this.setState({ modalOpen: false });
-        }}
+          update={this.props.update}
+          closeModal={this.closeModal}
         />);
       }
       this.setState({ modalOpen: open, modalContent: content });
@@ -53,43 +57,45 @@ export default class Match extends React.Component {
   render() {
     const { match } = this.props;
     return (
-      <div className="clickable" onClick={this.openModal} role="button" tabIndex={0}>
-        <div className="margin-bottom">
-          <span className="badge badge-dark">{match.key}</span>
-          <span style={{
+      <div>
+        <div className="clickable" onClick={this.openModal} role="button" tabIndex={0}>
+          <div className="margin-bottom">
+            <span className="badge badge-dark">{match.key}</span>
+            <span style={{
             float: 'right',
           }}
-          >{this.props.loserside}</span>
-        </div>
-        <div
-          className={match.playerOne.score === this.props.raceTo
+            >{this.props.loserside}</span>
+          </div>
+          <div
+            className={match.playerOne.score === this.props.raceTo ||
+              (match.walkOver === '1' && match.playerOne.details)
           ? 'winner'
           : ''}
-          style={{
+            style={{
           borderBottom: '1px solid black',
         }}
-        >{match.playerOne.details
+          ><div className="nametag">{match.playerOne.details
             ? (`${match.playerOne.details.firstName} ${match.playerOne.details.lastName}`)
             : ''} {match.walkOver === '1' && !match.playerOne.details
             ? 'Walk over'
             : ''}
-          <span style={{
-            float: 'right',
-          }}
-          >{match.playerOne.score}</span>
-        </div>
-        <div className={match.playerTwo.score === this.props.raceTo
+            <div className="score">{match.playerOne.score}</div>
+          </div>
+          </div>
+          <div className={match.playerTwo.score === this.props.raceTo ||
+              (match.walkOver === '1' && match.playerTwo.details)
           ? 'winner'
           : ''}
-        >{match.playerTwo.details
+          ><div className="nametag">
+            <div className="name">{match.playerTwo.details
             ? `${match.playerTwo.details.firstName} ${match.playerTwo.details.lastName}`
             : ''} {match.walkOver === '1' && !match.playerTwo.details
             ? 'Walk over'
             : ''}
-          <span style={{
-            float: 'right',
-          }}
-          >{match.playerTwo.score}</span>
+            </div>
+            <div className="score">{match.playerTwo.score}</div>
+          </div>
+          </div>
         </div>
         <Modal
           open={this.state.modalOpen}
@@ -98,6 +104,7 @@ export default class Match extends React.Component {
         >
           {this.state.modalContent}
         </Modal>
+
       </div>
     );
   }

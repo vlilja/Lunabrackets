@@ -70,6 +70,10 @@ module.exports = {
     return db.elimination.getEliminationMatches(dbClient, leagueId);
   },
 
+  getPlacements(dbClient) {
+    return db.elimination.getEliminationPlacements(dbClient);
+  },
+
   updateBracket(dbClient, leagueId, match) {
     const promises = [];
     promises.push(db.elimination.updateMatchScore(dbClient, leagueId, match));
@@ -87,13 +91,13 @@ module.exports = {
   },
 
   updateEliminationMatch(dbClient, leagueId, matchKey, playerOne = 0, playerTwo = 0) {
-    let player;
+    let promise;
     if (playerOne) {
-      player = playerOne;
+      promise = db.elimination.updatePlayerOneToMatch(dbClient, leagueId, matchKey, playerOne);
     } else if (playerTwo) {
-      player = playerTwo;
+      promise = db.elimination.updatePlayerTwoToMatch(dbClient, leagueId, matchKey, playerTwo);
     }
-    return db.elimination.updatePlayerOneToMatch(dbClient, leagueId, matchKey, player);
+    return promise;
   },
 
 };

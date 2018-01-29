@@ -1,4 +1,4 @@
-const { Match } = require('../../Datamodel').Match;
+const { Match } = require('lunabrackets-datamodel');
 
 module.exports = {
 

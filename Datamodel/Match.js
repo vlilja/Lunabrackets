@@ -42,6 +42,11 @@ module.exports = function Match(id, key, winnerNextMatchKey, loserNextMatchKey, 
     this.playerOne.score = pOne;
     this.playerTwo.score = pTwo;
   }
+
+  this.setAsWalkOver = function() {
+    this.walkOver = 1;
+  }
+
   this.getResult = function() {
     if (this.playerOne.score && this.playerTwo.score) {
       if (Number(this.playerOne.score) > Number(this.playerTwo.score)) {
@@ -57,6 +62,10 @@ module.exports = function Match(id, key, winnerNextMatchKey, loserNextMatchKey, 
       } else {
         return null;
       }
+    }
+    else if(this.walkOver === 1){
+      winner = this.playerOne ? this.playerOne.id : this.playerTwo.id;
+      return {winner: winner, loser:null}
     }
   }
 

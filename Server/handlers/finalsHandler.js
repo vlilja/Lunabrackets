@@ -45,6 +45,10 @@ module.exports = {
     return db.finals.getFinalsMatches(dbClient, leagueId);
   },
 
+  getPlacements(dbClient) {
+    return db.finals.getPlacements(dbClient);
+  },
+
   updatePlayersToFinal(dbClient, leagueId, placements, groupA, groupB, groupC, groupD) {
     const promises = [];
     const groups = [{
