@@ -17,7 +17,6 @@ const {
 // HELPERS
 function placePlayersByRanking(leagueId, group, placements) {
   const promises = [];
-  console.log(placements);
   group.players.forEach((player) => {
     const ranking = Number(player.ranking);
     if (ranking === 1) {
@@ -27,7 +26,6 @@ function placePlayersByRanking(leagueId, group, placements) {
     }
     if (ranking > 1 && ranking <= 5) {
       const seed = group.key + player.ranking;
-      console.log(seed);
       placements.qualifiers.forEach((match) => {
         if (match.player_one === seed) {
           promises.push(qualifierHandler.updateQualifiersMatch(dbClient, leagueId, match.match_key, player.details.id, null));
@@ -39,7 +37,6 @@ function placePlayersByRanking(leagueId, group, placements) {
     }
     if (ranking > 5) {
       const seed = group.key + player.ranking;
-      console.log(seed);
       placements.elimination.forEach((match) => {
         if (match.player_one === seed) {
           promises.push(eliminationHandler.updateEliminationMatch(dbClient, leagueId, match.match_key, player.details.id, null));
@@ -173,7 +170,7 @@ module.exports = {
           places.push(i);
         }
         const scoring = response[4];
-        const finalRankings = [];
+        let finalRankings = [];
         // Finals places
         matches.finals.sort((a, b) => Number(b.key) - Number(a.key));
         matches.finals.forEach((match, idx) => {
@@ -212,6 +209,12 @@ module.exports = {
             place: places.shift(),
             player: result.loser,
           });
+        });
+        finalRankings = finalRankings.filter((r) => {
+          if (r.place && r.player) {
+            return true;
+          }
+          return false;
         });
         finalRankings.forEach((rank) => {
           const score = scoring.find((scoreObj) => {
@@ -372,7 +375,6 @@ module.exports = {
   },
 
   fixUndeterminedRankings(leagueId, group, cb) {
-    console.log(group);
     const promise = transactionManager.startTransaction(dbClient);
     promise.then(() => groupHandler.fixUndeterminedRankings(dbClient, leagueId, group))
       .then(() => {
@@ -491,42 +493,26 @@ module.exports = {
           })
           .catch((error) => {
             logger.error(error);
-            transactionManager.endTransaction(dbClient, false, (value) => {
-              console.log(value);
-            });
+            transactionManager.endTransaction(dbClient, false, cb);
           }));
   },
 
-  startFinals(leagueId, cb) {
+  startFinals(leagueId, players, cb) {
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => qualifierHandler.getMatches(dbClient, leagueId))
-      .then((matches) => {
-        let players = [];
-        matches.forEach((match) => {
-          if (match.match_key === 'B1' || match.match_key === 'B2' || match.match_key === 'L11' || match.match_key === 'L12') {
-            if (Number(match.player_one_score) > Number(match.player_two_score)) {
-              players.push(match.player_one);
-            } else {
-              players.push(match.player_two);
-            }
-          }
-        });
-        const promises = [];
-        players = _.shuffle(players);
-        players.forEach((player, idx) => {
-          promises.push(finalsHandler.updateFinalsMatch(dbClient, leagueId, idx + 1, null, player));
-        });
-        if (promises.length !== 4) {
-          throw new Error('Error starting Finals, players missing');
-        }
-        return Promise.all(promises);
-      })
+    promise.then(() => {
+      const promises = [];
+      const shuffledPlayers = _.shuffle(players);
+      shuffledPlayers.forEach((player, idx) => {
+        promises.push(finalsHandler.updateFinalsMatch(dbClient, leagueId, idx + 1, null, player));
+      });
+      return Promise.all(promises);
+    })
       .then(() => db.league.updateLeagueStage(dbClient, leagueId, 'finals'))
       .then(() => {
         transactionManager.endTransaction(dbClient, true, cb);
       })
       .catch((error) => {
-        console.log(error);
+        logger.error(error);
         transactionManager.endTransaction(dbClient, false, cb, error);
       });
   },
@@ -616,7 +602,7 @@ module.exports = {
       cb(matches);
     })
       .catch((error) => {
-        console.log(error);
+        logger.error(error);
         cb(new Error(error));
       });
   },

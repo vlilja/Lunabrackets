@@ -26,6 +26,9 @@ $height: 90px;
 .match {
   height: $height;
   box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.18);
+  .matchtag {
+    background-color: white;
+  }
   .nametag {
     position:relative;
     display: block;

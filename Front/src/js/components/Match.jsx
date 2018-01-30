@@ -68,28 +68,30 @@ export default class Match extends React.Component {
           </div>
           <div
             className={match.playerOne.score === this.props.raceTo ||
-              (match.walkOver === '1' && match.playerOne.details)
-          ? 'winner'
-          : ''}
+              (match.walkOver === 1 && match.playerOne.details)
+          ? 'matchtag winner'
+          : 'matchtag'}
             style={{
           borderBottom: '1px solid black',
         }}
-          ><div className="nametag">{match.playerOne.details
+          ><div className="nametag">
+            <div className="name">{match.playerOne.details
             ? (`${match.playerOne.details.firstName} ${match.playerOne.details.lastName}`)
-            : ''} {match.walkOver === '1' && !match.playerOne.details
+            : ''} {match.walkOver === 1 && !match.playerOne.details
             ? 'Walk over'
             : ''}
+            </div>
             <div className="score">{match.playerOne.score}</div>
           </div>
           </div>
           <div className={match.playerTwo.score === this.props.raceTo ||
-              (match.walkOver === '1' && match.playerTwo.details)
-          ? 'winner'
-          : ''}
+              (match.walkOver === 1 && match.playerTwo.details)
+          ? 'matchtag winner'
+          : 'matchtag'}
           ><div className="nametag">
             <div className="name">{match.playerTwo.details
             ? `${match.playerTwo.details.firstName} ${match.playerTwo.details.lastName}`
-            : ''} {match.walkOver === '1' && !match.playerTwo.details
+            : ''} {match.walkOver === 1 && !match.playerTwo.details
             ? 'Walk over'
             : ''}
             </div>

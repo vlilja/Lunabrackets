@@ -48,11 +48,15 @@ router.post('/:leagueId/start', (req, res) => {
   }
 });
 
-router.post('/:leagueId/finish', (req, res) => {
+router.get('/:leagueId/finish', (req, res) => {
   const leagueId = Number(req.params.leagueId);
   if (!Number.isNaN(leagueId)) {
     leagueHandler.finishLeague(leagueId, (response) => {
-      res.json('League finished');
+      if (response instanceof Error) {
+        res.status(400).send('Error finishing the league');
+      } else {
+        res.json('League finished');
+      }
     });
   } else {
     res.status(400).send('Bad request');
@@ -70,13 +74,19 @@ router.get('/:leagueId/start/qualifiers', (req, res) => {
 });
 
 router.post('/:leagueId/start/finals', (req, res) => {
-  leagueHandler.startFinals(req.params.leagueId, (response) => {
-    if (response instanceof Error) {
-      res.status(400).send('Error starting finals');
-    } else {
-      res.json('Finals started successfully');
-    }
-  });
+  const { leagueId } = req.params;
+  const { players } = req.body;
+  if (!Number.isNaN(Number(leagueId)) && players.length === 4) {
+    leagueHandler.startFinals(leagueId, players, (response) => {
+      if (response instanceof Error) {
+        res.status(400).send('Error starting finals');
+      } else {
+        res.json('Finals started successfully');
+      }
+    });
+  } else {
+    res.status(400).send('Bad request');
+  }
 });
 
 router.get('/:leagueId/results', (req, res) => {

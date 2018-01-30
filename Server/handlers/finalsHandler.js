@@ -102,13 +102,13 @@ module.exports = {
   },
 
   updateFinalsMatch(dbClient, leagueId, matchKey, playerOne = 0, playerTwo = 0) {
-    let player;
+    let promise;
     if (playerOne) {
-      player = playerOne;
+      promise = db.finals.updatePlayerOneToMatch(dbClient, leagueId, matchKey, playerOne);
     } else if (playerTwo) {
-      player = playerTwo;
+      promise = db.finals.updatePlayerTwoToMatch(dbClient, leagueId, matchKey, playerTwo);
     }
-    return db.finals.updatePlayerOneToMatch(dbClient, leagueId, matchKey, player);
+    return promise;
   },
 
 };

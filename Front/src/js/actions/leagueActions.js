@@ -370,6 +370,54 @@ export function startQualifiers(leagueId) {
   };
 }
 
+export function startFinals(leagueId, players) {
+  return (dispatch) => {
+    dispatch({
+      type: 'START_FINALS',
+      payload: '',
+    });
+    axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/start/finals`, { players })
+      .then(() => {
+        dispatch({
+          type: 'START_FINALS_FULFILLED',
+          payload: phrases.messages.finalsStarted,
+        });
+        flashMessage(dispatch, 2000, true);
+      })
+      .catch((error) => {
+        dispatch({
+          type: 'START_FINALS_REJECTED',
+          payload: { error, message: phrases.errorMessages.finals },
+        });
+        flashMessage(dispatch, 2000);
+      });
+  };
+}
+
+export function finishLeague(leagueId) {
+  return (dispatch) => {
+    dispatch({
+      type: 'FINISH_LEAGUE',
+      payload: '',
+    });
+    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/finish`)
+      .then(() => {
+        dispatch({
+          type: 'FINISH_LEAGUE_FULFILLED',
+          payload: phrases.messages.leagueFinished,
+        });
+        flashMessage(dispatch, 2000, true);
+      })
+      .catch((error) => {
+        dispatch({
+          type: 'FINISH_LEAGUE_REJECTED',
+          payload: { error, message: phrases.errorMessages.finish },
+        });
+        flashMessage(dispatch, 2000);
+      });
+  };
+}
+
 export function updateGroupStageMatch(leagueId, groupId, match) {
   return (dispatch) => {
     dispatch({

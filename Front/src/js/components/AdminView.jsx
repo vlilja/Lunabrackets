@@ -13,6 +13,12 @@ export default class AdminView extends React.Component {
     super(props);
     this.state = {};
     this.renderControls = this.renderControls.bind(this);
+    this.getMatches = this.getMatches.bind(this);
+  }
+
+  getMatches() {
+    this.props.getFinalsMatches();
+    this.props.getEliminationMatches();
   }
 
   renderControls() {
@@ -31,7 +37,7 @@ export default class AdminView extends React.Component {
         break;
       }
       case 'finals': {
-        element = <EndLeagueForm league={this.props.league} finishLeague={this.props.finishLeague} />;
+        element = <EndLeagueForm finals={this.props.league.finals} elimination={this.props.league.elimination} getMatches={this.getMatches} finishLeague={this.props.finishLeague} />;
         break;
       }
       case 'complete': {
@@ -49,9 +55,6 @@ export default class AdminView extends React.Component {
     const form = this.renderControls();
     return (
       <div>
-        <div className="col-xs-12">
-          <h3>{`${phrases.adminView.currentStage}: ${this.props.league.stage}`}</h3>
-        </div>
         <div className="col-xs-12">
           {form}
         </div>

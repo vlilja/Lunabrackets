@@ -5,6 +5,8 @@ import {
   getLeagueResults,
   startLeague,
   startQualifiers,
+  startFinals,
+  finishLeague,
   getLeagueGroups,
   getUndetermined,
   updateUndetermined,
@@ -36,6 +38,8 @@ class LeagueDetails extends React.Component {
     };
     this.startLeague = this.startLeague.bind(this);
     this.startQualifiers = this.startQualifiers.bind(this);
+    this.startFinals = this.startFinals.bind(this);
+    this.finishLeague = this.finishLeague.bind(this);
     this.getGroups = this.getGroups.bind(this);
     this.getResults = this.getResults.bind(this);
     this.getUndetermined = this.getUndetermined.bind(this);
@@ -125,10 +129,18 @@ class LeagueDetails extends React.Component {
     this.props.dispatch(startQualifiers(this.props.league.id));
   }
 
+  startFinals(players) {
+    this.props.dispatch(startFinals(this.props.league.id, players));
+  }
+
+  finishLeague() {
+    this.props.dispatch(finishLeague(this.props.league.id));
+  }
+
   initializeView() {
     switch (this.state.view) {
       case 'ready':
-        return <AdminView league={this.props.league} startLeague={this.startLeague} startQualifiers={this.startQualifiers} getGroups={this.getGroups} getUndetermined={this.getUndetermined} updateUndetermined={this.updateUndetermined} />;
+        return <AdminView league={this.props.league} startLeague={this.startLeague} startQualifiers={this.startQualifiers} startFinals={this.startFinals} finishLeague={this.finishLeague} getGroups={this.getGroups} getEliminationMatches={this.getEliminationMatches} getFinalsMatches={this.getFinalsMatches} getUndetermined={this.getUndetermined} updateUndetermined={this.updateUndetermined} />;
       case 'complete':
         return <ResultsView league={this.props.league} loading={this.props.loadingResults} getResults={this.getResults} />;
       case 'elimination':

@@ -342,6 +342,60 @@ export default function reducer(
         message: action.payload.response.data,
       };
     }
+    case 'START_FINALS':
+    {
+      return {
+        ...state,
+        loading: { ...state.loading, update: true },
+      };
+    }
+    case 'START_FINALS_FULFILLED':
+    {
+      return {
+        ...state,
+        loading: {
+          ...state.loading,
+          update: false,
+        },
+        message: action.payload,
+      };
+    }
+    case 'START_FINALS_REJECTED':
+    {
+      return {
+        ...state,
+        loading: { ...state.loading, update: false },
+        error: action.payload.error,
+        message: action.payload.message,
+      };
+    }
+    case 'FINISH_LEAGUE':
+    {
+      return {
+        ...state,
+        loading: { ...state.loading, update: true },
+      };
+    }
+    case 'FINISH_LEAGUE_FULFILLED':
+    {
+      return {
+        ...state,
+        loading: {
+          ...state.loading,
+          update: false,
+        },
+        message: action.payload,
+      };
+    }
+    case 'FINISH_LEAGUE_REJECTED':
+    {
+      return {
+        ...state,
+        loading: { ...state.loading, update: false },
+        error: action.payload.error,
+        message: action.payload.message,
+      };
+    }
     case 'UPDATE_LEAGUE_MATCH':
     {
       return {
@@ -350,6 +404,7 @@ export default function reducer(
           ...state.loading,
           update: true,
         },
+        error: null,
       };
     }
     case 'UPDATE_MATCH_FULFILLED':

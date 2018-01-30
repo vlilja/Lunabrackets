@@ -14,7 +14,7 @@ module.exports = function Match(id, key, winnerNextMatchKey, loserNextMatchKey, 
     details: '',
     score: ''
   }
-  this.walkOver = walkOver || 0;
+  this.walkOver = Number(walkOver) || 0;
 
   this.isMatchNumEven = function() {
     var even = false;

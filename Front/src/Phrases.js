@@ -72,6 +72,16 @@ export default {
     heading: 'Qualifiers stage',
     startFinals: 'Start finals',
   },
+  endLeagueForm: {
+    heading: 'Complete league',
+    incompleteMatches: 'There are still matches left to be played',
+    submit: 'Finish the league',
+  },
+  playersToFinalsForm: {
+    heading: 'Select players to finals',
+    eligible: 'Eligible to finals',
+    goingToFinals: 'Going to finals',
+  },
   leagueNavigation: {
     admin: 'Admin',
     results: 'Results',
@@ -125,9 +135,15 @@ export default {
   },
   messages: {
     matchUpdate: 'Match updated successfully',
+    finalsStarted: 'Finals started successfully',
+    qualifierStarted: 'Qualifiers started successfully',
+    leagueFinished: 'League finished',
   },
   errorMessages: {
     pageNotFound: 'Sorry we couldn\'t find what u were looking for...',
+    finals: 'Error starting finals',
+    qualifiers: 'Error startin qualifiers',
+    finish: 'Error finishing the league',
     fixRankings: 'Fix duplicate rankings',
     missingSeasonName: 'Missing season name',
     missingName: 'Missing league name',

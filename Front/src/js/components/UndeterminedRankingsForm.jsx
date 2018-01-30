@@ -110,7 +110,7 @@ export default class UndeterminedRankingsForm extends React.Component {
   render() {
     const undetermined = this.mapUndetermined();
     return (
-      <div className="col-lg-12 col-xs-12">
+      <div className="col-lg-12 col-xs-12 well">
         <h2>{phrases.adminView.undeterminedRankingsHeading}</h2>
         <div>
           {this.state.loading ? <Icons type="LOADING" size="40px" /> : undetermined }

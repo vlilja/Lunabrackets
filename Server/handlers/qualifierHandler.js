@@ -185,7 +185,7 @@ module.exports = {
       }
       if (num >= 5 && num <= 8) {
         if (num % 2 === 0) {
-          promises.push(this.updateQualifiersMatch(dbClient, leagueId, lnmk, null, winner));
+          promises.push(this.updateQualifiersMatch(dbClient, leagueId, wnmk, null, winner));
         } else {
           promises.push(this.updateQualifiersMatch(dbClient, leagueId, wnmk, winner, null));
         }
