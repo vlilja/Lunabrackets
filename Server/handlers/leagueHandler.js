@@ -50,6 +50,131 @@ function placePlayersByRanking(leagueId, group, placements) {
   return promises;
 }
 
+function checkForSubsitutes(grpWinners, matches) {
+  const finalsPlayers = [];
+  let subbedPlayers = [];
+  const subbingPlayers = [];
+  let filteredGrpWinners = grpWinners;
+  matches.finals.forEach((m) => {
+    if (Number(m.key) < 5) {
+      filteredGrpWinners = filteredGrpWinners.filter(p => p !== m.playerOne.id);
+      finalsPlayers.push(m.playerOne.id);
+      finalsPlayers.push(m.playerTwo.id);
+    }
+  });
+  subbedPlayers = filteredGrpWinners;
+  matches.qualifiers.forEach((m) => {
+    if (m.key.match(/L11|L12|B1|B2/)) {
+      const result = m.getResult();
+      const winner = finalsPlayers.find(p => p === result.winner);
+      if (!winner) {
+        subbedPlayers.push(result.winner);
+      }
+    }
+    if (m.key.match(/L.*/)) {
+      const result = m.getResult();
+      const player = finalsPlayers.find(p => p === result.loser);
+      if (player) {
+        subbingPlayers.push(player);
+      }
+    }
+  });
+  return { substituted: subbedPlayers, substituting: subbingPlayers };
+}
+
+function scoreLeague(grpWinners, matches, players, scoring) {
+  let finalRankings = [];
+  const subs = checkForSubsitutes(grpWinners, matches);
+  const places = [];
+  players.forEach((p, idx) => {
+    places.push(idx + 1);
+  });
+  // Sort all matches to numerical order
+  matches.finals.sort((a, b) => Number(b.key) - Number(a.key));
+  matches.qualifiers = matches.qualifiers.filter(m => m.key.match(/L.*/));
+  matches.qualifiers.sort((a, b) => Number(b.key.substr(1)) - Number(a.key.substr(1)));
+  matches.elimination.sort((a, b) => Number(b.key) - Number(a.key));
+  matches.finals.forEach((match, idx) => {
+    const result = match.getResult();
+    if (idx === 0) {
+      finalRankings.push({
+        place: places.shift(),
+        player: result.winner,
+      });
+    }
+    finalRankings.push({
+      place: places.shift(),
+      player: result.loser,
+    });
+  });
+  matches.qualifiers.forEach((match) => {
+    const result = match.getResult();
+    finalRankings.push({
+      place: places.shift(),
+      player: result.loser,
+    });
+  });
+  matches.elimination.forEach((match, idx) => {
+    const result = match.getResult();
+    if (idx === 0) {
+      finalRankings.push({
+        place: places.shift(),
+        player: result.winner,
+      });
+    }
+    finalRankings.push({
+      place: places.shift(),
+      player: result.loser,
+    });
+  });
+  finalRankings = finalRankings.filter((r) => {
+    if (r.place && r.player) {
+      return true;
+    }
+    return false;
+  });
+  finalRankings.forEach((rank) => {
+    const score = scoring.find((scoreObj) => {
+      const placesArray = scoreObj.places.split('-');
+      if (placesArray.length === 1) {
+        if (rank.place === Number(placesArray[0])) {
+          return true;
+        }
+      } else if (rank.place >= Number(placesArray[0]) && rank.place <= Number(placesArray[1])) {
+        return true;
+      }
+      return false;
+    });
+    rank.points = score.points;
+  });
+  // Fix subbed points
+  if (subs.substituting.length > 0) {
+    subs.substituting.forEach((player) => {
+      const placement = finalRankings.find(place => place.player === player);
+      if (placement.place < 5) {
+        const scndPlacement = finalRankings.find(place => place.player === player && place.place !== placement.place);
+        scndPlacement.points = scoring.find(scoreObj => scoreObj.places === '5-8').points;
+        scndPlacement.player = subs.substituted.pop();
+      } else {
+        placement.player = subs.substituted.pop();
+      }
+    });
+  }
+  // Mark bonuses
+  finalRankings.forEach((ranking) => {
+    let bonus = 1;
+    matches.group.forEach((m) => {
+      if (m.playerOne.id === ranking.player || m.playerTwo.id === ranking.player) {
+        if (!m.getResult()) {
+          bonus = 0;
+        }
+      }
+    });
+    ranking.bonus = bonus;
+  });
+  return finalRankings;
+}
+
 module.exports = {
 
   createLeague(league, cb) {
@@ -132,105 +257,62 @@ module.exports = {
 
   finishLeague(leagueId, cb) {
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => {
-      const promises = [];
-      promises.push(finalsHandler.getFinalsMatches(dbClient, leagueId));
-      promises.push(qualifierHandler.getMatches(dbClient, leagueId));
-      promises.push(eliminationHandler.getEliminationMatches(dbClient, leagueId));
-      promises.push(db.league.getLeagueParticipants(dbClient, leagueId));
-      promises.push(db.league.getLeagueScoring(dbClient));
-      return Promise.all(promises);
-    })
+    promise.then(() => groupHandler.getGroups(dbClient, leagueId))
+      .then((groups) => {
+        const promises = [];
+        groups.forEach((group) => {
+          promises.push((groupHandler.getGroupMembers(dbClient, group.id, leagueId)));
+        });
+        promises.push(finalsHandler.getFinalsMatches(dbClient, leagueId));
+        promises.push(qualifierHandler.getMatches(dbClient, leagueId));
+        promises.push(eliminationHandler.getEliminationMatches(dbClient, leagueId));
+        promises.push(db.league.getLeagueParticipants(dbClient, leagueId));
+        promises.push(db.league.getLeagueScoring(dbClient));
+        groups.forEach((group) => {
+          promises.push((groupHandler.getGroupMatches(dbClient, group.id)));
+        });
+        return Promise.all(promises);
+      })
       .then(response => new Promise((resolve, reject) => {
         const places = [];
+        const grpWinners = [];
+        for (let i = 0; i < 4; i += 1) {
+          response[i].forEach((grpMember) => {
+            if (grpMember.place === '1') {
+              grpWinners.push(grpMember.id);
+            }
+          });
+        }
         const matches = {
           finals: [],
-          qualifier: [],
+          qualifiers: [],
           elimination: [],
+          group: [],
         };
-        response[0].forEach((match) => {
-          const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over);
+        response[4].forEach((match) => {
+          const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over, match.void);
           m.setScore(match.player_one_score, match.player_two_score);
           matches.finals.push(m);
         });
-        response[1].forEach((match) => {
-          if (match.match_key.match(/^L[0-9]+[0-9]*$/g)) {
-            const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over);
+        response[5].forEach((match) => {
+          if (match.match_key.match(/(^L[0-9]+[0-9]*$)|B1|B2/g)) {
+            const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over, match.void);
             m.setScore(match.player_one_score, match.player_two_score);
-            matches.qualifier.push(m);
+            matches.qualifiers.push(m);
           }
         });
-        response[2].forEach((match) => {
-          const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over);
+        response[6].forEach((match) => {
+          const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over, match.void);
           m.setScore(match.player_one_score, match.player_two_score);
           matches.elimination.push(m);
         });
-        const players = response[3];
-        for (let i = 1; i <= players.length; i += 1) {
-          places.push(i);
+        for (let i = 9; i < response.length; i += 1) {
+          response[i].forEach((m) => {
+            matches.group.push(m);
+          });
         }
-        const scoring = response[4];
-        let finalRankings = [];
-        // Finals places
-        matches.finals.sort((a, b) => Number(b.key) - Number(a.key));
-        matches.finals.forEach((match, idx) => {
-          const result = match.getResult();
-          if (idx === 0) {
-            finalRankings.push({
-              place: places.shift(),
-              player: result.winner,
-            });
-          }
-          finalRankings.push({
-            place: places.shift(),
-            player: result.loser,
-          });
-        });
-        // Qualifier places
-        matches.qualifier.sort((a, b) => Number(b.key.substr(1)) - Number(a.key.substr(1)));
-        matches.qualifier.forEach((match) => {
-          const result = match.getResult();
-          finalRankings.push({
-            place: places.shift(),
-            player: result.loser,
-          });
-        });
-        // Elimination places
-        matches.elimination.sort((a, b) => Number(b.key) - Number(a.key));
-        matches.elimination.forEach((match, idx) => {
-          const result = match.getResult();
-          if (idx === 0) {
-            finalRankings.push({
-              place: places.shift(),
-              player: result.winner,
-            });
-          }
-          finalRankings.push({
-            place: places.shift(),
-            player: result.loser,
-          });
-        });
-        finalRankings = finalRankings.filter((r) => {
-          if (r.place && r.player) {
-            return true;
-          }
-          return false;
-        });
-        finalRankings.forEach((rank) => {
-          const score = scoring.find((scoreObj) => {
-            const placesArray = scoreObj.places.split('-');
-            if (placesArray.length === 1) {
-              if (rank.place === Number(placesArray[0])) {
-                return true;
-              }
-            } else if (rank.place >= Number(placesArray[0]) && rank.place <= Number(placesArray[1])) {
-              return true;
-            }
-            return false;
-          });
-          rank.points = score.points;
-        });
-        if (finalRankings.length !== response[3].length) {
+        const finalRankings = scoreLeague(grpWinners, matches, response[7], response[8]);
+        if (finalRankings.length !== response[7].length) {
           reject(new Error('Rankings missing'));
         }
         resolve(finalRankings);
@@ -238,17 +320,18 @@ module.exports = {
       .then((rankings) => {
         const promises = [];
         rankings.forEach((ranking) => {
-          promises.push(db.league.insertLeagueResult(dbClient, leagueId, ranking.player, ranking.place, ranking.points));
+          promises.push(db.league.insertLeagueResult(dbClient, leagueId, ranking.player, ranking.place, ranking.points, ranking.bonus));
         });
         return Promise.all(promises);
       })
       .then(() => db.league.updateLeagueStage(dbClient, leagueId, 'complete'))
-      .then((response) => {
-        transactionManager.endTransaction(dbClient, true, cb, response);
+      .then(() => {
+        logger.info('[SUCCESS] finishLeague', `Params:{leagueId:${leagueId}}`);
+        transactionManager.endTransaction(dbClient, true, cb);
       })
       .catch((error) => {
         logger.error(error);
-        cb(error);
+        transactionManager.endTransaction(dbClient, false, cb);
       });
   },
 
@@ -293,7 +376,7 @@ module.exports = {
     const promise = db.league.getLeagueResults(dbClient, leagueId);
     promise.then((response) => {
       logger.info('[SUCCESS] getResults', `Params: {id: ${leagueId}}`);
-      cb(response);
+      cb({ id: leagueId, results: response });
     })
       .catch((error) => {
         logger.error(error);
@@ -501,9 +584,9 @@ module.exports = {
     const promise = transactionManager.startTransaction(dbClient);
     promise.then(() => {
       const promises = [];
-      const shuffledPlayers = _.shuffle(players);
+      const shuffledPlayers = _.shuffle(players.qualifiers);
       shuffledPlayers.forEach((player, idx) => {
-        promises.push(finalsHandler.updateFinalsMatch(dbClient, leagueId, idx + 1, null, player));
+        promises.push(finalsHandler.updateFinalsMatch(dbClient, leagueId, idx + 1, players.groupStage[idx], player));
       });
       return Promise.all(promises);
     })
@@ -522,7 +605,7 @@ module.exports = {
     promise.then((response) => {
       const matches = [];
       response.forEach((match) => {
-        const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two);
+        const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, match.walk_over, match.void);
         m.setScore(match.player_one_score, match.player_two_score);
         matches.push(m);
       });
@@ -559,7 +642,7 @@ module.exports = {
     promise.then((response) => {
       const matches = [];
       response.forEach((match) => {
-        const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over);
+        const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over, match.void);
         m.setScore(match.player_one_score, match.player_two_score);
         matches.push(m);
       });
@@ -595,7 +678,7 @@ module.exports = {
     promise.then((response) => {
       const matches = [];
       response.forEach((match) => {
-        const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over);
+        const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over, match.void);
         m.setScore(match.player_one_score, match.player_two_score);
         matches.push(m);
       });

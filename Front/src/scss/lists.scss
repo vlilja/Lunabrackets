@@ -12,3 +12,11 @@ ul.pointer > li {
 ul.pointer > li:hover {
   color:$yellow;
 }
+
+td.sum-cell {
+  border-left:1px solid $light-grey;
+}
+
+td.name-cell {
+  width: 250px;
+}

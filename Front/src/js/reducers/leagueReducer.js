@@ -302,6 +302,7 @@ export default function reducer(
       return {
         ...state,
         loading: { ...state.loading, update: false },
+        message: action.payload,
         startingLeague: false,
       };
     }
@@ -310,8 +311,8 @@ export default function reducer(
       return {
         ...state,
         loading: { ...state.loading, update: false },
-        error: action.payload,
-        message: action.payload.response.data,
+        error: action.payload.error,
+        message: action.payload.message,
         startingLeague: false,
       };
     }
@@ -396,7 +397,7 @@ export default function reducer(
         message: action.payload.message,
       };
     }
-    case 'UPDATE_LEAGUE_MATCH':
+    case 'UPDATE_MATCH':
     {
       return {
         ...state,
@@ -417,6 +418,18 @@ export default function reducer(
         },
         error: null,
         message: action.payload,
+      };
+    }
+    case 'UPDATE_MATCH_REJECTED':
+    {
+      return {
+        ...state,
+        loading: {
+          ...state.loading,
+          update: false,
+        },
+        error: action.payload.error,
+        message: action.payload.message,
       };
     }
     case 'UPDATE_UNDETERMINED':
@@ -450,18 +463,6 @@ export default function reducer(
         },
         error: action.payload,
         message: action.payload.response.data,
-      };
-    }
-    case 'UPDATE_MATCH_REJECTED':
-    {
-      return {
-        ...state,
-        loading: {
-          ...state.loading,
-          update: false,
-        },
-        error: action.payload,
-        message: 'Error updating match',
       };
     }
     case 'UPDATE_ELIMINATION_MATCH':

@@ -329,17 +329,17 @@ export function startLeague(leagueId, players, groupNames, raceTo) {
       groupNames,
       raceTo,
     })
-      .then((response) => {
+      .then(() => {
         dispatch({
           type: 'START_LEAGUE_FULFILLED',
-          payload: response.data,
+          payload: phrases.messages.leagueStart,
         });
-        flashMessage(dispatch, 2000);
+        flashMessage(dispatch, 2000, true);
       })
       .catch((error) => {
         dispatch({
           type: 'START_LEAGUE_REJECTED',
-          payload: error,
+          payload: { error, message: phrases.errorMessages.leagueStart },
         });
         flashMessage(dispatch, 2000);
       });
@@ -421,7 +421,7 @@ export function finishLeague(leagueId) {
 export function updateGroupStageMatch(leagueId, groupId, match) {
   return (dispatch) => {
     dispatch({
-      type: 'UPDATE_LEAGUE_MATCH',
+      type: 'UPDATE_MATCH',
       payload: '',
     });
     axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/groups/${groupId}/matches/${match.id}`, {
@@ -432,11 +432,12 @@ export function updateGroupStageMatch(leagueId, groupId, match) {
         payload: phrases.messages.matchUpdate,
       });
       flashMessage(dispatch, 2000);
+      dispatch(getLeagueGroups(leagueId));
     })
-      .catch((err) => {
+      .catch((error) => {
         dispatch({
           type: 'UPDATE_MATCH_REJECTED',
-          payload: err,
+          payload: { error, message: phrases.errorMessages.matchUpdate },
         });
         flashMessage(dispatch, 2000);
         dispatch(getLeagueGroups(leagueId));

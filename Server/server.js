@@ -1,6 +1,13 @@
 const express = require('express');
 const delay = require('express-delay');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const https = require('https');
+
+const privateKey = fs.readFileSync('/encryption/domain.key', 'utf8');
+const certificate = fs.readFileSync('/encryption/domain.crt', 'utf8');
+
+const credentials = { key: privateKey, cert: certificate };
 
 const app = express();
 
@@ -28,5 +35,7 @@ app.use((req, res, next) => {
 app.use(delay(700, 1300));
 app.use(require('./routes'));
 
-app.listen(3001);
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(3001);
 console.log('Listening on port 3001...');

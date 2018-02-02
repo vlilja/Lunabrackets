@@ -1,5 +1,5 @@
 export default {
 
-  baseUrl: 'http://localhost:3001/api/',
+  baseUrl: 'https://localhost:3001/api/',
 
 };

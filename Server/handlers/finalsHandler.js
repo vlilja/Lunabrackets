@@ -103,7 +103,9 @@ module.exports = {
 
   updateFinalsMatch(dbClient, leagueId, matchKey, playerOne = 0, playerTwo = 0) {
     let promise;
-    if (playerOne) {
+    if (playerOne && playerTwo) {
+      promise = db.finals.updatePlayersToMatch(dbClient, leagueId, matchKey, playerOne, playerTwo);
+    } else if (playerOne) {
       promise = db.finals.updatePlayerOneToMatch(dbClient, leagueId, matchKey, playerOne);
     } else if (playerTwo) {
       promise = db.finals.updatePlayerTwoToMatch(dbClient, leagueId, matchKey, playerTwo);

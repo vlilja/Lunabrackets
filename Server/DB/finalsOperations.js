@@ -56,6 +56,20 @@ module.exports = {
     });
   },
 
+  updatePlayersToMatch(c, finalsId, matchKey, playerOne, playerTwo) {
+    return new Promise((resolve, reject) => {
+      const queryString = `UPDATE finals_matches SET player_one = '${playerOne}', player_two = '${playerTwo}' \
+      WHERE finals_id = '${finalsId}' AND match_key = '${matchKey}'`;
+      c.query(queryString, (error, rows) => {
+        if (error) {
+          reject(new Error(`[ERROR] updatePlayerTwoToMatch${error}`));
+        } else {
+          resolve(rows.info.insertId);
+        }
+      });
+    });
+  },
+
   updateMatchScore(c, finalsId, match) {
     return new Promise((resolve, reject) => {
       const queryString = `UPDATE finals_matches SET player_one_score = ${match.playerOne.score}, player_two_score = ${match.playerTwo.score}, walk_over = ${match.walkOver} WHERE finals_id = ${finalsId} AND match_key = '${match.key}';`;

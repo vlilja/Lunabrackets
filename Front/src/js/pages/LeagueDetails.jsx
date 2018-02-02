@@ -140,7 +140,7 @@ class LeagueDetails extends React.Component {
   initializeView() {
     switch (this.state.view) {
       case 'ready':
-        return <AdminView league={this.props.league} startLeague={this.startLeague} startQualifiers={this.startQualifiers} startFinals={this.startFinals} finishLeague={this.finishLeague} getGroups={this.getGroups} getEliminationMatches={this.getEliminationMatches} getFinalsMatches={this.getFinalsMatches} getUndetermined={this.getUndetermined} updateUndetermined={this.updateUndetermined} />;
+        return <AdminView league={this.props.league} startLeague={this.startLeague} startQualifiers={this.startQualifiers} startFinals={this.startFinals} finishLeague={this.finishLeague} getGroups={this.getGroups} getEliminationMatches={this.getEliminationMatches} getQualifierMatches={this.getQualifierMatches} getFinalsMatches={this.getFinalsMatches} getUndetermined={this.getUndetermined} updateUndetermined={this.updateUndetermined} />;
       case 'complete':
         return <ResultsView league={this.props.league} loading={this.props.loadingResults} getResults={this.getResults} />;
       case 'elimination':

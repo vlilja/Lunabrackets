@@ -76,7 +76,8 @@ router.get('/:leagueId/start/qualifiers', (req, res) => {
 router.post('/:leagueId/start/finals', (req, res) => {
   const { leagueId } = req.params;
   const { players } = req.body;
-  if (!Number.isNaN(Number(leagueId)) && players.length === 4) {
+  if (!Number.isNaN(Number(leagueId)) && players.groupStage.length === 4 &&
+  players.qualifiers.length === 4) {
     leagueHandler.startFinals(leagueId, players, (response) => {
       if (response instanceof Error) {
         res.status(400).send('Error starting finals');

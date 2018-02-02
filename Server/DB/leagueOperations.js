@@ -117,10 +117,10 @@ module.exports = {
     });
   },
 
-  insertLeagueResult(c, leagueId, playerId, place, points) {
+  insertLeagueResult(c, leagueId, playerId, place, points, bonus) {
     return new Promise((resolve, reject) => {
-      const queryString = `INSERT INTO league_results(league_id, player_id, place, points) VALUES\
-    (${leagueId}, ${playerId}, ${place}, ${points})`;
+      const queryString = `INSERT INTO league_results(league_id, player_id, place, points, bonus) VALUES\
+    (${leagueId}, ${playerId}, ${place}, ${points}, ${bonus})`;
       c.query(queryString, (error, rows) => {
         if (error) {
           reject(new Error(`[ERROR] insertLeagueResult${error}`));

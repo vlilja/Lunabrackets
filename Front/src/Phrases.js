@@ -23,6 +23,7 @@ export default {
     heading: 'Seasons',
     active: 'Active',
     inactive: 'Inactive',
+    bonus: 'Bonus',
     sum: 'Sum',
   },
   league: {
@@ -79,8 +80,10 @@ export default {
   },
   playersToFinalsForm: {
     heading: 'Select players to finals',
+    lead: 'Drag & Drop to edit players',
     eligible: 'Eligible to finals',
-    goingToFinals: 'Going to finals',
+    fromGroupStage: 'Going to finals from group stage',
+    fromQualifiers: 'Going to finals from qualifiers',
   },
   leagueNavigation: {
     admin: 'Admin',
@@ -127,13 +130,19 @@ export default {
   resultsView: {
     heading: 'League results',
     points: 'Points',
+    bonus: 'Bonus',
+    total: 'Total',
     leagueNotFinished: 'League is still not finished!',
   },
   walkOverForm: {
     heading: 'Walk over',
     message: 'Walk over for',
   },
+  voidForm: {
+    heading: 'Void the match?',
+  },
   messages: {
+    leagueStart: 'League started successfully',
     matchUpdate: 'Match updated successfully',
     finalsStarted: 'Finals started successfully',
     qualifierStarted: 'Qualifiers started successfully',
@@ -141,9 +150,11 @@ export default {
   },
   errorMessages: {
     pageNotFound: 'Sorry we couldn\'t find what u were looking for...',
+    leagueStart: 'Error starting league',
     finals: 'Error starting finals',
     qualifiers: 'Error startin qualifiers',
     finish: 'Error finishing the league',
+    matchUpdate: 'Error updating match',
     fixRankings: 'Fix duplicate rankings',
     missingSeasonName: 'Missing season name',
     missingName: 'Missing league name',

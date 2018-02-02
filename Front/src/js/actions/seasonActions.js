@@ -65,17 +65,16 @@ export function getSeasonResults(leagues) {
     });
     axios.all(requests).then((response) => {
       const leagueResults = [];
-      if (response[0].data.length > 0) {
-        response.forEach((res) => {
-          leagueResults.push({ id: res.data[0].league_id, results: res.data });
-        });
-      }
+      response.forEach((res) => {
+        leagueResults.push({ id: res.data.id, results: res.data.results });
+      });
       dispatch({
         type: 'GET_SEASON_RESULTS_FULFILLED',
         payload: leagueResults,
       });
     })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         dispatch({
           type: 'GET_SEASON_RESULTS_REJECTED',
           payload: 'Error fetching season results',

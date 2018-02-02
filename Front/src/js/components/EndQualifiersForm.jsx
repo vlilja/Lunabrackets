@@ -13,7 +13,7 @@ export default class EndQualifiersForm extends React.Component {
   render() {
     return (<div>
       <UndeterminedRankingsForm getUndetermined={this.props.getUndetermined} undetermined={this.props.league.undetermined} players={this.props.league.players} updateUndetermined={this.props.updateUndetermined} />
-      <PlayersToFinalsForm league={this.props.league} startFinals={this.props.startFinals} />
+      <PlayersToFinalsForm league={this.props.league} getMatches={this.props.getMatches} startFinals={this.props.startFinals} />
     </div>);
   }
 }

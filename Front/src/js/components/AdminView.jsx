@@ -18,6 +18,7 @@ export default class AdminView extends React.Component {
 
   getMatches() {
     this.props.getFinalsMatches();
+    this.props.getQualifierMatches();
     this.props.getEliminationMatches();
   }
 
@@ -33,7 +34,7 @@ export default class AdminView extends React.Component {
         break;
       }
       case 'qualifiers': {
-        element = <EndQualifiersForm league={this.props.league} getUndetermined={this.props.getUndetermined} updateUndetermined={this.props.updateUndetermined} startFinals={this.props.startFinals} />;
+        element = <EndQualifiersForm league={this.props.league} getMatches={this.getMatches} getUndetermined={this.props.getUndetermined} updateUndetermined={this.props.updateUndetermined} startFinals={this.props.startFinals} />;
         break;
       }
       case 'finals': {
