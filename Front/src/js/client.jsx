@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Frontpage from './pages/Frontpage';
 import Tournaments from './pages/Tournaments';
+import TournamentForm from './pages/TournamentForm';
 import Players from './pages/Players';
 import Leagues from './pages/Leagues';
 import Seasons from './pages/Seasons';
@@ -22,6 +23,7 @@ ReactDOM.render(<Provider store={store}>
       <Switch>
         <Route exact path="/" component={Frontpage} />
         <Route path="/tournaments" component={Tournaments} />
+        <Route path="/new-tournament" component={TournamentForm} />
         <Route path="/players" component={Players} />
         <Route path="/leagues" component={Leagues} />
         <Route path="/seasons" component={Seasons} />

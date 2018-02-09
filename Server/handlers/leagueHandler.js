@@ -274,7 +274,6 @@ module.exports = {
         return Promise.all(promises);
       })
       .then(response => new Promise((resolve, reject) => {
-        const places = [];
         const grpWinners = [];
         for (let i = 0; i < 4; i += 1) {
           response[i].forEach((grpMember) => {

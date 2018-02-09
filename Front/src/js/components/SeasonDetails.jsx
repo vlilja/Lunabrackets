@@ -23,7 +23,7 @@ class SeasonDetails extends React.Component {
 
   componentWillReceiveProps(props) {
     if (props.season && !props.season.results) {
-      this.props.dispatch(getSeasonResults(props.season.leagues));
+      this.props.dispatch(getSeasonResults(props.season.leagues, props.season.tournaments));
     }
   }
 
@@ -56,15 +56,31 @@ class SeasonDetails extends React.Component {
       const players = {};
       const { results } = this.props.season;
       const leagueKeys = [];
-      results.forEach((league) => {
+      const tournamentKeys = [];
+      results.leagues.forEach((league) => {
         leagueKeys.push(league.id);
         league.results.forEach((result) => {
           if (players[result.player_id]) {
-            players[result.player_id][league.id] = { points: result.points, bonus: result.bonus };
+            players[result.player_id].leagues[league.id] = { points: result.points, bonus: result.bonus };
           } else {
             const playerDetails = this.props.players.find(p => p.id === result.player_id);
-            players[result.player_id] = { details: playerDetails };
-            players[result.player_id][league.id] = { points: result.points, bonus: result.points };
+            players[result.player_id] = { details: playerDetails, leagues: {} };
+            players[result.player_id].leagues[league.id] = { points: result.points, bonus: result.points };
+          }
+        });
+      });
+      results.tournaments.forEach((tournament) => {
+        tournamentKeys.push(tournament.id);
+        tournament.results.forEach((result) => {
+          if (players[result.player_id]) {
+            if (!players[result.player_id].tournaments) {
+              players[result.player_id].tournaments = {};
+            }
+            players[result.player_id].tournaments[tournament.id] = { points: result.points };
+          } else {
+            const playerDetails = this.props.players.find(p => p.id === result.player_id);
+            players[result.player_id] = { details: playerDetails, tournaments: {} };
+            players[result.player_id].tournaments[tournament.id] = { points: result.points };
           }
         });
       });
@@ -74,13 +90,19 @@ class SeasonDetails extends React.Component {
         let sum = 0;
         let bonus = 0;
         leagueKeys.forEach((leagueKey) => {
-          if (players[key][leagueKey]) {
-            const { points } = players[key][leagueKey];
+          if (players[key].leagues && players[key].leagues[leagueKey]) {
+            const { points } = players[key].leagues[leagueKey];
             sum += Number(points);
-            if (players[key][leagueKey].bonus === '1') {
+            if (players[key].leagues[leagueKey].bonus === '1') {
               bonus += 4;
               sum += 4;
             }
+          }
+        });
+        tournamentKeys.forEach((tournamentKey) => {
+          if (players[key].tournaments && players[key].tournaments[tournamentKey]) {
+            const { points } = players[key].tournaments[tournamentKey];
+            sum += Number(points);
           }
         });
         players[key].sum = sum;
@@ -95,7 +117,10 @@ class SeasonDetails extends React.Component {
       this.props.season.leagues.forEach((league) => {
         headerRow.push(<th className="center-text" key={league.id}>{league.name}</th>);
       });
-      headerRow.push(<th className="center-text" key="bns">{phrases.season.bonus}</th>);
+      this.props.season.tournaments.forEach((tournament, idx) => {
+        headerRow.push(<th className={idx === 0 ? 'center-text left-border' : 'center-text'} key={tournament.id}>{tournament.name}</th>);
+      });
+      headerRow.push(<th className="center-text left-border" key="bns">{phrases.season.bonus}</th>);
       headerRow.push(<th className="center-text" key="sum">{phrases.season.sum}</th>);
       tableHeader.push(<tr key="header">{headerRow}</tr>);
       // Table body
@@ -105,12 +130,19 @@ class SeasonDetails extends React.Component {
         tableRow.push(<td className="name-cell" key={player.details.id}>{`${idx + 1}.  ${player.details.firstName} ${player.details.lastName}` }</td>);
         leagueKeys.forEach((leagueKey) => {
           let pts = '-';
-          if (player[leagueKey]) {
-            pts = player[leagueKey].points;
+          if (player.leagues && player.leagues[leagueKey]) {
+            pts = player.leagues[leagueKey].points;
           }
           tableRow.push(<td key={leagueKey + player.details.id} className="center-text">{pts}</td>);
         });
-        tableRow.push(<td className="center-text sum-cell" key="bns">{player.bonus}</td>);
+        tournamentKeys.forEach((tournamentKey, index) => {
+          let pts = '-';
+          if (player.tournaments && player.tournaments[tournamentKey]) {
+            pts = player.tournaments[tournamentKey].points;
+          }
+          tableRow.push(<td key={tournamentKey + player.details.id} className={index === 0 ? 'center-text left-border' : 'center-text'} >{pts}</td>);
+        });
+        tableRow.push(<td className="center-text left-border" key="bns">{player.bonus || ''}</td>);
         tableRow.push(<td className="center-text sum-cell" key="sum">{player.sum}</td>);
         tableBody.push(<tr key={player.details.id}>{tableRow}</tr>);
         table.header = tableHeader;
@@ -130,7 +162,7 @@ class SeasonDetails extends React.Component {
             <div className="col-xs-12 col-lg-4">{season}</div>
             <div className="col-xs-12 col-lg-8 margin-top-double">
               {table.header && table.body ?
-                <table className="table table-hover">
+                <table className="table table-hover season-results">
                   <thead>
                     {table.header}
                   </thead>

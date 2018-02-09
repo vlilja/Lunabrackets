@@ -1,6 +1,6 @@
 const db = require('../DB/dbOperations');
 const logger = require('winston');
-const { Season, League } = require('lunabrackets-datamodel');
+const { Season, League, Tournament } = require('lunabrackets-datamodel');
 
 const dbClient = require('../DB/dbconnect').initConnection();
 
@@ -25,6 +25,7 @@ module.exports = {
     const promises = [];
     promises.push(db.season.getSeasonById(dbClient, seasonId));
     promises.push(db.league.getLeaguesBySeason(dbClient, seasonId));
+    promises.push(db.tournament.getTournamentsBySeasonId(dbClient, seasonId));
     Promise.all(promises).then((response) => {
       const seasons = [];
       response[0].forEach((season) => {
@@ -34,7 +35,12 @@ module.exports = {
       response[1].forEach((league) => {
         leagues.push(Object.assign(new League(), league));
       });
+      const tournaments = [];
+      response[2].forEach((tournament) => {
+        tournaments.push(Object.assign(new Tournament(), tournament));
+      });
       seasons[0].leagues = leagues;
+      seasons[0].tournaments = tournaments;
       cb(seasons);
     })
       .catch((error) => {

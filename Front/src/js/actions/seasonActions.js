@@ -53,7 +53,7 @@ export function getSeason(seasonId) {
   };
 }
 
-export function getSeasonResults(leagues) {
+export function getSeasonResults(leagues, tournaments) {
   return (dispatch) => {
     dispatch({
       type: 'GET_SEASON_RESULTS',
@@ -63,18 +63,25 @@ export function getSeasonResults(leagues) {
     leagues.forEach((league) => {
       requests.push(axios.get(`${serverDetails.baseUrl}leagues/${league.id}/results`));
     });
+    tournaments.forEach((tournament) => {
+      requests.push(axios.get(`${serverDetails.baseUrl}tournaments/${tournament.id}/results`));
+    });
     axios.all(requests).then((response) => {
       const leagueResults = [];
-      response.forEach((res) => {
-        leagueResults.push({ id: res.data.id, results: res.data.results });
+      const tournamentResults = [];
+      response.forEach((res, idx) => {
+        if (idx < 4) {
+          leagueResults.push({ id: res.data.id, results: res.data.results });
+        } else {
+          tournamentResults.push({ id: res.data.id, results: res.data.results });
+        }
       });
       dispatch({
         type: 'GET_SEASON_RESULTS_FULFILLED',
-        payload: leagueResults,
+        payload: { leagues: leagueResults, tournaments: tournamentResults },
       });
     })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
         dispatch({
           type: 'GET_SEASON_RESULTS_REJECTED',
           payload: 'Error fetching season results',

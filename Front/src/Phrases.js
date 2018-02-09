@@ -17,6 +17,7 @@ export default {
     ndash: '–',
     ranking: 'Ranking',
     place: 'Place',
+    points: 'Points',
     submit: 'Submit',
   },
   season: {
@@ -54,6 +55,16 @@ export default {
     infoCreatingLeagueHeading: 'Creating league',
     warningHeading: 'Warning',
     warningMessage: 'There are less than 32 players in the league and it will cause games with walk overs. Do you want to proceed and still create this league?',
+  },
+  tournamentForm: {
+    heading: 'Create new tournament',
+    availablePlayers: 'Available players',
+    selectedPlayers: 'Selected players',
+    name: 'Name',
+    create: 'Create',
+  },
+  tournamentResults: {
+    heading: 'Tournament results',
   },
   leagueStartForm: {
     leagueSettings: 'League settings',
@@ -147,6 +158,10 @@ export default {
     finalsStarted: 'Finals started successfully',
     qualifierStarted: 'Qualifiers started successfully',
     leagueFinished: 'League finished',
+    creatingTournament: 'Creating tournament',
+    createdTournament: 'Tournament created successfully',
+    creatingTournamentResults: 'Creating tournament results',
+    createdTournamentResults: 'Tournament results created successfully',
   },
   errorMessages: {
     pageNotFound: 'Sorry we couldn\'t find what u were looking for...',
@@ -155,11 +170,14 @@ export default {
     qualifiers: 'Error startin qualifiers',
     finish: 'Error finishing the league',
     matchUpdate: 'Error updating match',
+    fixSprintRankings: 'Fix rankings',
     fixRankings: 'Fix duplicate rankings',
     missingSeasonName: 'Missing season name',
     missingName: 'Missing league name',
     missingPlayers: 'Missing players',
     handicapError: 'Fix handicaps',
     invalidScore: 'Who won? Fix scores',
+    tournamentCreation: 'Error creating tournament',
+    tournamentResultsCreation: 'Error creating tournament results',
   },
 };

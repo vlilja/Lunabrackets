@@ -1,0 +1,18 @@
+
+
+.season-results {
+
+  thead {
+    tr {
+      border-bottom: 1px solid $dark-grey;
+      th {
+        border-bottom:inherit;
+      }
+    }
+  }
+
+  .left-border {
+    border-left: 1px solid $dark-grey;
+  }
+
+}

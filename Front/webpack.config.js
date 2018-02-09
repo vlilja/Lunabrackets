@@ -46,6 +46,7 @@ module.exports = {
     extensions: ['.js', '.jsx', '.scss'],
   },
   devServer: {
+    https: true,
     port: 8080,
     historyApiFallback: true,
   },

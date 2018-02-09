@@ -4,8 +4,10 @@ const router = express.Router();
 router.use('/api/players', require('./playerRoutes'));
 router.use('/api/leagues', require('./leagueRoutes'));
 router.use('/api/seasons', require('./seasonRoutes'));
+router.use('/api/tournaments', require('./tournamentRoutes'));
 
 router.get('/', (req, res) => {
+  console.log(req.headers);
   res.send('Hello LunabracketsAPI\n');
 });
 

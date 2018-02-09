@@ -7,6 +7,7 @@ const qualifier = require('./qualifierOperations');
 const finals = require('./finalsOperations');
 const elimination = require('./eliminationOperations');
 const season = require('./seasonOperations');
+const tournament = require('./tournamentOperations');
 
 
 module.exports = {
@@ -18,4 +19,5 @@ module.exports = {
   finals,
   elimination,
   season,
+  tournament,
 };
