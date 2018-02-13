@@ -1,40 +1,51 @@
 import axios from 'axios';
 import serverDetails from '../apiDetails';
 
-export function fetchUser(userDetails) {
+
+export function createUser(user) {
   return (dispatch) => {
-    axios.post(`${serverDetails.baseUrl}user/login`, {
-      name: userDetails.name,
-      password: userDetails.password,
-    })
+    dispatch({
+      type: 'CREATE_USER',
+      payload: '',
+    });
+    axios.post(`${serverDetails.baseUrl}users/`, { user })
       .then((response) => {
+        console.log(response);
         dispatch({
-          type: 'USER_LOGIN_FULFILLED',
-          payload: response.data,
+          type: 'CREATE_USER_FULFILLED',
+          payload: '',
         });
       })
-      .catch((err) => {
+      .catch((error) => {
         dispatch({
-          type: 'USER_LOGIN_REJECTED',
-          payload: err,
+          type: 'CREATE_USER_REJECTED',
+          payload: '',
         });
       });
   };
 }
 
-export function fetchUsers() {
+export function getUserByFb(fbId) {
   return (dispatch) => {
-    axios.get(`${serverDetails.baseUrl}/users`)
+    dispatch({
+      type: 'FETCH_USER_BY_FB',
+      payload: '',
+    });
+    axios.get(`${serverDetails.baseUrl}users/fb/${fbId}`)
       .then((response) => {
+        let userId;
+        if (response.data[0]) {
+          userId = response.data[0].id;
+        }
         dispatch({
-          type: 'FETCH_USERS_FULFILLED',
-          payload: response.data,
+          type: 'FETCH_USER_BY_FB_FULFILLED',
+          payload: userId,
         });
       })
-      .catch((err) => {
+      .catch((error) => {
         dispatch({
-          type: 'FETCH_USERS_REJECTED',
-          payload: err,
+          type: 'FETCH_USER_BY_FB_REJECTED',
+          payload: { error, message: 'Unable to fetch user' },
         });
       });
   };

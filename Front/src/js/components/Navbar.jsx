@@ -1,15 +1,35 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { checkLoginStatus } from '../actions/loginActions';
+import phrases from '../../Phrases';
 
 
-export default class Navbar extends React.Component {
+class Navbar extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      profileSearchDone: false,
+    };
+    this.handleLogin = this.handleLogin.bind(this);
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.user.id === undefined && !this.state.profileSearchDone) {
+      this.props.history.push('/new-user');
+      this.setState({ profileSearchDone: true });
+    }
+  }
+
+  handleLogin(e) {
+    e.preventDefault();
+    this.props.dispatch(checkLoginStatus());
   }
 
   render() {
+    console.log(this.props);
+    console.log(this.state);
     return (
       <div>
         <nav className="navbar navbar-default">
@@ -69,8 +89,12 @@ export default class Navbar extends React.Component {
                     </li>
                   </ul>
                 </li>
+              </ul>
+              <ul className="nav navbar-nav navbar-right">
                 <li>
-                  <a href="#logout">Logout</a>
+                  <a href="#menu" onClick={this.handleLogin}>
+                    {this.props.user.fbId ? phrases.general.logout : phrases.general.login }
+                  </a>
                 </li>
               </ul>
             </div>
@@ -79,5 +103,8 @@ export default class Navbar extends React.Component {
       </div>
     );
   }
-
 }
+
+export default connect(store => ({
+  user: store.user,
+}))(Navbar);

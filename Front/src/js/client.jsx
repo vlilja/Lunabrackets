@@ -11,6 +11,7 @@ import Leagues from './pages/Leagues';
 import Seasons from './pages/Seasons';
 import LeagueForm from './pages/LeagueForm';
 import SeasonForm from './pages/SeasonForm';
+import UserForm from './pages/UserForm';
 import NoMatch from './pages/NoMatch';
 import store from './store';
 import '../scss/base.scss';
@@ -19,7 +20,7 @@ const app = document.getElementById('app');
 ReactDOM.render(<Provider store={store}>
   <Router>
     <div>
-      <Navbar />
+      <Route component={Navbar} />
       <Switch>
         <Route exact path="/" component={Frontpage} />
         <Route path="/tournaments" component={Tournaments} />
@@ -29,6 +30,7 @@ ReactDOM.render(<Provider store={store}>
         <Route path="/seasons" component={Seasons} />
         <Route path="/new-league" component={LeagueForm} />
         <Route path="/new-season" component={SeasonForm} />
+        <Route path="/new-user" component={UserForm} />
         <Route component={NoMatch} />
       </Switch>
     </div>

@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { checkLoginStatus, getUserDetails } from '../actions/loginActions';
 
 export default class Frontpage extends React.Component {
 
@@ -10,9 +9,9 @@ export default class Frontpage extends React.Component {
   }
 
   render() {
-    checkLoginStatus();
-    return (<div><h1>Frontpage</h1>
-    <button onClick={getUserDetails}>USER</button></div>);
+    return (<div>
+      <h1>Frontpage</h1>
+    </div>);
   }
 
 }

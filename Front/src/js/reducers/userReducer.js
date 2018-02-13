@@ -1,57 +1,49 @@
 export default function reducer(state = {
-  user: {
-    id: null,
-    name: null,
+  id: null,
+  fbId: null,
+  fb: {
+    details: null,
   },
-  users: [],
-  searchResults: [],
-  fetched: false,
-  fetching: false,
   error: null,
 }, action) {
   switch (action.type) {
-    case 'USER_LOGIN': {
-      return { ...state, fetching: true };
+    case 'LOG_IN': {
+      return { ...state };
     }
-    case 'USER_LOGIN_REJECTED': {
-      return { ...state, fetching: false, error: action.payload };
+    case 'LOG_IN_FULFILLED': {
+      return { ...state, fbId: action.payload };
     }
-    case 'USER_LOGIN_FULFILLED': {
+    case 'LOG_IN_REJECTED': {
+      return { ...state, error: action.payload };
+    }
+    case 'LOG_OUT': {
+      return { ...state };
+    }
+    case 'LOG_OUT_FULFILLED': {
       return {
-        ...state,
-        user: action.payload,
-        fetched: true,
-        fetching: false,
+        ...state, fbId: null, id: null, error: null,
       };
     }
-    case 'FETCH_USERS_FULFILLED': {
-      return {
-        ...state,
-        users: action.payload,
-      };
+    case 'LOG_OUT_REJECTED': {
+      return { ...state, error: action.payload };
     }
-    case 'FETCH_USERS_REJECTED': {
-      return {
-        ...state,
-        error: action.payload,
-      };
+    case 'FETCH_USER_BY_FB': {
+      return { ...state };
     }
-    case 'FETCH_PLAYERS': {
-      return { ...state, searchResults: [], fetching: true };
+    case 'FETCH_USER_BY_FB_FULFILLED': {
+      return { ...state, id: action.payload };
     }
-    case 'FETCH_PLAYERS_FULFILLED': {
-      return {
-        ...state,
-        fetching: false,
-        searchResults: action.payload,
-      };
+    case 'FETCH_USER_BY_FB_REJECTED': {
+      return { ...state, error: action.payload };
     }
-    case 'FETCH_PLAYERS_REJECTED': {
-      return {
-        ...state,
-        fetching: false,
-        error: action.payload,
-      };
+    case 'FETCH_USER_DETAILS_FROM_FB': {
+      return { ...state };
+    }
+    case 'FETCH_USER_DETAILS_FROM_FB_FULFILLED': {
+      return { ...state, fb: { details: action.payload } };
+    }
+    case 'FETCH_USER_DETAILS_FROM_FB_REJECTED': {
+      return { ...state, error: action.payload };
     }
     default: {
       return { ...state };

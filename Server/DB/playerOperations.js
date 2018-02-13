@@ -36,4 +36,19 @@ module.exports = {
       }
     });
   },
+  // INSERT OPERATIONS
+  insertPlayer(c, player) {
+    return new Promise((resolve, reject) => {
+      const { firstName, lastName, nickName } = player;
+      const queryString = `INSERT INTO players(firstName, lastName, nickName) VALUES('${firstName}', '${lastName}', '${nickName}')`;
+      c.query(queryString, (error, rows) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+        } else {
+          resolve(rows.info.insertId);
+        }
+      });
+    });
+  },
 };

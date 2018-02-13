@@ -19,6 +19,8 @@ export default {
     place: 'Place',
     points: 'Points',
     submit: 'Submit',
+    login: 'Log in',
+    logout: 'Log out',
   },
   season: {
     heading: 'Seasons',
@@ -33,6 +35,13 @@ export default {
     'divided to 4 groups where they play against each other. Winner of each group will advance straight to the final single elimination stage and last two are eliminated from the competition.\n' +
     'The rest will move on to the double elimination stage and seeded to the bracket according to their placements. From the double elimination state 4 players will advance to the final stage and rest are eliminated. In the final stage, each group stage winner will\n' +
     'be drawn an opponent from the double-elimination stage winners.',
+  },
+  userForm: {
+    heading: 'Create a player profile',
+    infotext: 'With player profile you are able to play in tournaments and track your scores',
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    nickName: 'Nickname',
   },
   seasonForm: {
     heading: 'Create new season',

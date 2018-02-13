@@ -1,8 +1,6 @@
-
+import { getUserByFb } from './userActions';
 
 const { FB } = window;
-
-let userId;
 
 FB.init({
   appId: '127635724454601',
@@ -11,20 +9,78 @@ FB.init({
   version: 'v2.12',
 });
 
-export function checkLoginStatus() {
-  FB.getLoginStatus((response) => {
-    console.log(response);
+function logIn(dispatch) {
+  dispatch({
+    type: 'LOG_IN',
+    payload: '',
+  });
+  FB.login((response) => {
     if (response.status === 'connected') {
-      userId = response.authResponse.userID;
-      console.log('Logged in.');
+      dispatch(getUserByFb(response.authResponse.userID));
+      dispatch({
+        type: 'LOG_IN_FULFILLED',
+        payload: response.authResponse.userID,
+      });
     } else {
-      FB.login();
+      dispatch({
+        type: 'LOG_IN_REJECTED',
+        payload: 'user not connected',
+      });
     }
   });
 }
 
-export function getUserDetails() {
-  FB.api('/me', {fields: 'first_name, last_name'}, function(response) {
 
+function logOut(dispatch) {
+  dispatch({
+    type: 'LOG_OUT',
+    payload: '',
   });
+  FB.logout((response) => {
+    if (response.status === 'unknown') {
+      dispatch({
+        type: 'LOG_OUT_FULFILLED',
+        payload: '',
+      });
+    } else {
+      dispatch({
+        type: 'LOG_OUT_REJECTED',
+        payload: 'Error logging user out',
+      });
+    }
+  });
+}
+
+export function checkLoginStatus() {
+  return (dispatch) => {
+    FB.getLoginStatus((response) => {
+      if (response.status === 'connected') {
+        logOut(dispatch);
+      } else {
+        logIn(dispatch);
+      }
+    });
+  };
+}
+
+export function getFacebookUserDetails() {
+  return (dispatch) => {
+    dispatch({
+      type: 'FETCH_USER_DETAILS_FROM_FB',
+      payload: '',
+    });
+    FB.api('/me', { fields: 'first_name, last_name, email' }, (response) => {
+      if (response.error) {
+        dispatch({
+          type: 'FETCH_USER_DETAILS_FROM_FB_REJECTED',
+          payload: response.error.message,
+        });
+      } else {
+        dispatch({
+          type: 'FETCH_USER_DETAILS_FROM_FB_FULFILLED',
+          payload: { firstName: response.first_name, lastName: response.last_name, email: response.email },
+        });
+      }
+    });
+  };
 }
