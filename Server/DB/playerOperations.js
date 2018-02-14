@@ -40,7 +40,7 @@ module.exports = {
   insertPlayer(c, player) {
     return new Promise((resolve, reject) => {
       const { firstName, lastName, nickName } = player;
-      const queryString = `INSERT INTO players(firstName, lastName, nickName) VALUES('${firstName}', '${lastName}', '${nickName}')`;
+      const queryString = `INSERT INTO players(firstName, lastName, nickName, handicap) VALUES('${firstName}', '${lastName}', '${nickName}', ${0})`;
       c.query(queryString, (error, rows) => {
         if (error) {
           console.log(error);

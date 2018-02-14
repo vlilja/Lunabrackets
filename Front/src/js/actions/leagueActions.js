@@ -24,13 +24,13 @@ function flashMessage(dispatch, time, reload = 0) {
   }, time);
 }
 
-export function createLeague(league) {
+export function createLeague(league, user) {
   return (dispatch) => {
     dispatch({
       type: 'CREATE_LEAGUE',
       payload: '',
     });
-    axios.post(`${serverDetails.baseUrl}leagues`, league).then((response) => {
+    axios.post(`${serverDetails.baseUrl}leagues`, league, { auth: { username: user.id, password: user.fbId } }).then((response) => {
       dispatch({
         type: 'CREATE_LEAGUE_FULFILLED',
         payload: response.data,
@@ -215,15 +215,18 @@ export function getUndetermined(leagueId) {
   };
 }
 
-export function updateUndetermined(leagueId, group) {
+export function updateUndetermined(leagueId, group, user) {
   return (dispatch) => {
     dispatch({
       type: 'UPDATE_UNDETERMINED',
       payload: '',
     });
-    axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/groups/undetermined`, {
-      group,
-    }).then((response) => {
+    axios.post(
+      `${serverDetails.baseUrl}leagues/${leagueId}/groups/undetermined`, {
+        group,
+      },
+      { auth: { username: user.id, password: user.fbId } },
+    ).then((response) => {
       dispatch({
         type: 'UPDATE_UNDETERMINED_FULFILLED',
         payload: response.data,
@@ -318,17 +321,20 @@ export function getFinalsMatches(leagueId) {
   };
 }
 
-export function startLeague(leagueId, players, groupNames, raceTo) {
+export function startLeague(leagueId, players, groupNames, raceTo, user) {
   return (dispatch) => {
     dispatch({
       type: 'START_LEAGUE',
       payload: '',
     });
-    axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/start`, {
-      players,
-      groupNames,
-      raceTo,
-    })
+    axios.post(
+      `${serverDetails.baseUrl}leagues/${leagueId}/start?id=${user.id}`, {
+        players,
+        groupNames,
+        raceTo,
+      },
+      { auth: { username: user.id, password: user.fbId } },
+    )
       .then(() => {
         dispatch({
           type: 'START_LEAGUE_FULFILLED',
@@ -346,13 +352,16 @@ export function startLeague(leagueId, players, groupNames, raceTo) {
   };
 }
 
-export function startQualifiers(leagueId) {
+export function startQualifiers(leagueId, user) {
   return (dispatch) => {
     dispatch({
       type: 'START_QUALIFIERS',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/start/qualifiers`)
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}/start/qualifiers?id=${user.id}`,
+      { auth: { username: user.id, password: user.fbId } },
+    )
       .then((response) => {
         dispatch({
           type: 'START_QUALIFIERS_FULFILLED',
@@ -370,13 +379,16 @@ export function startQualifiers(leagueId) {
   };
 }
 
-export function startFinals(leagueId, players) {
+export function startFinals(leagueId, players, user) {
   return (dispatch) => {
     dispatch({
       type: 'START_FINALS',
       payload: '',
     });
-    axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/start/finals`, { players })
+    axios.post(
+      `${serverDetails.baseUrl}leagues/${leagueId}/start/finals`, { players },
+      { auth: { username: user.id, password: user.fbId } },
+    )
       .then(() => {
         dispatch({
           type: 'START_FINALS_FULFILLED',
@@ -394,13 +406,16 @@ export function startFinals(leagueId, players) {
   };
 }
 
-export function finishLeague(leagueId) {
+export function finishLeague(leagueId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FINISH_LEAGUE',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/finish`)
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}/finish?id=${user.id}`,
+      { auth: { username: user.id, password: user.fbId } },
+    )
       .then(() => {
         dispatch({
           type: 'FINISH_LEAGUE_FULFILLED',
@@ -418,15 +433,16 @@ export function finishLeague(leagueId) {
   };
 }
 
-export function updateGroupStageMatch(leagueId, groupId, match) {
+export function updateGroupStageMatch(leagueId, groupId, match, user) {
   return (dispatch) => {
     dispatch({
       type: 'UPDATE_MATCH',
       payload: '',
     });
-    axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/groups/${groupId}/matches/${match.id}`, {
-      match,
-    }).then(() => {
+    axios.post(
+      `${serverDetails.baseUrl}leagues/${leagueId}/groups/${groupId}/matches/${match.id}`, { match },
+      { auth: { username: user.id, password: user.fbId } },
+    ).then(() => {
       dispatch({
         type: 'UPDATE_MATCH_FULFILLED',
         payload: phrases.messages.matchUpdate,
@@ -445,7 +461,7 @@ export function updateGroupStageMatch(leagueId, groupId, match) {
   };
 }
 
-export function updateEliminationMatch(leagueId, match) {
+export function updateEliminationMatch(leagueId, match, user) {
   return (dispatch) => {
     dispatch({
       type: 'UPDATE_ELIMINATION_MATCH',
@@ -453,7 +469,7 @@ export function updateEliminationMatch(leagueId, match) {
     });
     axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/elimination/matches/${match.id}`, {
       match,
-    })
+    }, { auth: { username: user.id, password: user.fbId } })
       .then(() => {
         dispatch({
           type: 'UPDATE_ELIMINATION_MATCH_FULFILLED',
@@ -473,15 +489,18 @@ export function updateEliminationMatch(leagueId, match) {
   };
 }
 
-export function updateQualifierMatch(leagueId, match) {
+export function updateQualifierMatch(leagueId, match, user) {
   return (dispatch) => {
     dispatch({
       type: 'UPDATE_QUALIFIER_MATCH',
       payload: '',
     });
-    axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/qualifiers/matches/${match.id}`, {
-      match,
-    })
+    axios.post(
+      `${serverDetails.baseUrl}leagues/${leagueId}/qualifiers/matches/${match.id}`, {
+        match,
+      },
+      { auth: { username: user.id, password: user.fbId } },
+    )
       .then(() => {
         dispatch({
           type: 'UPDATE_QUALIFIER_MATCH_FULFILLED',
@@ -501,15 +520,18 @@ export function updateQualifierMatch(leagueId, match) {
   };
 }
 
-export function updateFinalsMatch(leagueId, match) {
+export function updateFinalsMatch(leagueId, match, user) {
   return (dispatch) => {
     dispatch({
       type: 'UPDATE_FINALS_MATCH',
       payload: '',
     });
-    axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/finals/matches/${match.id}`, {
-      match,
-    })
+    axios.post(
+      `${serverDetails.baseUrl}leagues/${leagueId}/finals/matches/${match.id}`, {
+        match,
+      },
+      { auth: { username: user.id, password: user.fbId } },
+    )
       .then(() => {
         dispatch({
           type: 'UPDATE_FINALS_MATCH_FULFILLED',

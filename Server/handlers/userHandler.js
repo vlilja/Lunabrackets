@@ -20,6 +20,10 @@ function validateUser(user) {
 module.exports = {
 
 
+  getUserById(id) {
+    return db.user.getUser(dbClient, id);
+  },
+
   getUserByFb(id, cb) {
     const promise = db.user.getUserByFb(dbClient, id);
     promise.then((response) => {

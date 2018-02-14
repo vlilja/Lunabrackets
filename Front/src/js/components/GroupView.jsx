@@ -21,7 +21,7 @@ export default class GroupView extends React.Component {
     const groupsKeys = Object.keys(this.props.league.groups);
     groupsKeys.forEach((key) => {
       const bracket = new RoundRobinBracket(this.props.league.groups[key].matches, null, this.props.league.groups[key].players);
-      groups.push(<GroupBracket key={key} stage={this.props.league.stage} raceTo={this.props.league.raceTo} bracket={bracket} group={this.props.league.groups[key]} updateMatch={this.props.updateGroupStageMatch} />);
+      groups.push(<GroupBracket user={this.props.user} key={key} stage={this.props.league.stage} raceTo={this.props.league.raceTo} bracket={bracket} group={this.props.league.groups[key]} updateMatch={this.props.updateGroupStageMatch} />);
     });
     if (groups.length === 0) {
       groups = <h2>{phrases.groupView.groupStageNotStarted}</h2>;

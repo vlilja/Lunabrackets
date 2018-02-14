@@ -1,5 +1,8 @@
 export default function reducer(state = {
   id: null,
+  firstName: '',
+  lastName: '',
+  admin: null,
   fbId: null,
   fb: {
     details: null,
@@ -21,7 +24,7 @@ export default function reducer(state = {
     }
     case 'LOG_OUT_FULFILLED': {
       return {
-        ...state, fbId: null, id: null, error: null,
+        ...state, fbId: null, id: null, admin: null, error: null,
       };
     }
     case 'LOG_OUT_REJECTED': {
@@ -31,7 +34,13 @@ export default function reducer(state = {
       return { ...state };
     }
     case 'FETCH_USER_BY_FB_FULFILLED': {
-      return { ...state, id: action.payload };
+      return {
+        ...state,
+        id: action.payload.id,
+        admin: action.payload.admin,
+        firstName: action.payload.firstName,
+        lastName: action.payload.lastName,
+      };
     }
     case 'FETCH_USER_BY_FB_REJECTED': {
       return { ...state, error: action.payload };

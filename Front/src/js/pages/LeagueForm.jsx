@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import _ from 'lodash';
 
 import phrases from '../../Phrases';
@@ -74,7 +75,8 @@ class LeagueForm extends React.Component {
       season: this.state.season,
       players: this.state.pickedPlayers,
     };
-    this.props.dispatch(createLeague(league));
+    const { user } = this.props;
+    this.props.dispatch(createLeague(league, user));
   }
 
   update(obj) {
@@ -155,6 +157,14 @@ class LeagueForm extends React.Component {
   }
 
   render() {
+    if (this.props.user.admin !== '1') {
+      return (<Redirect
+        to={{
+            pathname: '/',
+            state: { from: '/new-league' },
+          }}
+      />);
+    }
     let element;
     if (this.state.stage.league) {
       element = <MainForm update={this.update} leagueName={this.state.leagueName} game={this.state.game} season={this.state.season} seasons={this.props.seasons} error={this.state.errors.name} next={this.showPickPlayers} />;
@@ -214,6 +224,7 @@ class LeagueForm extends React.Component {
 }
 
 export default connect(store => ({
+  user: store.user,
   league: store.league,
   players: store.player.playerList,
   seasons: store.season.seasons,

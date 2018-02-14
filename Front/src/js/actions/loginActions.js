@@ -56,6 +56,7 @@ export function checkLoginStatus() {
     FB.getLoginStatus((response) => {
       if (response.status === 'connected') {
         logOut(dispatch);
+        window.location = '/';
       } else {
         logIn(dispatch);
       }

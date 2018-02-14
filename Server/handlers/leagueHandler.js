@@ -7,6 +7,7 @@ const groupHandler = require('./groupHandler');
 const qualifierHandler = require('./qualifierHandler');
 const finalsHandler = require('./finalsHandler');
 const eliminationHandler = require('./eliminationHandler');
+const userHandler = require('./userHandler');
 const logger = require('winston');
 const validator = require('../validators/validator');
 const {
@@ -175,12 +176,23 @@ function scoreLeague(grpWinners, matches, players, scoring) {
   return finalRankings;
 }
 
+function isAdmin(id) {
+  return userHandler.getUserById(id)
+    .then(user => new Promise((resolve, reject) => {
+      if (user.admin !== '1') {
+        reject(new Error('User not admin'));
+      }
+      resolve();
+    }));
+}
+
 module.exports = {
 
-  createLeague(league, cb) {
+  createLeague(league, id, cb) {
     const leagueObj = Object.assign(new League(), league);
     const transaction = transactionManager.startTransaction(dbClient);
-    transaction.then(() => db.league.insertLeague(dbClient, leagueObj))
+    transaction.then(() => isAdmin(id))
+      .then(() => db.league.insertLeague(dbClient, leagueObj))
       .then(leagueId => Promise.all(db.league.insertParticipants(dbClient, leagueId, leagueObj.players)))
       .then(() => {
         transactionManager.endTransaction(dbClient, true, cb, 'League created successfully');
@@ -191,7 +203,7 @@ module.exports = {
       });
   },
 
-  startLeague(leagueId, players, groupNames, raceTo, cb) {
+  startLeague(leagueId, players, groupNames, raceTo, id, cb) {
     const promise = db.league.getLeague(dbClient, leagueId);
     // validate stage
     promise.then(league => new Promise((resolve, reject) => {
@@ -201,6 +213,7 @@ module.exports = {
       resolve('ok');
     }))
       .then(() => transactionManager.startTransaction(dbClient))
+      .then(() => isAdmin(id))
       .then(() => {
       // Adjust player handicaps
         const promises = [];
@@ -255,9 +268,10 @@ module.exports = {
       });
   },
 
-  finishLeague(leagueId, cb) {
+  finishLeague(leagueId, id, cb) {
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => groupHandler.getGroups(dbClient, leagueId))
+    promise.then(() => isAdmin(id))
+      .then(() => groupHandler.getGroups(dbClient, leagueId))
       .then((groups) => {
         const promises = [];
         groups.forEach((group) => {
@@ -440,25 +454,28 @@ module.exports = {
   },
 
 
-  updateGroupStageMatch(leagueId, matchObj, cb) {
+  updateGroupStageMatch(leagueId, matchObj, userId, cb) {
     const match = Object.assign(new Match(), matchObj);
-    if (validator.validateMatch(match)) {
-      const promise = db.group.updateGroupStageMatch(dbClient, leagueId, match);
-      promise.then((response) => {
+    const promise = db.user.getUser(dbClient, userId);
+    promise.then(user => new Promise((resolve, reject) => {
+      if (validator.validateMatch(match, user)) {
+        resolve();
+      }
+      reject(new Error('Match not valid'));
+    })).then(() => db.group.updateGroupStageMatch(dbClient, leagueId, match))
+      .then((response) => {
         logger.info('[SUCCESS] updateGroupStageMatch', `Params: {leagueId: ${leagueId}, matchId: ${match.id}}`);
         cb(response);
       })
-        .catch((error) => {
-          cb(new Error(error));
-        });
-    } else {
-      cb(new Error('Match object not valid'));
-    }
+      .catch((error) => {
+        cb(new Error(error));
+      });
   },
 
-  fixUndeterminedRankings(leagueId, group, cb) {
+  fixUndeterminedRankings(leagueId, group, id, cb) {
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => groupHandler.fixUndeterminedRankings(dbClient, leagueId, group))
+    promise.then(() => isAdmin(id))
+      .then(() => groupHandler.fixUndeterminedRankings(dbClient, leagueId, group))
       .then(() => {
         // Get placements
         const promises = [];
@@ -486,12 +503,13 @@ module.exports = {
   },
 
   // Qualifier stage
-  startQualifiers(leagueId, cb) {
+  startQualifiers(leagueId, id, cb) {
     const rankedGroups = [];
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() =>
+    promise.then(() => isAdmin(id))
+      .then(() =>
       // Create qualifier
-      qualifierHandler.createQualifier(dbClient, leagueId))
+        qualifierHandler.createQualifier(dbClient, leagueId))
       .then(() => qualifierHandler.createQualifierMatches(dbClient, leagueId))
       .then(() =>
         // Create finals
@@ -579,9 +597,9 @@ module.exports = {
           }));
   },
 
-  startFinals(leagueId, players, cb) {
+  startFinals(leagueId, players, id, cb) {
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => {
+    promise.then(() => isAdmin(id)).then(() => {
       const promises = [];
       const shuffledPlayers = _.shuffle(players.qualifiers);
       shuffledPlayers.forEach((player, idx) => {
@@ -617,13 +635,19 @@ module.exports = {
       });
   },
 
-  updateQualifierBracket(leagueId, matchObj, cb) {
+  updateQualifierBracket(leagueId, matchObj, id, cb) {
     const match = Object.assign(new Match(), matchObj);
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => {
-      const promises = qualifierHandler.updateBracket(dbClient, leagueId, match);
-      return Promise.all(promises);
-    })
+    promise.then(() => userHandler.getUser(id))
+      .then(user => new Promise((resolve, reject) => {
+        if (validator.validateMatch(match, user)) {
+          resolve();
+        }
+        reject(new Error('Match invalid'));
+      })).then(() => {
+        const promises = qualifierHandler.updateBracket(dbClient, leagueId, match);
+        return Promise.all(promises);
+      })
       .then((response) => {
         logger.info('[SUCCESS] updateQualifierBracket', `Params: {leagueId: ${leagueId}, matchId: ${match.id}}`);
         transactionManager.endTransaction(dbClient, true, cb, response);
@@ -654,13 +678,19 @@ module.exports = {
       });
   },
 
-  updateEliminationBracket(leagueId, matchObj, cb) {
+  updateEliminationBracket(leagueId, matchObj, id, cb) {
     const match = Object.assign(new Match(), matchObj);
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => {
-      const promises = eliminationHandler.updateBracket(dbClient, leagueId, match);
-      return Promise.all(promises);
-    })
+    promise.then(() => userHandler.getUser(id))
+      .then(user => new Promise((resolve, reject) => {
+        if (validator.validateMatch(match, user)) {
+          resolve();
+        }
+        reject(new Error('Match invalid'));
+      })).then(() => {
+        const promises = eliminationHandler.updateBracket(dbClient, leagueId, match);
+        return Promise.all(promises);
+      })
       .then((response) => {
         logger.info('[SUCCESS] updateEliminationBracket', `Params: {leagueId: ${leagueId}, matchId: ${match.id}}`);
         transactionManager.endTransaction(dbClient, true, cb, response);
@@ -689,13 +719,19 @@ module.exports = {
       });
   },
 
-  updateFinalsBracket(leagueId, matchObj, cb) {
+  updateFinalsBracket(leagueId, matchObj, id, cb) {
     const match = Object.assign(new Match(), matchObj);
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => {
-      const promises = finalsHandler.updateBracket(dbClient, leagueId, match);
-      return Promise.all(promises);
-    })
+    promise.then(() => userHandler.getUser(id))
+      .then(user => new Promise((resolve, reject) => {
+        if (validator.validateMatch(match, user)) {
+          resolve();
+        }
+        reject(new Error('Match invalid'));
+      })).then(() => {
+        const promises = finalsHandler.updateBracket(dbClient, leagueId, match);
+        return Promise.all(promises);
+      })
       .then((response) => {
         logger.info('[SUCCESS] updateFinalsBracket', `Params: {leagueId: ${leagueId}, matchId: ${match.id}}`);
         transactionManager.endTransaction(dbClient, true, cb, response);

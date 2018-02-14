@@ -28,8 +28,7 @@ class Navbar extends React.Component {
   }
 
   render() {
-    console.log(this.props);
-    console.log(this.state);
+    const admin = this.props.user.admin === '1';
     return (
       <div>
         <nav className="navbar navbar-default">
@@ -45,47 +44,53 @@ class Navbar extends React.Component {
             <div id="navbar" className="collapse navbar-collapse">
               <ul className="nav navbar-nav">
                 <li className="dropdown">
-                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">Seasons<span className="caret" />
+                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">{phrases.navigation.seasons}<span className="caret" />
                   </a>
                   <ul className="dropdown-menu">
                     <li>
-                      <Link to="/seasons">View all seasons</Link>
+                      <Link to="/seasons">{phrases.navigation.viewSeasons}</Link>
                     </li>
-                    <li>
-                      <Link to="/new-season">Create new season</Link>
-                    </li>
+                    { admin
+                      ? <li>
+                        <Link to="/new-season">{phrases.navigation.createSeason}</Link>
+                      </li>
+                    : ''}
                   </ul>
                 </li>
                 <li className="dropdown">
-                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">Leagues<span className="caret" />
+                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">{phrases.navigation.leagues}<span className="caret" />
                   </a>
                   <ul className="dropdown-menu">
                     <li>
-                      <Link to="/leagues">View all leagues</Link>
+                      <Link to="/leagues">{phrases.navigation.viewLeagues}</Link>
                     </li>
-                    <li>
-                      <Link to="/new-league">Create new league</Link>
+                    { admin
+                    ? <li>
+                      <Link to="/new-league">{phrases.navigation.createLeague}</Link>
                     </li>
+                  : '' }
                   </ul>
                 </li>
                 <li className="dropdown">
-                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">Tournaments<span className="caret" />
+                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">{phrases.navigation.tournaments}<span className="caret" />
                   </a>
                   <ul className="dropdown-menu">
                     <li>
-                      <Link to="/tournaments">View all tournaments</Link>
+                      <Link to="/tournaments">{phrases.navigation.viewTournaments}</Link>
                     </li>
-                    <li>
-                      <Link to="/new-tournament">Create new tournament</Link>
+                    {admin
+                    ? <li>
+                      <Link to="/new-tournament">{phrases.navigation.createTournament}</Link>
                     </li>
+                    : ''}
                   </ul>
                 </li>
                 <li className="dropdown">
-                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">Players<span className="caret" />
+                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">{phrases.navigation.players}<span className="caret" />
                   </a>
                   <ul className="dropdown-menu">
                     <li>
-                      <Link to="/players">Show players</Link>
+                      <Link to="/players">{phrases.navigation.viewPlayers}</Link>
                     </li>
                   </ul>
                 </li>
@@ -93,7 +98,9 @@ class Navbar extends React.Component {
               <ul className="nav navbar-nav navbar-right">
                 <li>
                   <a href="#menu" onClick={this.handleLogin}>
-                    {this.props.user.fbId ? phrases.general.logout : phrases.general.login }
+                    {this.props.user.fbId
+                      ? `(${this.props.user.firstName} ${this.props.user.lastName}) ${phrases.general.logout}`
+                         : phrases.general.login }
                   </a>
                 </li>
               </ul>

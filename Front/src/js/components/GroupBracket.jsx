@@ -25,7 +25,7 @@ export default class GroupBracket extends React.Component {
   }
 
   openModal(matchId) {
-    if (this.props.stage === 'group') {
+    if (this.props.stage === 'group' && this.props.user.id !== null) {
       const match = this.props.bracket.matches.find(m => matchId === m.id);
       const content = (<MatchForm
         match={match}

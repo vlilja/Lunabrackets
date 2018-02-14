@@ -39,7 +39,8 @@ export default function reducer(
       return {
         ...state,
         creatingLeague: false,
-        error: action.payload,
+        error: action.payload.error,
+        message: action.payload.message,
       };
     }
     case 'FETCH_LEAGUE':

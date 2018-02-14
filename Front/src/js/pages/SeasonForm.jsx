@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 import { createSeason } from '../actions/seasonActions';
 import Icons from '../components/Icons';
 import phrases from '../../Phrases';
@@ -69,6 +70,14 @@ class SeasonForm extends React.Component {
   }
 
   render() {
+    if (this.props.admin !== '1') {
+      return (<Redirect
+        to={{
+            pathname: '/',
+            state: { from: '/new-season' },
+          }}
+      />);
+    }
     const modal = this.renderModal();
     return (<div className="container">
       <div className="col-xs-12 col-lg-6">
@@ -104,6 +113,7 @@ class SeasonForm extends React.Component {
 }
 
 export default connect(store => ({
+  admin: store.user.admin,
   loading: store.season.loading,
   message: store.season.message,
   error: store.season.error,

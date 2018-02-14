@@ -6,11 +6,13 @@ const router = express.Router();
 
 router.post('/', (req, res) => {
   const league = req.body;
-  leagueHandler.createLeague(league, (rows, response) => {
+  const auth = req.get('authorization');
+  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
+  leagueHandler.createLeague(league, id, (response) => {
     if (response instanceof Error) {
       res.status(400).send('Error creating league');
     } else {
-      res.json(response);
+      res.json('League created successfully');
     }
   });
 });
@@ -35,8 +37,10 @@ router.get('/:leagueId', (req, res) => {
 router.post('/:leagueId/start', (req, res) => {
   const { leagueId } = req.params;
   const { players, groupNames, raceTo } = req.body;
-  if (!Number.isNaN(leagueId) && players.length > 0 && Number(raceTo) > 1) {
-    leagueHandler.startLeague(leagueId, players, groupNames, raceTo, (response) => {
+  const auth = req.get('authorization');
+  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
+  if (!Number.isNaN(leagueId) && players.length > 0 && Number(raceTo) > 1 && !Number.isNaN(id)) {
+    leagueHandler.startLeague(leagueId, players, groupNames, raceTo, id, (response) => {
       if (response instanceof Error) {
         res.status(400).send('Error starting the league');
       } else {
@@ -50,8 +54,10 @@ router.post('/:leagueId/start', (req, res) => {
 
 router.get('/:leagueId/finish', (req, res) => {
   const leagueId = Number(req.params.leagueId);
-  if (!Number.isNaN(leagueId)) {
-    leagueHandler.finishLeague(leagueId, (response) => {
+  const auth = req.get('authorization');
+  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
+  if (!Number.isNaN(leagueId) && !Number.isNaN(id)) {
+    leagueHandler.finishLeague(leagueId, id, (response) => {
       if (response instanceof Error) {
         res.status(400).send('Error finishing the league');
       } else {
@@ -64,7 +70,9 @@ router.get('/:leagueId/finish', (req, res) => {
 });
 
 router.get('/:leagueId/start/qualifiers', (req, res) => {
-  leagueHandler.startQualifiers(req.params.leagueId, (response) => {
+  const auth = req.get('authorization');
+  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
+  leagueHandler.startQualifiers(req.params.leagueId, id, (response) => {
     if (response instanceof Error) {
       res.status(400).send('Error starting qualifiers');
     } else {
@@ -76,9 +84,11 @@ router.get('/:leagueId/start/qualifiers', (req, res) => {
 router.post('/:leagueId/start/finals', (req, res) => {
   const { leagueId } = req.params;
   const { players } = req.body;
+  const auth = req.get('authorization');
+  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
   if (!Number.isNaN(Number(leagueId)) && players.groupStage.length === 4 &&
   players.qualifiers.length === 4) {
-    leagueHandler.startFinals(leagueId, players, (response) => {
+    leagueHandler.startFinals(leagueId, players, id, (response) => {
       if (response instanceof Error) {
         res.status(400).send('Error starting finals');
       } else {
@@ -127,8 +137,10 @@ router.get('/:leagueId/groups/undetermined', (req, res) => {
 router.post('/:leagueId/groups/undetermined/', (req, res) => {
   const { leagueId } = req.params;
   const { group } = req.body;
+  const auth = req.get('authorization');
+  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
   if (!Number.isNaN(Number(leagueId))) {
-    leagueHandler.fixUndeterminedRankings(leagueId, group, (reows, response) => {
+    leagueHandler.fixUndeterminedRankings(leagueId, group, id, (reows, response) => {
       if (response instanceof Error) {
         res.status(400).send('Error updating undetermined');
       } else {
@@ -159,8 +171,10 @@ router.get('/:leagueId/groups/:groupId/matches', (req, res) => {
 router.post('/:leagueId/groups/:groupId/matches/:matchId', (req, res) => {
   const { match } = req.body;
   const { leagueId } = req.params;
-  if (!Number.isNaN(leagueId) && typeof match === 'object') {
-    leagueHandler.updateGroupStageMatch(leagueId, match, (response) => {
+  const auth = req.get('authorization');
+  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
+  if (!Number.isNaN(leagueId) && typeof match === 'object' && !Number.isNaN(id)) {
+    leagueHandler.updateGroupStageMatch(leagueId, match, id, (response) => {
       if (response instanceof Error) {
         res.status(400).send(response.message);
       } else {
@@ -206,8 +220,10 @@ router.get('/:leagueId/elimination/matches/', (req, res) => {
 router.post('/:leagueId/qualifiers/matches/:matchId', (req, res) => {
   const { match } = req.body;
   const { leagueId } = req.params;
-  if (!Number.isNaN(leagueId) && typeof match === 'object') {
-    leagueHandler.updateQualifierBracket(leagueId, match, (response) => {
+  const auth = req.get('authorization');
+  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
+  if (!Number.isNaN(leagueId) && typeof match === 'object' && !Number.isNaN(id)) {
+    leagueHandler.updateQualifierBracket(leagueId, match, id, (response) => {
       if (response instanceof Error) {
         res.status(400).send(response.message);
       } else {
@@ -222,8 +238,10 @@ router.post('/:leagueId/qualifiers/matches/:matchId', (req, res) => {
 router.post('/:leagueId/elimination/matches/:matchId', (req, res) => {
   const { match } = req.body;
   const { leagueId } = req.params;
+  const auth = req.get('authorization');
+  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
   if (!Number.isNaN(leagueId) && typeof match === 'object') {
-    leagueHandler.updateEliminationBracket(leagueId, match, (response) => {
+    leagueHandler.updateEliminationBracket(leagueId, match, id, (response) => {
       if (response instanceof Error) {
         res.status(400).send('Error updating elimination match');
       } else {
@@ -238,8 +256,10 @@ router.post('/:leagueId/elimination/matches/:matchId', (req, res) => {
 router.post('/:leagueId/finals/matches/:matchId', (req, res) => {
   const { match } = req.body;
   const { leagueId } = req.params;
+  const auth = req.get('authorization');
+  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
   if (!Number.isNaN(leagueId) && typeof match === 'object') {
-    leagueHandler.updateFinalsBracket(leagueId, match, (response) => {
+    leagueHandler.updateFinalsBracket(leagueId, match, id, (response) => {
       if (response instanceof Error) {
         res.status(400).send(response.message);
       } else {

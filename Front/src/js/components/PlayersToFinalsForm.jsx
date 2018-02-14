@@ -134,17 +134,26 @@ export default class PlayersToFinalsForm extends React.Component {
       const toFinalsFromGroupStage = [];
       finalsMatches.forEach((m) => {
         if (Number(m.key) < 5) {
-          toFinalsFromGroupStage.push(players.find(p => p.id === m.playerOne.id));
+          const player = players.find(p => p.id === m.playerOne.id);
+          if (player) {
+            toFinalsFromGroupStage.push(player);
+          }
         }
       });
       filteredQualifierMatches.forEach((m) => {
         const result = m.getResult();
         if (result) {
           if (m.key.match(/(B.)|(L11)|(L12)/)) {
-            toFinalsFromQualifiers.push(players.find(p => p.id === result.winner));
+            const player = players.find(p => p.id === result.winner);
+            if (player) {
+              toFinalsFromQualifiers.push(players.find(player));
+            }
           }
           if (m.key.match(/L./)) {
-            qualifierPlayers.push(players.find(p => p.id === result.loser));
+            const player = players.find(p => p.id === result.loser);
+            if (player) {
+              qualifierPlayers.push(player);
+            }
           }
         }
       });

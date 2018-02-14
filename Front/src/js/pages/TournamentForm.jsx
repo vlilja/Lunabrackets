@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-
+import { Redirect } from 'react-router-dom';
 import { createTournament } from '../actions/tournamentActions';
 import { getSeasons } from '../actions/seasonActions';
 import Icons from '../components/Icons';
@@ -73,6 +73,14 @@ class TournamentForm extends React.Component {
   }
 
   render() {
+    if (this.props.admin !== '1') {
+      return (<Redirect
+        to={{
+            pathname: '/',
+            state: { from: '/new-tournament' },
+          }}
+      />);
+    }
     const options = this.renderOptions();
     return (<div className="container">
       <div className="col-xs-12">

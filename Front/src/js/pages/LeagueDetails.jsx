@@ -35,7 +35,16 @@ class LeagueDetails extends React.Component {
     super(props);
     this.state = {
       view: null,
+      views: ['ready',
+        'complete',
+        'elimination',
+        'group',
+        'qualifiers',
+        'finals'],
     };
+    if (props.user.admin !== '1') {
+      this.state.views.shift();
+    }
     this.startLeague = this.startLeague.bind(this);
     this.startQualifiers = this.startQualifiers.bind(this);
     this.startFinals = this.startFinals.bind(this);
@@ -62,6 +71,10 @@ class LeagueDetails extends React.Component {
   componentWillReceiveProps(props) {
     if (props.league && !this.state.view) {
       this.setState({ view: props.league.stage });
+    }
+    if (props.user.admin === '1' && this.state.views[0] !== 'ready') {
+      const views = ['ready', ...this.state.views];
+      this.setState({ views });
     }
   }
 
@@ -96,57 +109,69 @@ class LeagueDetails extends React.Component {
   }
 
   updateUndetermined(group) {
-    this.props.dispatch(updateUndetermined(this.props.league.id, group));
+    const { user } = this.props;
+    this.props.dispatch(updateUndetermined(this.props.league.id, group, user));
   }
 
   updateEliminationMatch(match) {
+    const { user } = this.props;
     if (this.props.league.stage === 'qualifiers' || this.props.league.stage === 'finals') {
-      this.props.dispatch(updateEliminationMatch(this.props.league.id, match));
+      this.props.dispatch(updateEliminationMatch(this.props.league.id, match, user));
     }
   }
 
   updateQualifierMatch(match) {
+    const { user } = this.props;
     if (this.props.league.stage === 'qualifiers') {
-      this.props.dispatch(updateQualifierMatch(this.props.league.id, match));
+      this.props.dispatch(updateQualifierMatch(this.props.league.id, match, user));
     }
   }
 
   updateFinalsMatch(match) {
+    const { user } = this.props;
     if (this.props.league.stage === 'finals') {
-      this.props.dispatch(updateFinalsMatch(this.props.league.id, match));
+      this.props.dispatch(updateFinalsMatch(this.props.league.id, match, user));
     }
   }
 
   updateGroupStageMatch(groupId, match) {
-    this.props.dispatch(updateGroupStageMatch(this.props.league.id, groupId, match));
+    const { user } = this.props;
+    this.props.dispatch(updateGroupStageMatch(this.props.league.id, groupId, match, user));
   }
 
   startLeague(participants, groupNames, raceTo) {
-    this.props.dispatch(startLeague(this.props.league.id, participants, groupNames, raceTo));
+    const { user } = this.props;
+    this.props.dispatch(startLeague(this.props.league.id, participants, groupNames, raceTo, user));
   }
 
   startQualifiers() {
-    this.props.dispatch(startQualifiers(this.props.league.id));
+    const { user } = this.props;
+    this.props.dispatch(startQualifiers(this.props.league.id, user));
   }
 
   startFinals(players) {
-    this.props.dispatch(startFinals(this.props.league.id, players));
+    const { user } = this.props;
+    this.props.dispatch(startFinals(this.props.league.id, players, user));
   }
 
   finishLeague() {
-    this.props.dispatch(finishLeague(this.props.league.id));
+    const { user } = this.props;
+    this.props.dispatch(finishLeague(this.props.league.id, user));
   }
 
   initializeView() {
     switch (this.state.view) {
       case 'ready':
+        if (this.props.user.admin !== '1') {
+          return <ResultsView league={this.props.league} loading={this.props.loadingResults} getResults={this.getResults} />;
+        }
         return <AdminView league={this.props.league} startLeague={this.startLeague} startQualifiers={this.startQualifiers} startFinals={this.startFinals} finishLeague={this.finishLeague} getGroups={this.getGroups} getEliminationMatches={this.getEliminationMatches} getQualifierMatches={this.getQualifierMatches} getFinalsMatches={this.getFinalsMatches} getUndetermined={this.getUndetermined} updateUndetermined={this.updateUndetermined} />;
       case 'complete':
         return <ResultsView league={this.props.league} loading={this.props.loadingResults} getResults={this.getResults} />;
       case 'elimination':
         return <EliminationView league={this.props.league} getMatches={this.getEliminationMatches} update={this.updateEliminationMatch} />;
       case 'group':
-        return <GroupView league={this.props.league} getGroups={this.getGroups} getGroupMatches={this.getGroupMatches} updateGroupStageMatch={this.updateGroupStageMatch} updating={this.props.updating} />;
+        return <GroupView user={this.props.user} league={this.props.league} getGroups={this.getGroups} getGroupMatches={this.getGroupMatches} updateGroupStageMatch={this.updateGroupStageMatch} updating={this.props.updating} />;
       case 'qualifiers':
         return <QualifiersView league={this.props.league} players={this.props.league.players} getMatches={this.getQualifierMatches} qualifiers={this.props.league.qualifiers} update={this.updateQualifierMatch} />;
       case 'finals':
@@ -193,14 +218,7 @@ class LeagueDetails extends React.Component {
         {modal}
         <LeagueNavigation
           view={this.state.view}
-          views={[
-          'ready',
-          'complete',
-          'elimination',
-          'group',
-          'qualifiers',
-          'finals',
-        ]}
+          views={this.state.views}
           setView={this.setView}
         /> {view}
       </div>);
@@ -216,6 +234,7 @@ class LeagueDetails extends React.Component {
 }
 
 export default connect(store => ({
+  user: store.user,
   league: store.league.selectedLeague,
   error: store.league.error,
   loading: store.league.loading.single,

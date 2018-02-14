@@ -9,6 +9,19 @@ module.exports = {
     });
   },
 
+  getUser(c, id) {
+    return new Promise((resolve, reject) => {
+      const queryString = `SELECT * FROM users WHERE id = ${id}`;
+      c.query(queryString, (error, rows) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(rows[0]);
+        }
+      });
+    });
+  },
+
   getUserByFb(c, id) {
     return new Promise((resolve, reject) => {
       const queryString = `SELECT * FROM users INNER JOIN players ON users.id = players.id WHERE fb_id = ${id}`;
