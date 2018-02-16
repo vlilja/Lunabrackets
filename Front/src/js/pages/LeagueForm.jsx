@@ -190,7 +190,7 @@ class LeagueForm extends React.Component {
     }
     return (
       <div className="container">
-        <div className="row">
+        <div>
           <h1 className="margin-bottom-double">{phrases.leagueForm.heading}{' '}
             <Tooltip message={phrases.league.infoText} size="32px" />
           </h1>

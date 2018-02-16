@@ -24,7 +24,7 @@ export default class QualifiersView extends React.Component {
       elem = <Icons type="LOADING" size="40px" />;
     } else if (this.props.qualifiers && this.props.qualifiers.matches.length > 0) {
       const bracket = new DoubleEliminationBracket(this.props.qualifiers.matches, this.props.players, 16);
-      elem = <QualifiersBracket raceTo={this.props.league.raceTo} stage={this.props.league.stage} bracket={bracket} matches={this.props.qualifiers.matches} players={this.props.players} update={this.props.update} />;
+      elem = <QualifiersBracket user={this.props.user} raceTo={this.props.league.raceTo} stage={this.props.league.stage} bracket={bracket} matches={this.props.qualifiers.matches} players={this.props.players} update={this.props.update} />;
     } else {
       elem = <h2>{phrases.qualifiersView.qualifiersNotStarted}</h2>;
     }

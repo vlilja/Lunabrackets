@@ -98,6 +98,9 @@ class TournamentDetails extends React.Component {
   }
 
   render() {
+    if (this.props.tournament && this.props.tournament.status === 'ready' && this.props.admin !== '1') {
+      return <div> {phrases.tournamentResults.noResults} </div>;
+    }
     const tournament = this.mapTournament();
     const modal = this.renderModal();
     return (<div>{tournament || <Icons type="LOADING" size="40px" />}{modal} </div>);

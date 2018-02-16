@@ -261,7 +261,7 @@ router.post('/:leagueId/finals/matches/:matchId', (req, res) => {
   if (!Number.isNaN(leagueId) && typeof match === 'object') {
     leagueHandler.updateFinalsBracket(leagueId, match, id, (response) => {
       if (response instanceof Error) {
-        res.status(400).send(response.message);
+        res.status(400).send('Error updating finals match');
       } else {
         res.json('Success');
       }

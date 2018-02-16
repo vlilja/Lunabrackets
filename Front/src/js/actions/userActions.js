@@ -9,14 +9,13 @@ export function createUser(user) {
       payload: '',
     });
     axios.post(`${serverDetails.baseUrl}users/`, { user })
-      .then((response) => {
-        console.log(response);
+      .then(() => {
         dispatch({
           type: 'CREATE_USER_FULFILLED',
           payload: '',
         });
       })
-      .catch((error) => {
+      .catch(() => {
         dispatch({
           type: 'CREATE_USER_REJECTED',
           payload: '',
@@ -38,7 +37,7 @@ export function getUserByFb(fbId) {
           [user] = response.data;
         } else {
           user = {
-            id: undefined, admin: undefined, firstName: undefined, lastName: undefined,
+            id: undefined, fbId: null, admin: undefined, firstName: undefined, lastName: undefined,
           };
         }
         dispatch({

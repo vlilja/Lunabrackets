@@ -1,7 +1,9 @@
 
 
 .season-results {
-
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 4px;
   thead {
     tr {
       border-bottom: 1px solid $dark-grey;

@@ -53,20 +53,18 @@ module.exports = function Match(id, key, winnerNextMatchKey, loserNextMatchKey, 
   }
 
   this.getResult = function() {
-    if (this.playerOne.score && this.playerTwo.score) {
-      if (Number(this.playerOne.score) > Number(this.playerTwo.score)) {
+    const p1score = Number(this.playerOne.score);
+    const p2score = Number(this.playerTwo.score);
+    if (p1score > p2score) {
         return {
           winner: this.playerOne.id,
           loser: this.playerTwo.id
         }
-      } else if (Number(this.playerTwo.score) > Number(this.playerOne.score)) {
+    } else if (p2score > p1score) {
         return {
           winner: this.playerTwo.id,
           loser: this.playerOne.id
         }
-      } else {
-        return null;
-      }
     }
     else if(this.walkOver === 1){
       winner = this.playerOne ? this.playerOne.id : this.playerTwo.id;
@@ -74,6 +72,9 @@ module.exports = function Match(id, key, winnerNextMatchKey, loserNextMatchKey, 
     }
     else if(this.void === 1) {
       return {winner: null, loser:null};
+    }
+    else {
+      return null;
     }
   }
 

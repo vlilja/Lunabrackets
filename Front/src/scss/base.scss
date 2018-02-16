@@ -14,10 +14,28 @@
 @import "forms";
 @import "tables";
 
-html, body {
-  min-height: 100%;
-  min-width: 100%;
+html, body, #app {
+  height: 100%;
+  width: 100%;
 }
+
+#wrapper {
+  position: relative;
+  height: inherit;
+  width: inherit;
+  overflow: auto;
+  background-image: url('../images/pooltable-gradient.jpg');
+  .content {
+    padding-bottom: 80px;
+  }
+}
+
+.container {
+  padding: 10px 10px 20px 10px;
+  background-color: rgba(255,255,255, 0.6);
+  border-radius:20px;
+}
+
 
 .clickable {
   cursor: pointer;

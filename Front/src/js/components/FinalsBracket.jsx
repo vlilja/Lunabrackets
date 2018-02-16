@@ -13,7 +13,10 @@ export default class FinalsBracket extends React.Component {
 
   mapRounds() {
     const { bracket } = this.props;
-    const editable = this.props.stage === 'finals';
+    let editable = false;
+    if (this.props.stage === 'finals' && this.props.user.id) {
+      editable = true;
+    }
     const firstRound = [];
     bracket.rounds.R1.forEach((match) => {
       firstRound.push(<div key={match.id} className="col-xs-12">

@@ -22,6 +22,10 @@ export default {
     login: 'Log in',
     logout: 'Log out',
   },
+  frontPage: {
+    heading: 'Welcome to Lunabrackets',
+    infoheading: 'Scorekeeping tool for LaLunaLiga',
+  },
   navigation: {
     seasons: 'Seasons',
     viewSeasons: 'View seasons',
@@ -40,7 +44,7 @@ export default {
     active: 'Active',
     inactive: 'Inactive',
     bonus: 'Bonus',
-    sum: 'Sum',
+    sum: 'Total',
   },
   league: {
     heading: 'Leagues',
@@ -87,6 +91,7 @@ export default {
   },
   tournamentResults: {
     heading: 'Tournament results',
+    noResults: 'No results',
   },
   leagueStartForm: {
     leagueSettings: 'League settings',

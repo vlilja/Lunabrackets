@@ -29,7 +29,7 @@ export default class QualifiersBracket extends React.Component {
 
   mapRounds() {
     let editable = false;
-    if (this.props.stage === 'qualifiers') {
+    if (this.props.stage === 'qualifiers' && this.props.user.id) {
       editable = true;
     }
     const firstRound = [];

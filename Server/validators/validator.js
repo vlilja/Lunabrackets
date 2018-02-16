@@ -4,8 +4,8 @@ module.exports = {
 
   validateMatch(obj, user) {
     const match = Object.assign(new Match(), obj);
-    if (Number.isNaN(Number(match.id))) {
-      return false;
+    if ((match.walkOver === 1 || match.void === 1) && user.admin === '1') {
+      return true;
     }
     if (!match.playerOne.id || !match.playerTwo.id) {
       return false;

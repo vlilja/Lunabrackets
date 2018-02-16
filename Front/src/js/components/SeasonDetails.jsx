@@ -123,6 +123,7 @@ class SeasonDetails extends React.Component {
       headerRow.push(<th className="center-text left-border" key="bns">{phrases.season.bonus}</th>);
       headerRow.push(<th className="center-text" key="sum">{phrases.season.sum}</th>);
       tableHeader.push(<tr key="header">{headerRow}</tr>);
+      table.header = tableHeader;
       // Table body
       const tableBody = [];
       playersArr.forEach((player, idx) => {
@@ -145,7 +146,6 @@ class SeasonDetails extends React.Component {
         tableRow.push(<td className="center-text left-border" key="bns">{player.bonus || ''}</td>);
         tableRow.push(<td className="center-text sum-cell" key="sum">{player.sum}</td>);
         tableBody.push(<tr key={player.details.id}>{tableRow}</tr>);
-        table.header = tableHeader;
         table.body = tableBody;
       });
     }
@@ -161,7 +161,7 @@ class SeasonDetails extends React.Component {
           <div>
             <div className="col-xs-12 col-lg-4">{season}</div>
             <div className="col-xs-12 col-lg-8 margin-top-double">
-              {table.header && table.body ?
+              {table.header ?
                 <table className="table table-hover season-results">
                   <thead>
                     {table.header}

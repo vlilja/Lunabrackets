@@ -31,7 +31,7 @@ export default class EliminationView extends React.Component {
       element = <Icons type="LOADING" size="40px" />;
     } else if (this.props.league.elimination.matches.length > 0) {
       const bracket = new MegaEliminationBracket(this.props.league.elimination.matches, this.props.league.players, 12);
-      element = <EliminationBracket raceTo={this.props.league.raceTo} stage={this.props.league.stage} bracket={bracket} matches={this.props.league.elimination.matches} players={this.props.league.players} update={this.props.update} />;
+      element = <EliminationBracket user={this.props.user} raceTo={this.props.league.raceTo} stage={this.props.league.stage} bracket={bracket} matches={this.props.league.elimination.matches} players={this.props.league.players} update={this.props.update} />;
     } else {
       element = <h2>{phrases.eliminationView.eliminationNotStarted}</h2>;
     }

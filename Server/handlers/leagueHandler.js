@@ -638,7 +638,7 @@ module.exports = {
   updateQualifierBracket(leagueId, matchObj, id, cb) {
     const match = Object.assign(new Match(), matchObj);
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => userHandler.getUser(id))
+    promise.then(() => userHandler.getUserById(id))
       .then(user => new Promise((resolve, reject) => {
         if (validator.validateMatch(match, user)) {
           resolve();
@@ -681,7 +681,7 @@ module.exports = {
   updateEliminationBracket(leagueId, matchObj, id, cb) {
     const match = Object.assign(new Match(), matchObj);
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => userHandler.getUser(id))
+    promise.then(() => userHandler.getUserById(id))
       .then(user => new Promise((resolve, reject) => {
         if (validator.validateMatch(match, user)) {
           resolve();
@@ -722,7 +722,7 @@ module.exports = {
   updateFinalsBracket(leagueId, matchObj, id, cb) {
     const match = Object.assign(new Match(), matchObj);
     const promise = transactionManager.startTransaction(dbClient);
-    promise.then(() => userHandler.getUser(id))
+    promise.then(() => userHandler.getUserById(id))
       .then(user => new Promise((resolve, reject) => {
         if (validator.validateMatch(match, user)) {
           resolve();

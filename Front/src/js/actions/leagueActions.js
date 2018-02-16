@@ -543,8 +543,9 @@ export function updateFinalsMatch(leagueId, match, user) {
       .catch((error) => {
         dispatch({
           type: 'UPDATE_FINALS_MATCH_REJECTED',
-          payload: error,
+          payload: { error, message: phrases.errorMessages.matchUpdate },
         });
+        dispatch(getFinalsMatches(leagueId));
         flashMessage(dispatch, 2000);
       });
   };

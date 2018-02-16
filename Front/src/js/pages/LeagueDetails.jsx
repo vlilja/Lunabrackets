@@ -169,13 +169,13 @@ class LeagueDetails extends React.Component {
       case 'complete':
         return <ResultsView league={this.props.league} loading={this.props.loadingResults} getResults={this.getResults} />;
       case 'elimination':
-        return <EliminationView league={this.props.league} getMatches={this.getEliminationMatches} update={this.updateEliminationMatch} />;
+        return <EliminationView user={this.props.user} league={this.props.league} getMatches={this.getEliminationMatches} update={this.updateEliminationMatch} />;
       case 'group':
         return <GroupView user={this.props.user} league={this.props.league} getGroups={this.getGroups} getGroupMatches={this.getGroupMatches} updateGroupStageMatch={this.updateGroupStageMatch} updating={this.props.updating} />;
       case 'qualifiers':
-        return <QualifiersView league={this.props.league} players={this.props.league.players} getMatches={this.getQualifierMatches} qualifiers={this.props.league.qualifiers} update={this.updateQualifierMatch} />;
+        return <QualifiersView user={this.props.user} league={this.props.league} players={this.props.league.players} getMatches={this.getQualifierMatches} qualifiers={this.props.league.qualifiers} update={this.updateQualifierMatch} />;
       case 'finals':
-        return <FinalsView league={this.props.league} getMatches={this.getFinalsMatches} update={this.updateFinalsMatch} />;
+        return <FinalsView user={this.props.user} league={this.props.league} getMatches={this.getFinalsMatches} update={this.updateFinalsMatch} />;
       default:
         return (<div>NOTDONE
         </div>);

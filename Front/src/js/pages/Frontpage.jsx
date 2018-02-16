@@ -1,5 +1,6 @@
 import React from 'react';
 
+import phrases from '../../Phrases';
 
 export default class Frontpage extends React.Component {
 
@@ -9,9 +10,15 @@ export default class Frontpage extends React.Component {
   }
 
   render() {
-    return (<div>
-      <h1>Frontpage</h1>
-    </div>);
+    return (
+      <div>
+        <div className="container">
+          <h1>{phrases.frontPage.heading}</h1>
+          <p className="lead">
+            {phrases.frontPage.infoheading}
+          </p>
+        </div>
+      </div>);
   }
 
 }

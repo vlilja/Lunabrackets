@@ -40,7 +40,7 @@ class SeasonList extends React.Component {
   render() {
     const seasons = this.mapSeasons();
     return (
-      <div className="container">
+      <div>
         <h1>Seasons</h1>
         <div className="col-xs-12 col-lg-6">
           {this.props.loading

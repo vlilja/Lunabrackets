@@ -146,7 +146,7 @@ export default class PlayersToFinalsForm extends React.Component {
           if (m.key.match(/(B.)|(L11)|(L12)/)) {
             const player = players.find(p => p.id === result.winner);
             if (player) {
-              toFinalsFromQualifiers.push(players.find(player));
+              toFinalsFromQualifiers.push(player);
             }
           }
           if (m.key.match(/L./)) {

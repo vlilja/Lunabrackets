@@ -18,7 +18,7 @@ export default class EliminationBracket extends React.Component {
   mapRounds() {
     const { bracket } = this.props;
     let editable = false;
-    if (this.props.stage === 'qualifiers' || this.props.stage === 'finals') {
+    if ((this.props.stage === 'qualifiers' || this.props.stage === 'finals') && this.props.user.id) {
       editable = true;
     }
     const firstRound = [];

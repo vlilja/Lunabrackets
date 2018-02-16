@@ -40,6 +40,12 @@ module.exports = {
           use: 'css-loader!sass-loader',
         }),
       },
+      {
+        test: /\.(png|jpg|gif)$/,
+        use: [
+          'file-loader',
+        ],
+      },
     ],
   },
   resolve: {

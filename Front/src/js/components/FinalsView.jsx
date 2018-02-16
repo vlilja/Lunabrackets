@@ -31,7 +31,7 @@ export default class FinalsView extends React.Component {
       element = <Icons type="LOADING" size="40px" />;
     } else if (this.props.league.finals.matches.length > 0) {
       const bracket = new SingleEliminationBracket(this.props.league.finals.matches, this.props.league.players, 8);
-      element = <FinalsBracket matches={this.props.league.finals.matches} stage={this.props.league.stage} players={this.props.league.players} bracket={bracket} raceTo={this.props.league.raceTo} update={this.props.update} />;
+      element = <FinalsBracket user={this.props.user} matches={this.props.league.finals.matches} stage={this.props.league.stage} players={this.props.league.players} bracket={bracket} raceTo={this.props.league.raceTo} update={this.props.update} />;
     } else {
       element = <h2>{phrases.finalsView.finalsNotStarted}</h2>;
     }

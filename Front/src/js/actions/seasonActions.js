@@ -59,28 +59,32 @@ export function getSeasonResults(leagues, tournaments) {
       type: 'GET_SEASON_RESULTS',
       payload: '',
     });
-    const requests = [];
+    let requests = [];
+    const results = { leagues: [], tournaments: [] };
     leagues.forEach((league) => {
       requests.push(axios.get(`${serverDetails.baseUrl}leagues/${league.id}/results`));
     });
-    tournaments.forEach((tournament) => {
-      requests.push(axios.get(`${serverDetails.baseUrl}tournaments/${tournament.id}/results`));
-    });
     axios.all(requests).then((response) => {
-      const leagueResults = [];
-      const tournamentResults = [];
-      response.forEach((res, idx) => {
-        if (idx < 4) {
-          leagueResults.push({ id: res.data.id, results: res.data.results });
-        } else {
-          tournamentResults.push({ id: res.data.id, results: res.data.results });
-        }
-      });
-      dispatch({
-        type: 'GET_SEASON_RESULTS_FULFILLED',
-        payload: { leagues: leagueResults, tournaments: tournamentResults },
+      response.forEach((res) => {
+        results.leagues.push({ id: res.data.id, results: res.data.results });
       });
     })
+      .then(() => {
+        requests = [];
+        tournaments.forEach((tournament) => {
+          requests.push(axios.get(`${serverDetails.baseUrl}tournaments/${tournament.id}/results`));
+        });
+        return axios.all(requests);
+      })
+      .then((response) => {
+        response.forEach((res) => {
+          results.tournaments.push({ id: res.data.id, results: res.data.results });
+        });
+        dispatch({
+          type: 'GET_SEASON_RESULTS_FULFILLED',
+          payload: results,
+        });
+      })
       .catch(() => {
         dispatch({
           type: 'GET_SEASON_RESULTS_REJECTED',

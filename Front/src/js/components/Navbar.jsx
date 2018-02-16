@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { checkLoginStatus } from '../actions/loginActions';
+import { logIn, logOut } from '../actions/loginActions';
 import phrases from '../../Phrases';
 
 
@@ -13,6 +13,7 @@ class Navbar extends React.Component {
       profileSearchDone: false,
     };
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
   }
 
   componentWillReceiveProps(props) {
@@ -24,7 +25,12 @@ class Navbar extends React.Component {
 
   handleLogin(e) {
     e.preventDefault();
-    this.props.dispatch(checkLoginStatus());
+    this.props.dispatch(logIn());
+  }
+
+  handleLogout(e) {
+    e.preventDefault();
+    this.props.dispatch(logOut());
   }
 
   render() {
@@ -97,11 +103,15 @@ class Navbar extends React.Component {
               </ul>
               <ul className="nav navbar-nav navbar-right">
                 <li>
-                  <a href="#menu" onClick={this.handleLogin}>
-                    {this.props.user.fbId
-                      ? `(${this.props.user.firstName} ${this.props.user.lastName}) ${phrases.general.logout}`
-                         : phrases.general.login }
-                  </a>
+                  {
+                    this.props.user.fbId ?
+                      <a href="#menu" onClick={this.handleLogout}>
+                        {`(${this.props.user.firstName} ${this.props.user.lastName}) ${phrases.general.logout}`}
+                      </a> :
+                      <a href="#menu" onClick={this.handleLogin}>
+                        {phrases.general.login}
+                      </a>
+                  }
                 </li>
               </ul>
             </div>

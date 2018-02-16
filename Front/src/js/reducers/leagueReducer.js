@@ -474,6 +474,7 @@ export default function reducer(
           ...state.loading,
           update: true,
         },
+        error: null,
       };
     }
     case 'UPDATE_ELIMINATION_MATCH_FULFILLED':
@@ -507,6 +508,7 @@ export default function reducer(
           ...state.loading,
           update: true,
         },
+        error: null,
       };
     }
     case 'UPDATE_QUALIFIER_MATCH_FULFILLED':
@@ -540,6 +542,7 @@ export default function reducer(
           ...state.loading,
           update: true,
         },
+        error: null,
       };
     }
     case 'UPDATE_FINALS_MATCH_FULFILLED':
@@ -557,9 +560,12 @@ export default function reducer(
     {
       return {
         ...state,
-        ...state.loading,
-        update: false,
-        error: action.payload,
+        loading: {
+          ...state.loading,
+          update: false,
+        },
+        error: action.payload.error,
+        message: action.payload.message,
       };
     }
     case 'SHOW_MESSAGE':

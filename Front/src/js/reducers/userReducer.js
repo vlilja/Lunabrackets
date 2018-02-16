@@ -37,6 +37,7 @@ export default function reducer(state = {
       return {
         ...state,
         id: action.payload.id,
+        fbId: action.payload.fb_id,
         admin: action.payload.admin,
         firstName: action.payload.firstName,
         lastName: action.payload.lastName,

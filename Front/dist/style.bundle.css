@@ -215,9 +215,24 @@ td.name-cell {
 .start-form .error {
   background-color: pink; }
 
-html, body {
-  min-height: 100%;
-  min-width: 100%; }
+.season-results thead tr {
+  border-bottom: 1px solid #868686; }
+  .season-results thead tr th {
+    border-bottom: inherit; }
+
+.season-results .left-border {
+  border-left: 1px solid #868686; }
+
+html, body, #app {
+  height: 100%;
+  width: 100%; }
+
+#wrapper {
+  position: relative;
+  height: inherit;
+  width: inherit; }
+  #wrapper .bg-image {
+    opacity: 0.6; }
 
 .clickable {
   cursor: pointer; }

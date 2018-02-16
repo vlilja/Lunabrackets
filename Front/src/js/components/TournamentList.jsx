@@ -40,5 +40,6 @@ class TournamentList extends React.Component {
 }
 
 export default connect(store => ({
+  user: store.user.admin,
   tournaments: store.tournament.tournaments,
 }))(TournamentList);

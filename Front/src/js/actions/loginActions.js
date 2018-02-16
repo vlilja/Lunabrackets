@@ -7,59 +7,52 @@ FB.init({
   autoLogAppEvents: true,
   xfbml: true,
   version: 'v2.12',
+  cookie: true,
 });
 
-function logIn(dispatch) {
-  dispatch({
-    type: 'LOG_IN',
-    payload: '',
-  });
-  FB.login((response) => {
-    if (response.status === 'connected') {
-      dispatch(getUserByFb(response.authResponse.userID));
-      dispatch({
-        type: 'LOG_IN_FULFILLED',
-        payload: response.authResponse.userID,
-      });
-    } else {
-      dispatch({
-        type: 'LOG_IN_REJECTED',
-        payload: 'user not connected',
-      });
-    }
-  });
-}
-
-
-function logOut(dispatch) {
-  dispatch({
-    type: 'LOG_OUT',
-    payload: '',
-  });
-  FB.logout((response) => {
-    if (response.status === 'unknown') {
-      dispatch({
-        type: 'LOG_OUT_FULFILLED',
-        payload: '',
-      });
-    } else {
-      dispatch({
-        type: 'LOG_OUT_REJECTED',
-        payload: 'Error logging user out',
-      });
-    }
-  });
-}
-
-export function checkLoginStatus() {
+export function logIn() {
   return (dispatch) => {
-    FB.getLoginStatus((response) => {
+    dispatch({
+      type: 'LOG_IN',
+      payload: '',
+    });
+    FB.login((response) => {
       if (response.status === 'connected') {
-        logOut(dispatch);
-        window.location = '/';
+        dispatch(getUserByFb(response.authResponse.userID));
+        dispatch({
+          type: 'LOG_IN_FULFILLED',
+          payload: response.authResponse.userID,
+        });
       } else {
-        logIn(dispatch);
+        dispatch({
+          type: 'LOG_IN_REJECTED',
+          payload: 'user not connected',
+        });
       }
+    });
+  };
+}
+
+
+export function logOut() {
+  return (dispatch) => {
+    dispatch({
+      type: 'LOG_OUT',
+      payload: '',
+    });
+    FB.logout((response) => {
+      if (response.status === 'unknown') {
+        dispatch({
+          type: 'LOG_OUT_FULFILLED',
+          payload: '',
+        });
+      } else {
+        dispatch({
+          type: 'LOG_OUT_REJECTED',
+          payload: 'Error logging user out',
+        });
+      }
+      window.location = '/';
     });
   };
 }
@@ -81,6 +74,16 @@ export function getFacebookUserDetails() {
           type: 'FETCH_USER_DETAILS_FROM_FB_FULFILLED',
           payload: { firstName: response.first_name, lastName: response.last_name, email: response.email },
         });
+      }
+    });
+  };
+}
+
+export function checkLoginStatus() {
+  return (dispatch) => {
+    FB.getLoginStatus((response) => {
+      if (response.status === 'connected') {
+        dispatch(getUserByFb(response.authResponse.userID));
       }
     });
   };
