@@ -98,7 +98,7 @@ class TournamentDetails extends React.Component {
   }
 
   render() {
-    if (this.props.tournament && this.props.tournament.status === 'ready' && this.props.admin !== '1') {
+    if (this.props.tournament && this.props.tournament.status === 'ready' && this.props.user.admin !== '1') {
       return <div> {phrases.tournamentResults.noResults} </div>;
     }
     const tournament = this.mapTournament();
@@ -108,6 +108,7 @@ class TournamentDetails extends React.Component {
 }
 
 export default connect(store => ({
+  user: store.user,
   tournament: store.tournament.selectedTournament,
   loading: store.tournament.loading,
   message: store.tournament.message,

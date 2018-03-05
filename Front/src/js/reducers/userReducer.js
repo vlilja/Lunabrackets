@@ -44,7 +44,7 @@ export default function reducer(state = {
       };
     }
     case 'FETCH_USER_BY_FB_REJECTED': {
-      return { ...state, error: action.payload };
+      return { ...state, fbId: null, error: action.payload };
     }
     case 'FETCH_USER_DETAILS_FROM_FB': {
       return { ...state };
