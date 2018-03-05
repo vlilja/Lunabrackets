@@ -1,5 +1,6 @@
 const express = require('express');
 const seasonHandler = require('../handlers/seasonHandler');
+const authHelper = require('../helpers/authorizationHelper');
 
 const router = express.Router();
 
@@ -16,14 +17,19 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
   const { season } = req.body;
-  if (season && typeof season === 'object') {
-    seasonHandler.createSeason(season, (response) => {
-      if (response instanceof Error) {
-        res.status(400).send('Error creating season');
-      } else {
-        res.json(response);
-      }
-    });
+  try {
+    const userId = authHelper.readUserId(req);
+    if (season && typeof season === 'object') {
+      seasonHandler.createSeason(season, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send('Error creating season');
+        } else {
+          res.json(response);
+        }
+      });
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 
@@ -42,33 +48,43 @@ router.get('/:seasonId', (req, res) => {
   }
 });
 
-router.post('/:seasonId/active', (req, res) => {
+router.get('/:seasonId/activate', (req, res) => {
   const seasonId = Number(req.params.seasonId);
-  if (!Number.isNaN(seasonId)) {
-    seasonHandler.setActive(seasonId, (response) => {
-      if (response instanceof Error) {
-        res.status(400).send('Error activating season');
-      } else {
-        res.json(response);
-      }
-    });
-  } else {
-    res.status(400).send('Bad request');
+  try {
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(seasonId)) {
+      seasonHandler.setActive(seasonId, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send('Error activating season');
+        } else {
+          res.json(response);
+        }
+      });
+    } else {
+      res.status(400).send('Bad request');
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 
-router.post('/:seasonId/inactive', (req, res) => {
+router.get('/:seasonId/inactivate', (req, res) => {
   const seasonId = Number(req.params.seasonId);
-  if (!Number.isNaN(seasonId)) {
-    seasonHandler.setInactive(seasonId, (response) => {
-      if (response instanceof Error) {
-        res.status(400).send('Error inactivating season');
-      } else {
-        res.json(response);
-      }
-    });
-  } else {
-    res.status(400).send('Bad request');
+  try {
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(seasonId)) {
+      seasonHandler.setInactive(seasonId, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send('Error inactivating season');
+        } else {
+          res.json(response);
+        }
+      });
+    } else {
+      res.status(400).send('Bad request');
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 

@@ -94,7 +94,7 @@ export function getSeasonResults(leagues, tournaments) {
   };
 }
 
-export function createSeason(season) {
+export function createSeason(season, user) {
   return (dispatch) => {
     dispatch({
       type: 'CREATE_SEASON',
@@ -102,6 +102,8 @@ export function createSeason(season) {
     });
     axios.post(`${serverDetails.baseUrl}seasons/`, {
       season,
+    }, {
+      auth: { username: user.id, password: user.fbId },
     })
       .then(() => {
         dispatch({
@@ -114,6 +116,39 @@ export function createSeason(season) {
           type: 'CREATE_SEASON_REJECTED',
           payload: error,
         });
+      });
+  };
+}
+
+export function changeSeasonStatus(seasonId, status, user) {
+  return (dispatch) => {
+    dispatch({
+      type: 'UPDATE_SEASON_STATUS',
+      payload: '',
+    });
+    let url;
+    if (status === 1) {
+      url = `${serverDetails.baseUrl}seasons/${seasonId}/activate`;
+    }
+    if (status === 0) {
+      url = `${serverDetails.baseUrl}seasons/${seasonId}/inactivate`;
+    }
+    axios.get(url, {
+      auth: { username: user.id, password: user.fbId },
+    })
+      .then(() => {
+        dispatch({
+          type: 'UPDATE_SEASON_STATUS_FULFILLED',
+          payload: 'Season status changed successfully',
+        });
+        dispatch(getSeasons());
+      })
+      .catch((error) => {
+        dispatch({
+          type: 'UPDATE_SEASON_STATUS_REJECTED',
+          payload: { error, message: 'Season status change failed' },
+        });
+        dispatch(getSeasons());
       });
   };
 }

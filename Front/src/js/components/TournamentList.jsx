@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { getAllTournaments } from '../actions/tournamentActions';
 import Icons from './Icons';
+import phrases from '../../Phrases';
 
 class TournamentList extends React.Component {
 
@@ -35,7 +36,10 @@ class TournamentList extends React.Component {
 
   render() {
     const tournaments = this.renderList();
-    return (<div className="col-xs-12"> {tournaments || <Icons type="LOADING" size="40px" />} </div>);
+    return (<div className="col-xs-12">
+      <h2>{phrases.navigation.tournaments}</h2>
+      {tournaments || <Icons type="LOADING" size="40px" />}
+    </div>);
   }
 }
 

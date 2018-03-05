@@ -5,6 +5,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { getAllLeagues, getLeague } from '../actions/leagueActions';
 import LeaguePanel from './LeaguePanel';
 import Icons from './Icons';
+import phrases from '../../Phrases';
 
 
 class LeagueList extends React.Component {
@@ -36,6 +37,7 @@ class LeagueList extends React.Component {
     return (
       <Router>
         <div className="container">
+          <h2>{phrases.navigation.leagues}</h2>
           {this.props.loading
             ? <Icons type="LOADING" size="40px" />
             : mappedLeagues}

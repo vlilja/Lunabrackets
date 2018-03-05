@@ -34,6 +34,7 @@ export default function reducer(state = {
     {
       return {
         ...state,
+        selectedSeason: null,
         loading: true,
       };
     }
@@ -100,6 +101,31 @@ export default function reducer(state = {
         message: 'Error creating season',
         loading: false,
         error: action.payload,
+      };
+    }
+    case 'UPDATE_SEASON_STATUS':
+    {
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+    }
+    case 'UPDATE_SEASON_STATUS_FULFILLED':
+    {
+      return {
+        ...state,
+        message: action.payload,
+        loading: false,
+      };
+    }
+    case 'UPDATE_SEASON_STATUS_REJECTED':
+    {
+      return {
+        ...state,
+        message: action.payload.message,
+        loading: false,
+        error: action.payload.error,
       };
     }
     default: {

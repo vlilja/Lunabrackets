@@ -1,6 +1,7 @@
 
 const express = require('express');
 const leagueHandler = require('../handlers/leagueHandler');
+const authHelper = require('../helpers/authorizationHelper');
 
 const router = express.Router();
 
@@ -37,66 +38,83 @@ router.get('/:leagueId', (req, res) => {
 router.post('/:leagueId/start', (req, res) => {
   const { leagueId } = req.params;
   const { players, groupNames, raceTo } = req.body;
-  const auth = req.get('authorization');
-  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
-  if (!Number.isNaN(leagueId) && players.length > 0 && Number(raceTo) > 1 && !Number.isNaN(id)) {
-    leagueHandler.startLeague(leagueId, players, groupNames, raceTo, id, (response) => {
-      if (response instanceof Error) {
-        res.status(400).send('Error starting the league');
-      } else {
-        res.json(response);
-      }
-    });
-  } else {
-    res.status(400).send('Bad request');
+  try {
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(leagueId) && players.length > 0 && Number(raceTo) > 1 && !Number.isNaN(userId)) {
+      leagueHandler.startLeague(leagueId, players, groupNames, raceTo, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send('Error starting the league');
+        } else {
+          res.json(response);
+        }
+      });
+    } else {
+      res.status(400).send('Bad request');
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 
 router.get('/:leagueId/finish', (req, res) => {
   const leagueId = Number(req.params.leagueId);
-  const auth = req.get('authorization');
-  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
-  if (!Number.isNaN(leagueId) && !Number.isNaN(id)) {
-    leagueHandler.finishLeague(leagueId, id, (response) => {
-      if (response instanceof Error) {
-        res.status(400).send('Error finishing the league');
-      } else {
-        res.json('League finished');
-      }
-    });
-  } else {
-    res.status(400).send('Bad request');
+  try {
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(leagueId) && !Number.isNaN(userId)) {
+      leagueHandler.finishLeague(leagueId, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send('Error finishing the league');
+        } else {
+          res.json('League finished');
+        }
+      });
+    } else {
+      res.status(400).send('Bad request');
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 
 router.get('/:leagueId/start/qualifiers', (req, res) => {
-  const auth = req.get('authorization');
-  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
-  leagueHandler.startQualifiers(req.params.leagueId, id, (response) => {
-    if (response instanceof Error) {
-      res.status(400).send('Error starting qualifiers');
+  try {
+    const leagueId = Number(req.params.leagueId);
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(leagueId) && !Number.isNaN(userId)) {
+      leagueHandler.startQualifiers(req.params.leagueId, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send('Error starting qualifiers');
+        } else {
+          res.json('Qualifiers started successfully');
+        }
+      });
     } else {
-      res.json('Qualifiers started successfully');
+      res.status(400).send('Bad request');
     }
-  });
+  } catch (e) {
+    res.status(403).send(e.message);
+  }
 });
 
 router.post('/:leagueId/start/finals', (req, res) => {
   const { leagueId } = req.params;
   const { players } = req.body;
-  const auth = req.get('authorization');
-  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
-  if (!Number.isNaN(Number(leagueId)) && players.groupStage.length === 4 &&
+  try {
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(Number(leagueId)) && players.groupStage.length === 4 &&
   players.qualifiers.length === 4) {
-    leagueHandler.startFinals(leagueId, players, id, (response) => {
-      if (response instanceof Error) {
-        res.status(400).send('Error starting finals');
-      } else {
-        res.json('Finals started successfully');
-      }
-    });
-  } else {
-    res.status(400).send('Bad request');
+      leagueHandler.startFinals(leagueId, players, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send('Error starting finals');
+        } else {
+          res.json('Finals started successfully');
+        }
+      });
+    } else {
+      res.status(400).send('Bad request');
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 
@@ -137,18 +155,21 @@ router.get('/:leagueId/groups/undetermined', (req, res) => {
 router.post('/:leagueId/groups/undetermined/', (req, res) => {
   const { leagueId } = req.params;
   const { group } = req.body;
-  const auth = req.get('authorization');
-  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
-  if (!Number.isNaN(Number(leagueId))) {
-    leagueHandler.fixUndeterminedRankings(leagueId, group, id, (reows, response) => {
-      if (response instanceof Error) {
-        res.status(400).send('Error updating undetermined');
-      } else {
-        res.json(response);
-      }
-    });
-  } else {
-    res.status(400).send('Bad request');
+  try {
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(Number(leagueId))) {
+      leagueHandler.fixUndeterminedRankings(leagueId, group, userId, (reows, response) => {
+        if (response instanceof Error) {
+          res.status(400).send('Error updating undetermined');
+        } else {
+          res.json(response);
+        }
+      });
+    } else {
+      res.status(400).send('Bad request');
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 
@@ -171,18 +192,21 @@ router.get('/:leagueId/groups/:groupId/matches', (req, res) => {
 router.post('/:leagueId/groups/:groupId/matches/:matchId', (req, res) => {
   const { match } = req.body;
   const { leagueId } = req.params;
-  const auth = req.get('authorization');
-  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
-  if (!Number.isNaN(leagueId) && typeof match === 'object' && !Number.isNaN(id)) {
-    leagueHandler.updateGroupStageMatch(leagueId, match, id, (response) => {
-      if (response instanceof Error) {
-        res.status(400).send(response.message);
-      } else {
-        res.json(response);
-      }
-    });
-  } else {
-    res.status(400).send('Bad request');
+  try {
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(leagueId) && typeof match === 'object' && !Number.isNaN(userId)) {
+      leagueHandler.updateGroupStageMatch(leagueId, match, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send(response.message);
+        } else {
+          res.json(response);
+        }
+      });
+    } else {
+      res.status(400).send('Bad request');
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 
@@ -220,54 +244,63 @@ router.get('/:leagueId/elimination/matches/', (req, res) => {
 router.post('/:leagueId/qualifiers/matches/:matchId', (req, res) => {
   const { match } = req.body;
   const { leagueId } = req.params;
-  const auth = req.get('authorization');
-  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
-  if (!Number.isNaN(leagueId) && typeof match === 'object' && !Number.isNaN(id)) {
-    leagueHandler.updateQualifierBracket(leagueId, match, id, (response) => {
-      if (response instanceof Error) {
-        res.status(400).send(response.message);
-      } else {
-        res.json(response);
-      }
-    });
-  } else {
-    res.status(400).send('Bad request');
+  try {
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(leagueId) && typeof match === 'object' && !Number.isNaN(userId)) {
+      leagueHandler.updateQualifierBracket(leagueId, match, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send(response.message);
+        } else {
+          res.json(response);
+        }
+      });
+    } else {
+      res.status(400).send('Bad request');
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 
 router.post('/:leagueId/elimination/matches/:matchId', (req, res) => {
   const { match } = req.body;
   const { leagueId } = req.params;
-  const auth = req.get('authorization');
-  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
-  if (!Number.isNaN(leagueId) && typeof match === 'object') {
-    leagueHandler.updateEliminationBracket(leagueId, match, id, (response) => {
-      if (response instanceof Error) {
-        res.status(400).send('Error updating elimination match');
-      } else {
-        res.json('Success');
-      }
-    });
-  } else {
-    res.status(400).send('Bad request');
+  try {
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(leagueId) && typeof match === 'object') {
+      leagueHandler.updateEliminationBracket(leagueId, match, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send('Error updating elimination match');
+        } else {
+          res.json('Success');
+        }
+      });
+    } else {
+      res.status(400).send('Bad request');
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 
 router.post('/:leagueId/finals/matches/:matchId', (req, res) => {
   const { match } = req.body;
   const { leagueId } = req.params;
-  const auth = req.get('authorization');
-  const [id] = Buffer.from(auth.split(' ').pop(), 'base64').toString('ascii').split(':');
-  if (!Number.isNaN(leagueId) && typeof match === 'object') {
-    leagueHandler.updateFinalsBracket(leagueId, match, id, (response) => {
-      if (response instanceof Error) {
-        res.status(400).send('Error updating finals match');
-      } else {
-        res.json('Success');
-      }
-    });
-  } else {
-    res.status(400).send('Bad request');
+  try {
+    const userId = authHelper.readUserId(req);
+    if (!Number.isNaN(leagueId) && typeof match === 'object') {
+      leagueHandler.updateFinalsBracket(leagueId, match, userId, (response) => {
+        if (response instanceof Error) {
+          res.status(400).send('Error updating finals match');
+        } else {
+          res.json('Success');
+        }
+      });
+    } else {
+      res.status(400).send('Bad request');
+    }
+  } catch (e) {
+    res.status(403).send(e.message);
   }
 });
 

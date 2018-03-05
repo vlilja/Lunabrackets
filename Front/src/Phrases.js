@@ -65,6 +65,11 @@ export default {
     name: 'Name',
     create: 'Create season',
   },
+  seasonStatusForm: {
+    heading: 'Change season status',
+    activate: 'Activate',
+    inactivate: 'Inactivate',
+  },
   leagueForm: {
     heading: 'Create new league',
     mainFormHeading: 'Step One',

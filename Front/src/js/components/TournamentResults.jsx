@@ -37,6 +37,9 @@ export default class TournamentResults extends React.Component {
     const list = this.mapResults();
     return (<div>
       <h2>{phrases.tournamentResults.heading}</h2>
+      <p className="lead">
+        {this.props.tournament.name}
+      </p>
       <div className="col-xs-12 col-lg-6">
         {list || <Icons type="LOADING" size="40px" />}
       </div>

@@ -38,7 +38,7 @@ class SeasonForm extends React.Component {
     e.preventDefault();
     const { name } = this.state;
     if (name && name.length > 0) {
-      this.props.dispatch(createSeason({ name }));
+      this.props.dispatch(createSeason({ name }, this.props.user));
     } else {
       this.setState({ error: true });
     }
@@ -70,7 +70,7 @@ class SeasonForm extends React.Component {
   }
 
   render() {
-    if (this.props.admin !== '1') {
+    if (this.props.user.admin !== '1') {
       return (<Redirect
         to={{
             pathname: '/',
@@ -113,7 +113,7 @@ class SeasonForm extends React.Component {
 }
 
 export default connect(store => ({
-  admin: store.user.admin,
+  user: store.user,
   loading: store.season.loading,
   message: store.season.message,
   error: store.season.error,

@@ -1,8 +1,19 @@
 const db = require('../DB/dbOperations');
 const logger = require('winston');
 const { Season, League, Tournament } = require('lunabrackets-datamodel');
+const userHandler = require('./userHandler');
 
 const dbClient = require('../DB/dbconnect').initConnection();
+
+function isAdmin(id) {
+  return userHandler.getUserById(id)
+    .then(user => new Promise((resolve, reject) => {
+      if (user.admin !== '1') {
+        reject(new Error('User not admin'));
+      }
+      resolve();
+    }));
+}
 
 module.exports = {
 
@@ -49,42 +60,48 @@ module.exports = {
       });
   },
 
-  createSeason(season, cb) {
+  createSeason(season, userId, cb) {
     const seasonObj = Object.assign(new Season(), season);
-    if (season.name) {
-      const promise = db.season.getSeasonByName(dbClient, season.name);
-      promise.then((response) => {
+    const promise = isAdmin(userId);
+    promise.then(() => {
+      if (season.name) {
+        return db.season.getSeasonByName(dbClient, season.name);
+      }
+      throw new Error('Season name missing');
+    })
+      .then((response) => {
         if (response.length !== 0) {
           throw new Error('Season with that name already exists');
         }
         return db.season.insertSeason(dbClient, seasonObj);
       })
-        .then(() => {
-          cb('Season created successfully');
-        })
-        .catch((error) => {
-          logger.error(error);
-          cb(error);
-        });
-    }
-  },
-
-  setActive(seasonId, cb) {
-    const promise = db.season.updateActiveStatus(dbClient, seasonId, 1);
-    promise.then(() => {
-      cb('Season set active');
-    })
+      .then(() => {
+        cb('Season created successfully');
+      })
       .catch((error) => {
         logger.error(error);
         cb(error);
       });
   },
 
-  setInactive(seasonId, cb) {
-    const promise = db.season.updateActiveStatus(dbClient, seasonId, 0);
-    promise.then(() => {
-      cb('Season set inactive');
-    })
+  setActive(seasonId, userId, cb) {
+    const promise = isAdmin(userId);
+    promise.then(() => db.season.updateActiveStatus(dbClient, seasonId, 1))
+      .then(() => {
+        cb('Season set active');
+      })
+      .catch((error) => {
+        logger.error(error);
+        cb(error);
+      });
+  },
+
+  setInactive(seasonId, userId, cb) {
+    const promise = isAdmin(userId);
+    promise.then(() => db.season.updateActiveStatus(dbClient, seasonId, 0))
+      .then(() => {
+        cb('Season set inactive');
+      })
       .catch((error) => {
         logger.error(error);
         cb(error);
