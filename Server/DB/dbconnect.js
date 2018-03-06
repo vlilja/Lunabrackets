@@ -12,13 +12,19 @@ module.exports = {
   client: null,
 
   initConnection() {
-    const credentials = readDbCredentials();
     if (!this.client) {
+      const credentials = readDbCredentials();
+      let db;
+      if (process.env.NODE_ENV === 'production') {
+        db = 'lunabrackets';
+      } else {
+        db = 'lunabrackets-test';
+      }
       this.client = new Client({
         host: '127.0.0.1',
         user: credentials.username,
         password: credentials.password,
-        db: 'lunabrackets',
+        db,
       });
     }
     return this.client;
