@@ -31,13 +31,12 @@ export function getUserByFb(fbId) {
       payload: '',
     });
     let user = {
-      id: undefined, fbId, admin: undefined, firstName: undefined, lastName: undefined,
+      id: undefined, fb_id: fbId, admin: undefined, firstName: undefined, lastName: undefined,
     };
     axios.get(`${serverDetails.baseUrl}users/fb/${fbId}`)
       .then((response) => {
         if (response.data[0]) {
           [user] = response.data;
-          user.fbId = fbId;
         }
         dispatch({
           type: 'FETCH_USER_BY_FB_FULFILLED',
