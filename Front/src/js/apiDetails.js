@@ -1,5 +1,5 @@
 export default {
 
-  baseUrl: 'https://localhost:3001/api/',
+  baseUrl: 'https://172.31.41.146:3001/api/',
 
 };

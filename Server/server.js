@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 
 app.use((req, res, next) => {
   // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', 'https://localhost:8080');
+  res.setHeader('Access-Control-Allow-Origin', 'https://172.31.41.146:8080');
 
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
