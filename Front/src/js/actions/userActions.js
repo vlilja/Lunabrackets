@@ -31,7 +31,7 @@ export function getUserByFb(fbId) {
       payload: '',
     });
     let user = {
-      id: undefined, fbId: null, admin: undefined, firstName: undefined, lastName: undefined,
+      id: undefined, fbId, admin: undefined, firstName: undefined, lastName: undefined,
     };
     axios.get(`${serverDetails.baseUrl}users/fb/${fbId}`)
       .then((response) => {
