@@ -37,6 +37,7 @@ export function getUserByFb(fbId) {
       .then((response) => {
         if (response.data[0]) {
           [user] = response.data;
+          user.fbId = fbId;
         }
         dispatch({
           type: 'FETCH_USER_BY_FB_FULFILLED',
