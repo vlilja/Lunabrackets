@@ -73,7 +73,7 @@ class TournamentForm extends React.Component {
   }
 
   render() {
-    if (this.props.admin !== '1') {
+    if (this.props.user.admin !== '1') {
       return (<Redirect
         to={{
             pathname: '/',
@@ -165,6 +165,7 @@ class TournamentForm extends React.Component {
 }
 
 export default connect(store => ({
+  user: store.user,
   league: store.league,
   players: store.player.playerList,
   seasons: store.season.seasons,

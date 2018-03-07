@@ -1,5 +1,4 @@
 const express = require('express');
-const delay = require('express-delay');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const https = require('https');
@@ -18,7 +17,7 @@ app.use(bodyParser.json());
 
 app.use((req, res, next) => {
   // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', 'https://ec2-54-154-60-207.eu-west-1.compute.amazonaws.com:8080');
 
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
@@ -32,7 +31,7 @@ app.use((req, res, next) => {
   // Pass to next layer of middleware
   next();
 });
-app.use(delay(700, 1300));
+
 app.use(require('./routes'));
 
 const httpsServer = https.createServer(credentials, app);

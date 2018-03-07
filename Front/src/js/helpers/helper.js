@@ -1,4 +1,8 @@
 import phrases from '../../Phrases';
+import eightBall from '../../images/8ball.png';
+import nineBall from '../../images/9ball.png';
+import tenBall from '../../images/10ball.png';
+import straightPool from '../../images/rackedballs.jpg';
 
 module.exports = {
   determineGameName(id) {
@@ -23,23 +27,23 @@ module.exports = {
   },
 
   determineGameIcon(id) {
-    let gameName;
+    let image;
     switch (id) {
       case '1':
-        gameName = '8ball.png';
+        image = eightBall;
         break;
       case '2':
-        gameName = '9ball.png';
+        image = nineBall;
         break;
       case '3':
-        gameName = '10ball.png';
+        image = tenBall;
         break;
       case '4':
-        gameName = 'rackedballs.jpeg';
+        image = straightPool;
         break;
       default:
         break;
     }
-    return gameName;
+    return image;
   },
 };

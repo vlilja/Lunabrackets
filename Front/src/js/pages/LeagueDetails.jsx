@@ -210,11 +210,10 @@ class LeagueDetails extends React.Component {
       element = <Icons type="LOADING" size="40px" />;
     } else {
       const gameName = helper.determineGameName(this.props.league.gameType);
-      const imageName = helper.determineGameIcon(this.props.league.gameType);
+      const image = helper.determineGameIcon(this.props.league.gameType);
       const raceTo = this.props.league.raceTo ? this.props.league.raceTo : '?';
       element = (<div>
-        <h1 className="margin-bottom-double"> <img className="img game-logo" alt="logo" src={`/images/${imageName}`} />{`${this.props.league.name}  `}({`${gameName} , ${phrases.general.raceTo} ${raceTo}`})</h1>
-
+        <h1 className="margin-bottom-double"> <img className="img game-logo" alt="logo" src={image} />{`${this.props.league.name}  `}({`${gameName} , ${phrases.general.raceTo} ${raceTo}`})</h1>
         {modal}
         <LeagueNavigation
           view={this.state.view}
