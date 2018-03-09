@@ -4,6 +4,7 @@ export default function reducer(state = {
   lastName: '',
   admin: null,
   fbId: null,
+  token: null,
   fb: {
     details: null,
   },
@@ -14,7 +15,7 @@ export default function reducer(state = {
       return { ...state };
     }
     case 'LOG_IN_FULFILLED': {
-      return { ...state, fbId: action.payload };
+      return { ...state, fbId: action.payload.id, token: action.payload.token };
     }
     case 'LOG_IN_REJECTED': {
       return { ...state, error: action.payload };

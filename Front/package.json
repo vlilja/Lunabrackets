@@ -5,6 +5,7 @@
   "main": "client.js",
   "scripts": {
     "dev": "webpack-dev-server --content-base src --inline --hot",
+    "dist": "node app.js NODE_ENV='development'",
     "build": "webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,7 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.15.3",
-    "cookie-session": "^2.0.0-beta.3",
+    "express": "^4.16.2",
     "express-session": "^1.15.6",
     "file-loader": "^1.1.6",
     "helmet": "^3.12.0",

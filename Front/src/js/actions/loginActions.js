@@ -18,10 +18,10 @@ export function logIn() {
     });
     FB.login((response) => {
       if (response.status === 'connected') {
-        dispatch(getUserByFb(response.authResponse.userID));
+        dispatch(getUserByFb(response.authResponse.userID, response.authResponse.accessToken));
         dispatch({
           type: 'LOG_IN_FULFILLED',
-          payload: response.authResponse.userID,
+          payload: { id: response.authResponse.userID, token: response.authResponse.accessToken },
         });
       } else {
         dispatch({
@@ -83,7 +83,7 @@ export function checkLoginStatus() {
   return (dispatch) => {
     FB.getLoginStatus((response) => {
       if (response.status === 'connected') {
-        dispatch(getUserByFb(response.authResponse.userID));
+        dispatch(getUserByFb(response.authResponse.userID, response.authResponse.accessToken));
       }
     });
   };

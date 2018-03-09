@@ -17,7 +17,7 @@ class LeagueList extends React.Component {
 
   componentWillMount() {
     if (!this.props.leagues) {
-      this.props.dispatch(getAllLeagues());
+      this.props.dispatch(getAllLeagues(this.props.user));
     }
   }
 
@@ -48,4 +48,4 @@ class LeagueList extends React.Component {
 
 }
 
-export default connect(store => ({ leagues: store.league.leagueList, loading: store.league.loading.list }))(LeagueList);
+export default connect(store => ({ user: store.user, leagues: store.league.leagueList, loading: store.league.loading.list }))(LeagueList);

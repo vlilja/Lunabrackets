@@ -30,9 +30,6 @@ module.exports = {
     }),
     new ExtractTextPlugin('style.bundle.css'),
     new CopyWebpackPlugin([{ from: './src/bootstrap.min.css', to: paths.DIST }]),
-    new UglifyJsPlugin({
-      test: /\.js($|\?)/i,
-    }),
   ],
   module: {
     rules: [

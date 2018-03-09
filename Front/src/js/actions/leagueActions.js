@@ -30,7 +30,7 @@ export function createLeague(league, user) {
       type: 'CREATE_LEAGUE',
       payload: '',
     });
-    axios.post(`${serverDetails.baseUrl}leagues`, league, { auth: { username: user.id, password: user.fbId } }).then((response) => {
+    axios.post(`${serverDetails.baseUrl}leagues`, league, { auth: { username: user.id, password: user.token } }).then((response) => {
       dispatch({
         type: 'CREATE_LEAGUE_FULFILLED',
         payload: response.data,
@@ -45,13 +45,14 @@ export function createLeague(league, user) {
   };
 }
 
-export function getAllLeagues() {
+export function getAllLeagues(user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_ALL_LEAGUES',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues`).then((response) => {
+    console.log(user);
+    axios.get(`${serverDetails.baseUrl}leagues`, { auth: { username: user.id, password: user.token } }).then((response) => {
       const leagues = [];
       response.data.forEach((league) => {
         leagues.push(Object.assign(new League(), league));

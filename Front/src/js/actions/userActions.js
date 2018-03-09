@@ -24,16 +24,17 @@ export function createUser(user) {
   };
 }
 
-export function getUserByFb(fbId) {
+export function getUserByFb(fbId, token) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_USER_BY_FB',
       payload: '',
     });
+    console.log(`tolken${token}`);
     let user = {
       id: undefined, fb_id: fbId, admin: undefined, firstName: undefined, lastName: undefined,
     };
-    axios.get(`${serverDetails.baseUrl}users/fb/${fbId}`)
+    axios.get(`${serverDetails.baseUrl}users/fb/${fbId}`, { auth: { username: 'id', password: token } })
       .then((response) => {
         if (response.data[0]) {
           [user] = response.data;
