@@ -194,6 +194,7 @@ export default {
     createdTournament: 'Tournament created successfully',
     creatingTournamentResults: 'Creating tournament results',
     createdTournamentResults: 'Tournament results created successfully',
+    userCreation: 'User created successfully',
   },
   errorMessages: {
     pageNotFound: 'Sorry we couldn\'t find what u were looking for...',
@@ -211,5 +212,6 @@ export default {
     invalidScore: 'Who won? Fix scores',
     tournamentCreation: 'Error creating tournament',
     tournamentResultsCreation: 'Error creating tournament results',
+    userCreation: 'Error creating user',
   },
 };

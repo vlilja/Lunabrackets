@@ -35,6 +35,7 @@ class LeagueForm extends React.Component {
       availablePlayers: [],
       pickedPlayers: [],
       modalOpen: false,
+      initialized: false,
     };
     this.update = this.update.bind(this);
     this.showPickPlayers = this.showPickPlayers.bind(this);
@@ -45,11 +46,19 @@ class LeagueForm extends React.Component {
   }
 
   componentWillMount() {
-    this.props.dispatch(getAllPlayers());
-    this.props.dispatch(getSeasons());
+    if (this.props.user.token) {
+      this.props.dispatch(getAllPlayers(this.props.user));
+      this.props.dispatch(getSeasons(this.props.user));
+      this.setState({ initialized: true });
+    }
   }
 
   componentWillReceiveProps(props) {
+    if (!this.state.initialized && props.user.token) {
+      this.props.dispatch(getAllPlayers(props.user));
+      this.props.dispatch(getSeasons(props.user));
+      this.setState({ initialized: true });
+    }
     if (props.players.length > 0) {
       let availablePlayers = props.players.slice();
       availablePlayers = _.orderBy(availablePlayers, [

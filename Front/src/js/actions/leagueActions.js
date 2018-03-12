@@ -30,7 +30,10 @@ export function createLeague(league, user) {
       type: 'CREATE_LEAGUE',
       payload: '',
     });
-    axios.post(`${serverDetails.baseUrl}leagues`, league, { auth: { username: user.id, password: user.token } }).then((response) => {
+    axios.post(
+      `${serverDetails.baseUrl}leagues`, league,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       dispatch({
         type: 'CREATE_LEAGUE_FULFILLED',
         payload: response.data,
@@ -52,7 +55,10 @@ export function getAllLeagues(user) {
       payload: '',
     });
     console.log(user);
-    axios.get(`${serverDetails.baseUrl}leagues`, { auth: { username: user.id, password: user.token } }).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}leagues`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       const leagues = [];
       response.data.forEach((league) => {
         leagues.push(Object.assign(new League(), league));
@@ -71,13 +77,16 @@ export function getAllLeagues(user) {
   };
 }
 
-export function getLeague(leagueId) {
+export function getLeague(leagueId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_LEAGUE',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       const league = Object.assign(new League(), response.data);
       dispatch({
         type: 'FETCH_LEAGUE_FULFILLED',
@@ -93,13 +102,16 @@ export function getLeague(leagueId) {
   };
 }
 
-export function getLeagueResults(leagueId) {
+export function getLeagueResults(leagueId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_LEAGUE_RESULTS',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/results`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}/results`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       dispatch({
         type: 'FETCH_LEAGUE_RESULTS_FULFILLED',
         payload: response.data,
@@ -114,21 +126,27 @@ export function getLeagueResults(leagueId) {
   };
 }
 
-export function getLeagueGroups(leagueId) {
+export function getLeagueGroups(leagueId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_ALL_LEAGUE_GROUPS',
       payload: '',
     });
     const groups = {};
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/groups`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}/groups`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       response.data.forEach((group) => {
         groups[group.key] = Object.assign(new Group(), group);
       });
       const promises = [];
       const groupsKeys = Object.keys(groups);
       groupsKeys.forEach((key) => {
-        promises.push(axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/groups/${groups[key].id}/matches`));
+        promises.push(axios.get(
+          `${serverDetails.baseUrl}leagues/${leagueId}/groups/${groups[key].id}/matches`,
+          { auth: { username: user.id, password: user.token } },
+        ));
       });
       return Promise.all(promises);
     })
@@ -153,13 +171,16 @@ export function getLeagueGroups(leagueId) {
   };
 }
 
-export function getGroupResults(leagueId, groupId) {
+export function getGroupResults(leagueId, groupId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_LEAGUE_GROUP_RESULTS',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/groups/${groupId}/results`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}/groups/${groupId}/results`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       dispatch({
         type: 'FETCH_LEAGUE_GROUP_RESULTS_FULFILLED',
         payload: response.data,
@@ -174,13 +195,16 @@ export function getGroupResults(leagueId, groupId) {
   };
 }
 
-export function getLeagueGroupMatches(leagueId, groupId) {
+export function getLeagueGroupMatches(leagueId, groupId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_ALL_LEAGUE_GROUP_MATCHES',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/groups/${groupId}/matches`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}/groups/${groupId}/matches`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       dispatch({
         type: 'FETCH_ALL_LEAGUE_GROUP_MATCHES_FULFILLED',
         payload: response.data,
@@ -195,13 +219,16 @@ export function getLeagueGroupMatches(leagueId, groupId) {
   };
 }
 
-export function getUndetermined(leagueId) {
+export function getUndetermined(leagueId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_UNDETERMINED',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/groups/undetermined`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}/groups/undetermined`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       dispatch({
         type: 'FETCH_UNDETERMINED_FULFILLED',
         payload: response.data,
@@ -226,7 +253,7 @@ export function updateUndetermined(leagueId, group, user) {
       `${serverDetails.baseUrl}leagues/${leagueId}/groups/undetermined`, {
         group,
       },
-      { auth: { username: user.id, password: user.fbId } },
+      { auth: { username: user.id, password: user.token } },
     ).then((response) => {
       dispatch({
         type: 'UPDATE_UNDETERMINED_FULFILLED',
@@ -247,13 +274,16 @@ export function updateUndetermined(leagueId, group, user) {
 }
 
 
-export function getQualifierMatches(leagueId) {
+export function getQualifierMatches(leagueId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_QUALIFIER_MATCHES',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/qualifiers/matches`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}/qualifiers/matches`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       const matches = [];
       response.data.forEach((match) => {
         matches.push(Object.assign(new Match(), match));
@@ -272,13 +302,16 @@ export function getQualifierMatches(leagueId) {
   };
 }
 
-export function getEliminationMatches(leagueId) {
+export function getEliminationMatches(leagueId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_ELIMINATION_MATCHES',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/elimination/matches`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}/elimination/matches`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       const matches = [];
       response.data.forEach((match) => {
         matches.push(Object.assign(new Match(), match));
@@ -297,13 +330,16 @@ export function getEliminationMatches(leagueId) {
   };
 }
 
-export function getFinalsMatches(leagueId) {
+export function getFinalsMatches(leagueId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_FINALS_MATCHES',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}leagues/${leagueId}/finals/matches`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}leagues/${leagueId}/finals/matches`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       const matches = [];
       response.data.forEach((match) => {
         matches.push(Object.assign(new Match(), match));
@@ -334,7 +370,7 @@ export function startLeague(leagueId, players, groupNames, raceTo, user) {
         groupNames,
         raceTo,
       },
-      { auth: { username: user.id, password: user.fbId } },
+      { auth: { username: user.id, password: user.token } },
     )
       .then(() => {
         dispatch({
@@ -361,7 +397,7 @@ export function startQualifiers(leagueId, user) {
     });
     axios.get(
       `${serverDetails.baseUrl}leagues/${leagueId}/start/qualifiers?id=${user.id}`,
-      { auth: { username: user.id, password: user.fbId } },
+      { auth: { username: user.id, password: user.token } },
     )
       .then((response) => {
         dispatch({
@@ -388,7 +424,7 @@ export function startFinals(leagueId, players, user) {
     });
     axios.post(
       `${serverDetails.baseUrl}leagues/${leagueId}/start/finals`, { players },
-      { auth: { username: user.id, password: user.fbId } },
+      { auth: { username: user.id, password: user.token } },
     )
       .then(() => {
         dispatch({
@@ -415,7 +451,7 @@ export function finishLeague(leagueId, user) {
     });
     axios.get(
       `${serverDetails.baseUrl}leagues/${leagueId}/finish?id=${user.id}`,
-      { auth: { username: user.id, password: user.fbId } },
+      { auth: { username: user.id, password: user.token } },
     )
       .then(() => {
         dispatch({
@@ -442,7 +478,7 @@ export function updateGroupStageMatch(leagueId, groupId, match, user) {
     });
     axios.post(
       `${serverDetails.baseUrl}leagues/${leagueId}/groups/${groupId}/matches/${match.id}`, { match },
-      { auth: { username: user.id, password: user.fbId } },
+      { auth: { username: user.id, password: user.token } },
     ).then(() => {
       dispatch({
         type: 'UPDATE_MATCH_FULFILLED',
@@ -470,7 +506,7 @@ export function updateEliminationMatch(leagueId, match, user) {
     });
     axios.post(`${serverDetails.baseUrl}leagues/${leagueId}/elimination/matches/${match.id}`, {
       match,
-    }, { auth: { username: user.id, password: user.fbId } })
+    }, { auth: { username: user.id, password: user.token } })
       .then(() => {
         dispatch({
           type: 'UPDATE_ELIMINATION_MATCH_FULFILLED',
@@ -500,7 +536,7 @@ export function updateQualifierMatch(leagueId, match, user) {
       `${serverDetails.baseUrl}leagues/${leagueId}/qualifiers/matches/${match.id}`, {
         match,
       },
-      { auth: { username: user.id, password: user.fbId } },
+      { auth: { username: user.id, password: user.token } },
     )
       .then(() => {
         dispatch({
@@ -531,7 +567,7 @@ export function updateFinalsMatch(leagueId, match, user) {
       `${serverDetails.baseUrl}leagues/${leagueId}/finals/matches/${match.id}`, {
         match,
       },
-      { auth: { username: user.id, password: user.fbId } },
+      { auth: { username: user.id, password: user.token } },
     )
       .then(() => {
         dispatch({

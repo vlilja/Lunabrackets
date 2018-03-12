@@ -17,19 +17,22 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
   const { season } = req.body;
-  try {
-    const userId = authHelper.readUserId(req);
-    if (season && typeof season === 'object') {
-      seasonHandler.createSeason(season, userId, (response) => {
-        if (response instanceof Error) {
-          res.status(400).send('Error creating season');
-        } else {
-          res.json(response);
-        }
-      });
+  if (req.user.admin === '1') {
+    try {
+      if (season && typeof season === 'object') {
+        seasonHandler.createSeason(season, userId, (response) => {
+          if (response instanceof Error) {
+            res.status(400).send('Error creating season');
+          } else {
+            res.json(response);
+          }
+        });
+      }
+    } catch (e) {
+      res.status(403).send(e.message);
     }
-  } catch (e) {
-    res.status(403).send(e.message);
+  } else {
+    res.status(403).send('Unauthorized');
   }
 });
 

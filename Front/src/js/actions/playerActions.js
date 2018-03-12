@@ -28,13 +28,13 @@ export function searchPlayers(queryParam) {
   };
 }
 
-export function getAllPlayers() {
+export function getAllPlayers(user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_ALL_PLAYERS',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}players`).then((response) => {
+    axios.get(`${serverDetails.baseUrl}players`, { auth: { username: user.id, password: user.token } }).then((response) => {
       dispatch({
         type: 'FETCH_ALL_PLAYERS_FULFILLED',
         payload: response.data,

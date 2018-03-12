@@ -65,7 +65,9 @@ class LeagueDetails extends React.Component {
   }
 
   componentWillMount() {
-    this.props.dispatch(getLeague(this.props.match.params.id));
+    if (this.props.user.token) {
+      this.props.dispatch(getLeague(this.props.match.params.id, this.props.user));
+    }
   }
 
   componentWillReceiveProps(props) {
@@ -76,6 +78,9 @@ class LeagueDetails extends React.Component {
       const views = ['ready', ...this.state.views];
       this.setState({ views });
     }
+    if (!this.props.user.token && props.user.token) {
+      this.props.dispatch(getLeague(this.props.match.params.id, props.user));
+    }
   }
 
   setView(view) {
@@ -84,28 +89,28 @@ class LeagueDetails extends React.Component {
 
   getGroups() {
     if (!this.props.league.groups) {
-      this.props.dispatch(getLeagueGroups(this.props.league.id));
+      this.props.dispatch(getLeagueGroups(this.props.league.id, this.props.user));
     }
   }
 
   getUndetermined() {
-    this.props.dispatch(getUndetermined(this.props.league.id));
+    this.props.dispatch(getUndetermined(this.props.league.id, this.props.user));
   }
 
   getQualifierMatches() {
-    this.props.dispatch(getQualifierMatches(this.props.league.id));
+    this.props.dispatch(getQualifierMatches(this.props.league.id, this.props.user));
   }
 
   getEliminationMatches() {
-    this.props.dispatch(getEliminationMatches(this.props.league.id));
+    this.props.dispatch(getEliminationMatches(this.props.league.id, this.props.user));
   }
 
   getFinalsMatches() {
-    this.props.dispatch(getFinalsMatches(this.props.league.id));
+    this.props.dispatch(getFinalsMatches(this.props.league.id, this.props.user));
   }
 
   getResults() {
-    this.props.dispatch(getLeagueResults(this.props.league.id));
+    this.props.dispatch(getLeagueResults(this.props.league.id, this.props.user));
   }
 
   updateUndetermined(group) {

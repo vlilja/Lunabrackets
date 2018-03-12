@@ -6,8 +6,9 @@ export default function reducer(state = {
   fbId: null,
   token: null,
   fb: {
-    details: null,
+    details: { firstName: '', lastName: '' },
   },
+  loading: false,
   error: null,
 }, action) {
   switch (action.type) {
@@ -42,6 +43,7 @@ export default function reducer(state = {
         admin: action.payload.admin,
         firstName: action.payload.firstName,
         lastName: action.payload.lastName,
+        token: action.payload.token,
       };
     }
     case 'FETCH_USER_BY_FB_REJECTED': {
@@ -55,6 +57,19 @@ export default function reducer(state = {
     }
     case 'FETCH_USER_DETAILS_FROM_FB_REJECTED': {
       return { ...state, error: action.payload };
+    }
+    case 'CREATE_USER': {
+      return {
+        ...state, loading: true, error: null,
+      };
+    }
+    case 'CREATE_USER_FULFILLED': {
+      return { ...state, loading: false };
+    }
+    case 'CREATE_USER_REJECTED': {
+      return {
+        ...state, loading: false, error: action.payload.error,
+      };
     }
     default: {
       return { ...state };

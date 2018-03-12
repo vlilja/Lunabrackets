@@ -16,8 +16,14 @@ class LeagueList extends React.Component {
   }
 
   componentWillMount() {
-    if (!this.props.leagues) {
+    if (!this.props.leagues && this.props.user.id) {
       this.props.dispatch(getAllLeagues(this.props.user));
+    }
+  }
+
+  componentWillReceiveProps(props) {
+    if (!this.props.user.id && props.user.token) {
+      this.props.dispatch(getAllLeagues(props.user));
     }
   }
 

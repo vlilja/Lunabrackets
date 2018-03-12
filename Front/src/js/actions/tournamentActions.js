@@ -5,13 +5,16 @@ import phrases from '../../Phrases';
 
 // GET
 
-export function getAllTournaments() {
+export function getAllTournaments(user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_ALL_TOURNAMENTS',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}tournaments`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}tournaments`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       const tournaments = [];
       response.data.forEach((tournament) => {
         tournaments.push(tournament);
@@ -30,13 +33,16 @@ export function getAllTournaments() {
   };
 }
 
-export function getTournament(tournamentId) {
+export function getTournament(tournamentId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_TOURNAMENT',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}tournaments/${tournamentId}`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}tournaments/${tournamentId}`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       dispatch({
         type: 'FETCH_TOURNAMENT_FULFILLED',
         payload: response.data[0],
@@ -52,13 +58,16 @@ export function getTournament(tournamentId) {
 }
 
 
-export function getTournamentResults(tournamentId) {
+export function getTournamentResults(tournamentId, user) {
   return (dispatch) => {
     dispatch({
       type: 'FETCH_TOURNAMENT_RESULTS',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}tournaments/${tournamentId}/results`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}tournaments/${tournamentId}/results`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       dispatch({
         type: 'FETCH_TOURNAMENT_RESULTS_FULFILLED',
         payload: response.data,
@@ -75,7 +84,7 @@ export function getTournamentResults(tournamentId) {
 
 // POST
 
-export function createTournament(tournament) {
+export function createTournament(tournament, user) {
   return (dispatch) => {
     dispatch({
       type: 'CREATE_TOURNAMENT',
@@ -83,9 +92,9 @@ export function createTournament(tournament) {
     });
     axios({
       method: 'POST',
-      headers: { kissa: 'pissa' },
       url: `${serverDetails.baseUrl}tournaments`,
       data: { tournament },
+      auth: { username: user.id, password: user.token },
     }).then(() => {
       dispatch({
         type: 'CREATE_TOURNAMENT_FULFILLED',
@@ -101,13 +110,16 @@ export function createTournament(tournament) {
   };
 }
 
-export function createTournamentResults(tournamentId, results) {
+export function createTournamentResults(tournamentId, results, user) {
   return (dispatch) => {
     dispatch({
       type: 'CREATE_TOURNAMENT_RESULTS',
       payload: '',
     });
-    axios.post(`${serverDetails.baseUrl}tournaments/${tournamentId}/results`, { results }).then(() => {
+    axios.post(
+      `${serverDetails.baseUrl}tournaments/${tournamentId}/results`, { results },
+      { auth: { username: user.id, password: user.token } },
+    ).then(() => {
       dispatch({
         type: 'CREATE_TOURNAMENT_RESULTS_FULFILLED',
         payload: phrases.messages.createdTournamentResults,

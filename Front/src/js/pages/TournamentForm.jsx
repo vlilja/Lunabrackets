@@ -16,6 +16,7 @@ class TournamentForm extends React.Component {
       game: '1',
       season: '',
       modalOpen: false,
+      seasonsFetched: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.renderOptions = this.renderOptions.bind(this);
@@ -23,10 +24,17 @@ class TournamentForm extends React.Component {
   }
 
   componentWillMount() {
-    this.props.dispatch(getSeasons());
+    if (this.props.user.token) {
+      this.props.dispatch(getSeasons(this.props.user));
+      this.setState({ seasonsFetched: true });
+    }
   }
 
   componentWillReceiveProps(props) {
+    if (!this.state.seasonsFetched && props.user.token) {
+      this.props.dispatch(getSeasons(this.props.user));
+      this.setState({ seasonsFetched: true });
+    }
     if (props.seasons.length > 0) {
       this.setState({ season: props.seasons[0].id });
     }
@@ -57,7 +65,7 @@ class TournamentForm extends React.Component {
   submit(e) {
     e.preventDefault();
     const tournament = { name: this.state.name, game: this.state.game, season: this.state.season };
-    this.props.dispatch(createTournament(tournament));
+    this.props.dispatch(createTournament(tournament, this.props.user));
     this.controlModal(true);
   }
 

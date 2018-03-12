@@ -46,7 +46,7 @@ module.exports = {
         })
         .catch((error) => {
           logger.error(error);
-          cb(error);
+          transactionManager.endTransaction(dbClient, false, cb);
         });
     } else {
       cb(new Error('User details invalid'));

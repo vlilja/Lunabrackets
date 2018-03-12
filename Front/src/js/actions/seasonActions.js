@@ -3,13 +3,16 @@ import { Season } from 'lunabrackets-datamodel';
 
 import serverDetails from '../apiDetails';
 
-export function getSeasons() {
+export function getSeasons(user) {
   return (dispatch) => {
     dispatch({
       type: 'GET_SEASONS',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}seasons`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}seasons`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       const seasons = [];
       response.data.forEach((season) => {
         seasons.push((Object.assign(new Season(), season)));
@@ -28,13 +31,16 @@ export function getSeasons() {
   };
 }
 
-export function getSeason(seasonId) {
+export function getSeason(seasonId, user) {
   return (dispatch) => {
     dispatch({
       type: 'GET_SEASON',
       payload: '',
     });
-    axios.get(`${serverDetails.baseUrl}seasons/${seasonId}`).then((response) => {
+    axios.get(
+      `${serverDetails.baseUrl}seasons/${seasonId}`,
+      { auth: { username: user.id, password: user.token } },
+    ).then((response) => {
       const seasons = [];
       response.data.forEach((season) => {
         seasons.push((Object.assign(new Season(), season)));
@@ -53,7 +59,7 @@ export function getSeason(seasonId) {
   };
 }
 
-export function getSeasonResults(leagues, tournaments) {
+export function getSeasonResults(leagues, tournaments, user) {
   return (dispatch) => {
     dispatch({
       type: 'GET_SEASON_RESULTS',
@@ -62,7 +68,10 @@ export function getSeasonResults(leagues, tournaments) {
     let requests = [];
     const results = { leagues: [], tournaments: [] };
     leagues.forEach((league) => {
-      requests.push(axios.get(`${serverDetails.baseUrl}leagues/${league.id}/results`));
+      requests.push(axios.get(
+        `${serverDetails.baseUrl}leagues/${league.id}/results`,
+        { auth: { username: user.id, password: user.token } },
+      ));
     });
     axios.all(requests).then((response) => {
       response.forEach((res) => {
@@ -72,7 +81,10 @@ export function getSeasonResults(leagues, tournaments) {
       .then(() => {
         requests = [];
         tournaments.forEach((tournament) => {
-          requests.push(axios.get(`${serverDetails.baseUrl}tournaments/${tournament.id}/results`));
+          requests.push(axios.get(
+            `${serverDetails.baseUrl}tournaments/${tournament.id}/results`,
+            { auth: { username: user.id, password: user.token } },
+          ));
         });
         return axios.all(requests);
       })
@@ -103,7 +115,7 @@ export function createSeason(season, user) {
     axios.post(`${serverDetails.baseUrl}seasons/`, {
       season,
     }, {
-      auth: { username: user.id, password: user.fbId },
+      auth: { username: user.id, password: user.token },
     })
       .then(() => {
         dispatch({
@@ -134,7 +146,7 @@ export function changeSeasonStatus(seasonId, status, user) {
       url = `${serverDetails.baseUrl}seasons/${seasonId}/inactivate`;
     }
     axios.get(url, {
-      auth: { username: user.id, password: user.fbId },
+      auth: { username: user.id, password: user.token },
     })
       .then(() => {
         dispatch({

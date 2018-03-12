@@ -8,14 +8,26 @@ class SeasonList extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      initialized: false,
+    };
     this.mapSeasons = this.mapSeasons.bind(this);
     this.navigateTo = this.navigateTo.bind(this);
     this.changeSeasonStatus = this.changeSeasonStatus.bind(this);
   }
 
   componentWillMount() {
-    this.props.dispatch(getSeasons());
+    if (this.props.user.token) {
+      this.props.dispatch(getSeasons(this.props.user));
+      this.setState({ initialized: true });
+    }
+  }
+
+  componentWillReceiveProps(props) {
+    if (!this.state.initialized && props.user.token) {
+      this.props.dispatch(getSeasons(props.user));
+      this.setState({ initialized: true });
+    }
   }
 
   changeSeasonStatus(seasonId, status) {

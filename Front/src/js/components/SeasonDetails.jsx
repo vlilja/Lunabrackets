@@ -11,19 +11,37 @@ class SeasonDetails extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      seasonFetched: false,
+      resultsFetched: false,
+      playersFetched: false,
+    };
     this.mapSeason = this.mapSeason.bind(this);
   }
 
   componentWillMount() {
-    this.props.dispatch(getSeason(this.props.match.params.id));
-    if (!this.props.players.length > 0) {
-      this.props.dispatch(getAllPlayers());
+    if (this.props.user.token) {
+      this.props.dispatch(getSeason(this.props.match.params.id, this.props.user));
+      this.setState({ seasonFetched: true });
+    }
+    if (!this.props.players.length > 0 && this.props.user.token) {
+      this.props.dispatch(getAllPlayers(this.props.user));
+      this.setState({ playersFetched: true });
     }
   }
 
   componentWillReceiveProps(props) {
-    if (props.season && !props.season.results) {
-      this.props.dispatch(getSeasonResults(props.season.leagues, props.season.tournaments));
+    if (!this.state.seasonFetched && props.user.token) {
+      this.props.dispatch(getSeason(this.props.match.params.id, props.user));
+      this.setState({ seasonFetched: true });
+    }
+    if (!this.state.resultsFetched && props.season && props.user.token) {
+      this.props.dispatch(getSeasonResults(props.season.leagues, props.season.tournaments, props.user));
+      this.setState({ resultsFetched: true });
+    }
+    if (!this.state.playersFetched && props.user.token) {
+      this.props.dispatch(getAllPlayers(props.user));
+      this.setState({ playersFetched: true });
     }
   }
 
@@ -180,6 +198,7 @@ class SeasonDetails extends React.Component {
 }
 
 export default connect(store => ({
+  user: store.user,
   season: store.season.selectedSeason,
   players: store.player.playerList,
   loading: store.season.loading,

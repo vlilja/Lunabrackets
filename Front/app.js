@@ -1,6 +1,5 @@
 const express = require('express');
 const helmet = require('helmet');
-const axios = require('axios');
 
 const session = require('express-session');
 const fs = require('fs');

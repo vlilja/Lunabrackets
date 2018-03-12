@@ -15,6 +15,7 @@ class TournamentDetails extends React.Component {
     super(props);
     this.state = {
       modalOpen: false,
+      tournamentFetched: false,
       resultsFetched: false,
     };
     this.renderModal = this.renderModal.bind(this);
@@ -23,25 +24,33 @@ class TournamentDetails extends React.Component {
   }
 
   componentWillMount() {
-    this.props.dispatch(getTournament(this.props.match.params.id));
-    this.props.dispatch(getAllPlayers());
+    if (this.props.user.token) {
+      this.props.dispatch(getTournament(this.props.match.params.id, this.props.user));
+      this.props.dispatch(getAllPlayers(this.props.user));
+      this.setState({ tournamentFetched: true });
+    }
   }
 
   componentWillReceiveProps(props) {
-    if (props.tournament && props.tournament.status === 'complete' && !this.state.resultsFetched) {
-      this.props.dispatch(getTournamentResults(props.tournament.id));
+    if (props.user.token && !this.state.tournamentFetched) {
+      this.props.dispatch(getTournament(this.props.match.params.id, props.user));
+      this.props.dispatch(getAllPlayers(props.user));
+      this.setState({ tournamentFetched: true });
+    }
+    if (props.tournament && props.tournament.status === 'complete' && !this.state.resultsFetched && props.user.token) {
+      this.props.dispatch(getTournamentResults(props.tournament.id, props.user));
       this.setState({ resultsFetched: true });
     }
   }
 
   createTournamentResults(results) {
     this.setState({ modalOpen: true });
-    this.props.dispatch(createTournamentResults(this.props.tournament.id, results));
+    this.props.dispatch(createTournamentResults(this.props.tournament.id, results, this.props.user));
   }
 
   closeModal() {
     if (!this.props.error) {
-      this.props.dispatch(getTournament(this.props.tournament.id));
+      this.props.dispatch(getTournament(this.props.tournament.id, this.props.user));
     }
     this.setState({ modalOpen: false });
   }

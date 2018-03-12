@@ -70,6 +70,7 @@ module.exports = {
       throw new Error('Season name missing');
     })
       .then((response) => {
+        console.log(response);
         if (response.length !== 0) {
           throw new Error('Season with that name already exists');
         }

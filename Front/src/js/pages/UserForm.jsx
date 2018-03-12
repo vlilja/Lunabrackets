@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { getFacebookUserDetails } from '../actions/loginActions';
 import { createUser } from '../actions/userActions';
 import Icons from '../components/Icons';
+import Modal from '../components/Modal';
 import phrases from '../../Phrases';
 
 class UserForm extends React.Component {
@@ -12,6 +13,7 @@ class UserForm extends React.Component {
     super(props);
     this.state = {
       nickName: '',
+      modalOpen: false,
     };
     this.handleChange = this.handleChange.bind(this);
     this.submit = this.submit.bind(this);
@@ -29,6 +31,7 @@ class UserForm extends React.Component {
       lastName: this.props.user.fb.details.lastName,
       nickName: this.state.nickName,
     };
+    this.setState({ modalOpen: true });
     this.props.dispatch(createUser(user));
   }
 
@@ -70,6 +73,19 @@ class UserForm extends React.Component {
             </div>
           </div>
         : <Icons type="LOADING" size="40px" />}
+        <Modal
+          open={this.state.modalOpen}
+          classes={
+           ['col-xs-8 col-xs-offset-2 col-lg-4 col-lg-offset-4 small-modal']}
+          bgclasses={['modal-back-ground']}
+        >
+          {this.props.user.loading ?
+            <Icons type="LOADING" size="40px" />
+             : <div>{this.props.user.error ?
+               <Icons type="ERROR" size="40px" message={phrases.errorMessages.userCreation} />
+               : <Icons type="SUCCESS" size="40px" message={phrases.messages.userCreation} /> }</div>}
+          <button className="btn btn-primary" onClick={() => { window.location = '/'; }}>OK</button>
+        </Modal>
       </div>);
   }
 

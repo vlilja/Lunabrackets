@@ -9,13 +9,25 @@ class TournamentList extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      initialized: false,
+    };
     this.navigateTo = this.navigateTo.bind(this);
     this.renderList = this.renderList.bind(this);
   }
 
   componentWillMount() {
-    this.props.dispatch(getAllTournaments());
+    if (this.props.user.token) {
+      this.props.dispatch(getAllTournaments(this.props.user));
+      this.setState({ initialized: true });
+    }
+  }
+
+  componentWillReceiveProps(props) {
+    if (!this.state.initialized && props.user.token) {
+      this.props.dispatch(getAllTournaments(props.user));
+      this.setState({ initialized: true });
+    }
   }
 
   navigateTo(id) {
@@ -44,6 +56,6 @@ class TournamentList extends React.Component {
 }
 
 export default connect(store => ({
-  user: store.user.admin,
+  user: store.user,
   tournaments: store.tournament.tournaments,
 }))(TournamentList);

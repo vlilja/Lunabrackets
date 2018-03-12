@@ -19,9 +19,13 @@ router.post('/', (req, res) => {
 });
 
 router.get('/', (req, res) => {
-  leagueHandler.getLeagues((response) => {
-    res.json(response);
-  });
+  if (!req.user && !req.user.id) {
+    res.status(401).send('Unauthorized');
+  } else {
+    leagueHandler.getLeagues((response) => {
+      res.json(response);
+    });
+  }
 });
 
 router.get('/:leagueId', (req, res) => {

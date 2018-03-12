@@ -106,7 +106,7 @@ class Navbar extends React.Component {
                   {
                     this.props.user.fbId ?
                       <a href="#menu" onClick={this.handleLogout}>
-                        {`(${this.props.user.firstName} ${this.props.user.lastName}) ${phrases.general.logout}`}
+                        {`(${this.props.user.firstName || this.props.user.fb.details.firstName} ${this.props.user.lastName || this.props.user.fb.details.lastName}) ${phrases.general.logout}`}
                       </a> :
                       <a href="#menu" onClick={this.handleLogin}>
                         {phrases.general.login}

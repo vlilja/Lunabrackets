@@ -8,8 +8,9 @@ router.use('/api/seasons', require('./seasonRoutes'));
 router.use('/api/tournaments', require('./tournamentRoutes'));
 
 router.get('/', (req, res) => {
-  console.log(req.headers);
+  console.log(req.cookies);
   res.send('Hello LunabracketsAPI\n');
 });
+
 
 module.exports = router;

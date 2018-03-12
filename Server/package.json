@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js NODE_ENV='development'"
   },
   "keywords": [
     "Lunabrackets"
@@ -13,8 +13,13 @@
   "author": "Valtteri Lilja",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.17.1",
+    "cookie-parser": "^1.4.3",
+    "cookie-session": "^2.0.0-beta.3",
     "express": "^4.15.0",
+    "express-session": "^1.15.6",
+    "helmet": "^3.12.0",
     "lodash": "^4.17.4",
     "lunabrackets-datamodel": "file:../Datamodel",
     "mariasql": "^0.2.6",
