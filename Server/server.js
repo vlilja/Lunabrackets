@@ -8,7 +8,7 @@ const userHandler = require('./handlers/userHandler');
 
 const privateKey = fs.readFileSync('/encryption/domain.key', 'utf8');
 const certificate = fs.readFileSync('/encryption/domain.crt', 'utf8');
-const appSecret = fs.readFileSync('./appsecret.txt', 'utf-8').replace('\n', '');
+const appSecret = fs.readFileSync(`${__dirname}/appsecret.txt`, 'utf-8').replace('\n', '');
 
 
 const credentials = { key: privateKey, cert: certificate };
