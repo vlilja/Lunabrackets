@@ -84,8 +84,10 @@ function checkForSubsitutes(grpWinners, matches) {
 }
 
 function scoreLeague(grpWinners, matches, players, scoring) {
+  console.log(players.length);
   let finalRankings = [];
   const subs = checkForSubsitutes(grpWinners, matches);
+  console.log(subs);
   const places = [];
   players.forEach((p, idx) => {
     places.push(idx + 1);
@@ -123,10 +125,12 @@ function scoreLeague(grpWinners, matches, players, scoring) {
         player: result.winner,
       });
     }
-    finalRankings.push({
-      place: places.shift(),
-      player: result.loser,
-    });
+    if (match.walkOver !== 1) {
+      finalRankings.push({
+        place: places.shift(),
+        player: result.loser,
+      });
+    }
   });
   finalRankings = finalRankings.filter((r) => {
     if (r.place && r.player) {
@@ -325,6 +329,8 @@ module.exports = {
           });
         }
         const finalRankings = scoreLeague(grpWinners, matches, response[7], response[8]);
+        console.log(finalRankings.length);
+        console.log(response[7].length);
         if (finalRankings.length !== response[7].length) {
           reject(new Error('Rankings missing'));
         }

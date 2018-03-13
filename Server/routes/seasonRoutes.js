@@ -20,7 +20,7 @@ router.post('/', (req, res) => {
   if (req.user.admin === '1') {
     try {
       if (season && typeof season === 'object') {
-        seasonHandler.createSeason(season, userId, (response) => {
+        seasonHandler.createSeason(season, req.user.id, (response) => {
           if (response instanceof Error) {
             res.status(400).send('Error creating season');
           } else {

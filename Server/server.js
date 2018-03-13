@@ -58,7 +58,6 @@ app.use((req, res, next) => {
         const now = new Date().getTime();
         const diff = expiry - now;
         if (data.application === 'lunabrackets' && Number(diff) > 0) {
-          console.log(data);
           userHandler.getUserByFb(data.user_id, (user) => {
             if (user[0] && user[0].id) {
               [req.user] = user;
