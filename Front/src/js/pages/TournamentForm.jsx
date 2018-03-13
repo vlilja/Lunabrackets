@@ -97,32 +97,68 @@ class TournamentForm extends React.Component {
           <form className="form-horizontal" autoComplete="off">
             <div className="form-group">
               <label className="control-label col-xs-2" htmlFor="name">{phrases.tournamentForm.name}</label>
-              <div className="col-xs-6"><input name="name" className="form-control" onChange={this.handleChange} value={this.state.name} type="text" /></div>
+              <div
+                className="col-xs-6"
+              ><input
+                name="name"
+                className="form-control"
+                onChange={this.handleChange}
+                value={this.state.name}
+                type="text"
+              /></div>
             </div>
             <div className="form-group">
               <span className="col-xs-2 control-label">{phrases.leagueForm.game}</span>
               <div className="col-xs-10">
                 <div className="radio">
                   <label>
-                    <input type="radio" name="game" id="eight" onChange={this.handleChange} value="1" checked={this.state.game === '1'} />
+                    <input
+                      type="radio"
+                      name="game"
+                      id="eight"
+                      onChange={this.handleChange}
+                      value="1"
+                      checked={this.state.game === '1'}
+                    />
                     {phrases.general.games.eight}
                   </label>
                 </div>
                 <div className="radio">
                   <label>
-                    <input type="radio" name="game" id="nine" onChange={this.handleChange} value="2" checked={this.state.game === '2'} />
+                    <input
+                      type="radio"
+                      name="game"
+                      id="nine"
+                      onChange={this.handleChange}
+                      value="2"
+                      checked={this.state.game === '2'}
+                    />
                     {phrases.general.games.nine}
                   </label>
                 </div>
                 <div className="radio">
                   <label>
-                    <input type="radio" name="game" id="ten" onChange={this.handleChange} value="3" checked={this.state.game === '3'} />
+                    <input
+                      type="radio"
+                      name="game"
+                      id="ten"
+                      onChange={this.handleChange}
+                      value="3"
+                      checked={this.state.game === '3'}
+                    />
                     {phrases.general.games.ten}
                   </label>
                 </div>
                 <div className="radio">
                   <label>
-                    <input type="radio" name="game" id="straight" onChange={this.handleChange} value="4" checked={this.state.game === '4'} />
+                    <input
+                      type="radio"
+                      name="game"
+                      id="straight"
+                      onChange={this.handleChange}
+                      value="4"
+                      checked={this.state.game === '4'}
+                    />
                     {phrases.general.games.straight}
                   </label>
                 </div>
@@ -132,7 +168,14 @@ class TournamentForm extends React.Component {
               <span className="col-xs-2 control-label">{phrases.leagueForm.season}</span>
               <div className="col-xs-10">
                 <label htmlFor="season">
-                  <select name="season" value={this.state.season} onChange={this.handleChange} multiple="" className="form-control" id="season">
+                  <select
+                    name="season"
+                    value={this.state.season}
+                    onChange={this.handleChange}
+                    multiple=""
+                    className="form-control"
+                    id="season"
+                  >
                     {options}
                   </select>
                 </label>
@@ -161,7 +204,11 @@ class TournamentForm extends React.Component {
               </div>
             :
               <div>
-                <Icons type={this.props.tournament.error === null ? 'SUCCESS' : 'ERROR'} size="30px" message={this.props.tournament.message} />
+                <Icons
+                  type={this.props.tournament.error === null ? 'SUCCESS' : 'ERROR'}
+                  size="30px"
+                  message={this.props.tournament.message}
+                />
                 <a href="/new-tournament" className="btn btn-primary">OK</a>
               </div>
             }

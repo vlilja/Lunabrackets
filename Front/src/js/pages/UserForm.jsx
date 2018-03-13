@@ -50,19 +50,37 @@ class UserForm extends React.Component {
               <div className="col-xs-12">
                 <label htmlFor="firstname">
                   {phrases.userForm.firstName}
-                  <input className="form-control" type="text" name="firstname" readOnly value={this.props.user.fb.details.firstName} />
+                  <input
+                    className="form-control"
+                    type="text"
+                    name="firstname"
+                    readOnly
+                    value={this.props.user.fb.details.firstName}
+                  />
                 </label>
               </div>
               <div className="col-xs-12">
                 <label htmlFor="lastname">
                   {phrases.userForm.lastName}
-                  <input className="form-control" type="text" name="lastname" readOnly value={this.props.user.fb.details.lastName} />
+                  <input
+                    className="form-control"
+                    type="text"
+                    name="lastname"
+                    readOnly
+                    value={this.props.user.fb.details.lastName}
+                  />
                 </label>
               </div>
               <div className="col-xs-12">
                 <label htmlFor="nickname">
                   {phrases.userForm.nickName}
-                  <input className="form-control" type="text" name="lastname" onChange={this.handleChange} value={this.state.nickName} />
+                  <input
+                    className="form-control"
+                    type="text"
+                    name="lastname"
+                    onChange={this.handleChange}
+                    value={this.state.nickName}
+                  />
                 </label>
               </div>
             </div>

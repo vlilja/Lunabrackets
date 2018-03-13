@@ -168,19 +168,63 @@ class LeagueDetails extends React.Component {
     switch (this.state.view) {
       case 'ready':
         if (this.props.user.admin !== '1') {
-          return <ResultsView league={this.props.league} loading={this.props.loadingResults} getResults={this.getResults} />;
+          return (<ResultsView
+            league={this.props.league}
+            loading={this.props.loadingResults}
+            getResults={this.getResults}
+          />);
         }
-        return <AdminView league={this.props.league} startLeague={this.startLeague} startQualifiers={this.startQualifiers} startFinals={this.startFinals} finishLeague={this.finishLeague} getGroups={this.getGroups} getEliminationMatches={this.getEliminationMatches} getQualifierMatches={this.getQualifierMatches} getFinalsMatches={this.getFinalsMatches} getUndetermined={this.getUndetermined} updateUndetermined={this.updateUndetermined} />;
+        return (<AdminView
+          league={this.props.league}
+          startLeague={this.startLeague}
+          startQualifiers={this.startQualifiers}
+          startFinals={this.startFinals}
+          finishLeague={this.finishLeague}
+          getGroups={this.getGroups}
+          getEliminationMatches={this.getEliminationMatches}
+          getQualifierMatches={this.getQualifierMatches}
+          getFinalsMatches={this.getFinalsMatches}
+          getUndetermined={this.getUndetermined}
+          updateUndetermined={this.updateUndetermined}
+        />);
       case 'complete':
-        return <ResultsView league={this.props.league} loading={this.props.loadingResults} getResults={this.getResults} />;
+        return (<ResultsView
+          league={this.props.league}
+          loading={this.props.loadingResults}
+          getResults={this.getResults}
+        />);
       case 'elimination':
-        return <EliminationView user={this.props.user} league={this.props.league} getMatches={this.getEliminationMatches} update={this.updateEliminationMatch} />;
+        return (<EliminationView
+          user={this.props.user}
+          league={this.props.league}
+          getMatches={this.getEliminationMatches}
+          update={this.updateEliminationMatch}
+        />);
       case 'group':
-        return <GroupView user={this.props.user} league={this.props.league} getGroups={this.getGroups} getGroupMatches={this.getGroupMatches} updateGroupStageMatch={this.updateGroupStageMatch} updating={this.props.updating} />;
+        return (<GroupView
+          user={this.props.user}
+          league={this.props.league}
+          getGroups={this.getGroups}
+          getGroupMatches={this.getGroupMatches}
+          updateGroupStageMatch={this.updateGroupStageMatch}
+          updating={this.props.updating}
+        />);
       case 'qualifiers':
-        return <QualifiersView user={this.props.user} league={this.props.league} players={this.props.league.players} getMatches={this.getQualifierMatches} qualifiers={this.props.league.qualifiers} update={this.updateQualifierMatch} />;
+        return (<QualifiersView
+          user={this.props.user}
+          league={this.props.league}
+          players={this.props.league.players}
+          getMatches={this.getQualifierMatches}
+          qualifiers={this.props.league.qualifiers}
+          update={this.updateQualifierMatch}
+        />);
       case 'finals':
-        return <FinalsView user={this.props.user} league={this.props.league} getMatches={this.getFinalsMatches} update={this.updateFinalsMatch} />;
+        return (<FinalsView
+          user={this.props.user}
+          league={this.props.league}
+          getMatches={this.getFinalsMatches}
+          update={this.updateFinalsMatch}
+        />);
       default:
         return (<div>NOTDONE
         </div>);
@@ -218,7 +262,12 @@ class LeagueDetails extends React.Component {
       const image = helper.determineGameIcon(this.props.league.gameType);
       const raceTo = this.props.league.raceTo ? this.props.league.raceTo : '?';
       element = (<div>
-        <h1 className="margin-bottom-double"> <img className="img game-logo" alt="logo" src={image} />{`${this.props.league.name}  `}({`${gameName} , ${phrases.general.raceTo} ${raceTo}`})</h1>
+        <h1 className="margin-bottom-double">
+          <img
+            className="img game-logo"
+            alt="logo"
+            src={image}
+          />{`${this.props.league.name}  `}({`${gameName} , ${phrases.general.raceTo} ${raceTo}`})</h1>
         {modal}
         <LeagueNavigation
           view={this.state.view}

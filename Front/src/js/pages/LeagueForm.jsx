@@ -176,7 +176,15 @@ class LeagueForm extends React.Component {
     }
     let element;
     if (this.state.stage.league) {
-      element = <MainForm update={this.update} leagueName={this.state.leagueName} game={this.state.game} season={this.state.season} seasons={this.props.seasons} error={this.state.errors.name} next={this.showPickPlayers} />;
+      element = (<MainForm
+        update={this.update}
+        leagueName={this.state.leagueName}
+        game={this.state.game}
+        season={this.state.season}
+        seasons={this.props.seasons}
+        error={this.state.errors.name}
+        next={this.showPickPlayers}
+      />);
     } else if (this.state.stage.player) {
       element = (<PlayerPick
         update={this.update}
@@ -220,7 +228,11 @@ class LeagueForm extends React.Component {
                 </div>
               :
                 <div>
-                  <Icon type={this.props.league.error === null ? 'SUCCESS' : 'ERROR'} size="30px" message={this.props.league.message} />
+                  <Icon
+                    type={this.props.league.error === null ? 'SUCCESS' : 'ERROR'}
+                    size="30px"
+                    message={this.props.league.message}
+                  />
                   <a href="/new-league" className="btn btn-primary">OK</a>
                 </div>
               }

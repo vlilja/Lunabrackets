@@ -54,7 +54,6 @@ export function getAllLeagues(user) {
       type: 'FETCH_ALL_LEAGUES',
       payload: '',
     });
-    console.log(user);
     axios.get(
       `${serverDetails.baseUrl}leagues`,
       { auth: { username: user.id, password: user.token } },
@@ -260,7 +259,7 @@ export function updateUndetermined(leagueId, group, user) {
         payload: response.data,
       });
       flashMessage(dispatch, 2000);
-      dispatch(getUndetermined(leagueId));
+      dispatch(getUndetermined(leagueId, user));
     })
       .catch((err) => {
         dispatch({
@@ -268,7 +267,7 @@ export function updateUndetermined(leagueId, group, user) {
           payload: err,
         });
         flashMessage(dispatch, 2000);
-        dispatch(getUndetermined(leagueId));
+        dispatch(getUndetermined(leagueId, user));
       });
   };
 }
@@ -485,7 +484,7 @@ export function updateGroupStageMatch(leagueId, groupId, match, user) {
         payload: phrases.messages.matchUpdate,
       });
       flashMessage(dispatch, 2000);
-      dispatch(getLeagueGroups(leagueId));
+      dispatch(getLeagueGroups(leagueId, user));
     })
       .catch((error) => {
         dispatch({
@@ -493,7 +492,7 @@ export function updateGroupStageMatch(leagueId, groupId, match, user) {
           payload: { error, message: phrases.errorMessages.matchUpdate },
         });
         flashMessage(dispatch, 2000);
-        dispatch(getLeagueGroups(leagueId));
+        dispatch(getLeagueGroups(leagueId, user));
       });
   };
 }
@@ -512,7 +511,7 @@ export function updateEliminationMatch(leagueId, match, user) {
           type: 'UPDATE_ELIMINATION_MATCH_FULFILLED',
           payload: phrases.messages.matchUpdate,
         });
-        dispatch(getEliminationMatches(leagueId));
+        dispatch(getEliminationMatches(leagueId, user));
         flashMessage(dispatch, 2000);
       })
       .catch((error) => {
@@ -521,7 +520,7 @@ export function updateEliminationMatch(leagueId, match, user) {
           payload: error,
         });
         flashMessage(dispatch, 2000);
-        dispatch(getEliminationMatches(leagueId));
+        dispatch(getEliminationMatches(leagueId, user));
       });
   };
 }
@@ -543,7 +542,7 @@ export function updateQualifierMatch(leagueId, match, user) {
           type: 'UPDATE_QUALIFIER_MATCH_FULFILLED',
           payload: phrases.messages.matchUpdate,
         });
-        dispatch(getQualifierMatches(leagueId));
+        dispatch(getQualifierMatches(leagueId, user));
         flashMessage(dispatch, 2000);
       })
       .catch((error) => {
@@ -552,7 +551,7 @@ export function updateQualifierMatch(leagueId, match, user) {
           payload: error,
         });
         flashMessage(dispatch, 2000);
-        dispatch(getQualifierMatches(leagueId));
+        dispatch(getQualifierMatches(leagueId, user));
       });
   };
 }
@@ -574,7 +573,7 @@ export function updateFinalsMatch(leagueId, match, user) {
           type: 'UPDATE_FINALS_MATCH_FULFILLED',
           payload: phrases.messages.matchUpdate,
         });
-        dispatch(getFinalsMatches(leagueId));
+        dispatch(getFinalsMatches(leagueId, user));
         flashMessage(dispatch, 2000);
       })
       .catch((error) => {
@@ -582,7 +581,7 @@ export function updateFinalsMatch(leagueId, match, user) {
           type: 'UPDATE_FINALS_MATCH_REJECTED',
           payload: { error, message: phrases.errorMessages.matchUpdate },
         });
-        dispatch(getFinalsMatches(leagueId));
+        dispatch(getFinalsMatches(leagueId, user));
         flashMessage(dispatch, 2000);
       });
   };

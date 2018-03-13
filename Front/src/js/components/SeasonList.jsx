@@ -44,7 +44,11 @@ class SeasonList extends React.Component {
     if (this.props.seasons) {
       this.props.seasons.forEach((season) => {
         if (season.active === '1') {
-          mappedSeasons.active.push(<button key={season.id} onClick={() => { this.navigateTo(season.id); }} className="list-group-item clickable">{season.name}</button>);
+          mappedSeasons.active.push(<button
+            key={season.id}
+            onClick={() => { this.navigateTo(season.id); }}
+            className="list-group-item clickable"
+          >{season.name}</button>);
         } else {
           mappedSeasons.inactive.push(<li key={season.id} className="list-group-item">{season.name}</li>);
         }

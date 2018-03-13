@@ -136,7 +136,10 @@ class SeasonDetails extends React.Component {
         headerRow.push(<th className="center-text" key={league.id}>{league.name}</th>);
       });
       this.props.season.tournaments.forEach((tournament, idx) => {
-        headerRow.push(<th className={idx === 0 ? 'center-text left-border' : 'center-text'} key={tournament.id}>{tournament.name}</th>);
+        headerRow.push(<th
+          className={idx === 0 ? 'center-text left-border' : 'center-text'}
+          key={tournament.id}
+        >{tournament.name}</th>);
       });
       headerRow.push(<th className="center-text left-border" key="bns">{phrases.season.bonus}</th>);
       headerRow.push(<th className="center-text" key="sum">{phrases.season.sum}</th>);
@@ -146,7 +149,10 @@ class SeasonDetails extends React.Component {
       const tableBody = [];
       playersArr.forEach((player, idx) => {
         const tableRow = [];
-        tableRow.push(<td className="name-cell" key={player.details.id}>{`${idx + 1}.  ${player.details.firstName} ${player.details.lastName}` }</td>);
+        tableRow.push(<td
+          className="name-cell"
+          key={player.details.id}
+        >{`${idx + 1}.  ${player.details.firstName} ${player.details.lastName}` }</td>);
         leagueKeys.forEach((leagueKey) => {
           let pts = '-';
           if (player.leagues && player.leagues[leagueKey]) {
@@ -159,7 +165,10 @@ class SeasonDetails extends React.Component {
           if (player.tournaments && player.tournaments[tournamentKey]) {
             pts = player.tournaments[tournamentKey].points;
           }
-          tableRow.push(<td key={tournamentKey + player.details.id} className={index === 0 ? 'center-text left-border' : 'center-text'} >{pts}</td>);
+          tableRow.push(<td
+            key={tournamentKey + player.details.id}
+            className={index === 0 ? 'center-text left-border' : 'center-text'}
+          >{pts}</td>);
         });
         tableRow.push(<td className="center-text left-border" key="bns">{player.bonus || ''}</td>);
         tableRow.push(<td className="center-text sum-cell" key="sum">{player.sum}</td>);

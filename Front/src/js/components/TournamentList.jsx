@@ -39,7 +39,14 @@ class TournamentList extends React.Component {
     if (this.props.tournaments) {
       tournaments = [];
       this.props.tournaments.forEach((tournament) => {
-        tournaments.push((<li key={tournament.id} className="list-group-item"><div tabIndex={tournament.id} role="button" onClick={() => { this.navigateTo(tournament.id); }}>{tournament.name}</div></li>));
+        tournaments.push((<li
+          key={tournament.id}
+          className="list-group-item"
+        ><div
+          tabIndex={tournament.id}
+          role="button"
+          onClick={() => { this.navigateTo(tournament.id); }}
+        >{tournament.name}</div></li>));
       });
       tournaments = <ul className="list-group">{tournaments}</ul>;
     }

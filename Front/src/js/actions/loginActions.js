@@ -84,7 +84,7 @@ export function checkLoginStatus() {
     FB.getLoginStatus((response) => {
       if (response.status === 'connected') {
         dispatch(getUserByFb(response.authResponse.userID, response.authResponse.accessToken));
-      }
+      } 
     });
   };
 }

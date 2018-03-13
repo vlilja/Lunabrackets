@@ -41,16 +41,17 @@ class Navbar extends React.Component {
           <div className="container-fluid">
             <div className="navbar-header">
               <Link className="navbar-brand" to="/">Lunabrackets</Link>
-              <button type="button" className="navbar-toggle" data-toggle="collapse" data-target="#navbar">
-                <span className="icon-bar" />
-                <span className="icon-bar" />
-                <span className="icon-bar" />
-              </button>
             </div>
             <div id="navbar" className="collapse navbar-collapse">
+              {!this.props.user.id ? '' :
               <ul className="nav navbar-nav">
                 <li className="dropdown">
-                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">{phrases.navigation.seasons}<span className="caret" />
+                  <a
+                    className="dropdown-toggle"
+                    data-toggle="dropdown"
+                    role="button"
+                    href="#menu"
+                  >{phrases.navigation.seasons}<span className="caret" />
                   </a>
                   <ul className="dropdown-menu">
                     <li>
@@ -64,7 +65,12 @@ class Navbar extends React.Component {
                   </ul>
                 </li>
                 <li className="dropdown">
-                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">{phrases.navigation.leagues}<span className="caret" />
+                  <a
+                    className="dropdown-toggle"
+                    data-toggle="dropdown"
+                    role="button"
+                    href="#menu"
+                  >{phrases.navigation.leagues}<span className="caret" />
                   </a>
                   <ul className="dropdown-menu">
                     <li>
@@ -78,7 +84,12 @@ class Navbar extends React.Component {
                   </ul>
                 </li>
                 <li className="dropdown">
-                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">{phrases.navigation.tournaments}<span className="caret" />
+                  <a
+                    className="dropdown-toggle"
+                    data-toggle="dropdown"
+                    role="button"
+                    href="#menu"
+                  >{phrases.navigation.tournaments}<span className="caret" />
                   </a>
                   <ul className="dropdown-menu">
                     <li>
@@ -92,7 +103,12 @@ class Navbar extends React.Component {
                   </ul>
                 </li>
                 <li className="dropdown">
-                  <a className="dropdown-toggle" data-toggle="dropdown" role="button" href="#menu">{phrases.navigation.players}<span className="caret" />
+                  <a
+                    className="dropdown-toggle"
+                    data-toggle="dropdown"
+                    role="button"
+                    href="#menu"
+                  >{phrases.navigation.players}<span className="caret" />
                   </a>
                   <ul className="dropdown-menu">
                     <li>
@@ -101,12 +117,15 @@ class Navbar extends React.Component {
                   </ul>
                 </li>
               </ul>
+              }
               <ul className="nav navbar-nav navbar-right">
                 <li>
                   {
                     this.props.user.fbId ?
                       <a href="#menu" onClick={this.handleLogout}>
-                        {`(${this.props.user.firstName || this.props.user.fb.details.firstName} ${this.props.user.lastName || this.props.user.fb.details.lastName}) ${phrases.general.logout}`}
+                        {`(${this.props.user.firstName || this.props.user.fb.details.firstName}
+                           ${this.props.user.lastName || this.props.user.fb.details.lastName})
+                            ${phrases.general.logout}`}
                       </a> :
                       <a href="#menu" onClick={this.handleLogin}>
                         {phrases.general.login}

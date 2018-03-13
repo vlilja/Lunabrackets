@@ -153,14 +153,14 @@ export function changeSeasonStatus(seasonId, status, user) {
           type: 'UPDATE_SEASON_STATUS_FULFILLED',
           payload: 'Season status changed successfully',
         });
-        dispatch(getSeasons());
+        dispatch(getSeasons(user));
       })
       .catch((error) => {
         dispatch({
           type: 'UPDATE_SEASON_STATUS_REJECTED',
           payload: { error, message: 'Season status change failed' },
         });
-        dispatch(getSeasons());
+        dispatch(getSeasons(user));
       });
   };
 }

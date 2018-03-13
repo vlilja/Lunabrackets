@@ -59,7 +59,7 @@ export default class Match extends React.Component {
     const { match } = this.props;
     return (<div>
       {match.void === 1 ?
-        <div>VOID</div> : <div>
+        <div /> : <div>
           <div className="clickable" onClick={this.openModal} role="button" tabIndex={0}>
             <div className="margin-bottom">
               <span className="badge badge-dark">{match.key}</span>

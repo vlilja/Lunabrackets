@@ -12,18 +12,23 @@ class LeagueList extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      initialized: false,
+    };
     this.navigateTo = this.navigateTo.bind(this);
   }
 
   componentWillMount() {
     if (!this.props.leagues && this.props.user.id) {
       this.props.dispatch(getAllLeagues(this.props.user));
+      this.setState({ initialized: true });
     }
   }
 
   componentWillReceiveProps(props) {
-    if (!this.props.user.id && props.user.token) {
+    if (!this.state.initialized && props.user.token) {
       this.props.dispatch(getAllLeagues(props.user));
+      this.setState({ initialized: true });
     }
   }
 
@@ -38,7 +43,10 @@ class LeagueList extends React.Component {
   render() {
     let mappedLeagues;
     if (this.props.leagues) {
-      mappedLeagues = this.props.leagues.map(league => <div className="col-lg-3 col-xs-6" key={league.id}><LeaguePanel navigateTo={this.navigateTo} league={league} /></div>);
+      mappedLeagues = this.props.leagues.map(league => (<div
+        className="col-lg-3 col-xs-6"
+        key={league.id}
+      ><LeaguePanel navigateTo={this.navigateTo} league={league} /></div>));
     }
     return (
       <Router>
@@ -54,4 +62,8 @@ class LeagueList extends React.Component {
 
 }
 
-export default connect(store => ({ user: store.user, leagues: store.league.leagueList, loading: store.league.loading.list }))(LeagueList);
+export default connect(store => ({
+  user: store.user,
+  leagues: store.league.leagueList,
+  loading: store.league.loading.list,
+}))(LeagueList);
