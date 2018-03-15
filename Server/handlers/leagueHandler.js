@@ -1,6 +1,8 @@
+const _ = require('lodash');
+const winston = require('winston');
+
 const db = require('../DB/dbOperations');
 const dbClient = require('../DB/dbconnect').initConnection();
-const _ = require('lodash');
 const transactionManager = require('../DB/transactionManager');
 const groupStageHelper = require('../helpers/groupStageHelper');
 const groupHandler = require('./groupHandler');
@@ -8,12 +10,17 @@ const qualifierHandler = require('./qualifierHandler');
 const finalsHandler = require('./finalsHandler');
 const eliminationHandler = require('./eliminationHandler');
 const userHandler = require('./userHandler');
-const logger = require('winston');
 const validator = require('../validators/validator');
 const {
   League, Match, Player, Group,
 } = require('lunabrackets-datamodel');
 
+const logger = new (winston.Logger)({
+  transports: [
+    new (winston.transports.Console)(),
+    new (winston.transports.File)({ filename: 'server.log' }),
+  ],
+});
 
 // HELPERS
 function placePlayersByRanking(leagueId, group, placements) {

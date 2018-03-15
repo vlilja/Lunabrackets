@@ -16,7 +16,7 @@ module.exports = {
       const credentials = readDbCredentials();
       let db;
       if (process.env.NODE_ENV === 'production') {
-        db = 'lunabrackets';
+        db = 'lunabrackets-test';
       } else {
         db = 'lunabrackets-test';
       }

@@ -26,7 +26,7 @@ let corsUrl = 'https://localhost:8080';
 const fbGraphApi = 'https://graph.facebook.com/debug_token';
 
 if (process.env.NODE_ENV === 'production') {
-  corsUrl = 'https://ec2-54-154-60-207.eu-west-1.compute.amazonaws.com:8080';
+  corsUrl = 'https://lunabrackets.com';
 }
 
 app.use((req, res, next) => {

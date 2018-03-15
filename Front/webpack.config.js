@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 
 // Constant with our paths
 const paths = {
@@ -29,6 +30,9 @@ module.exports = {
     }),
     new ExtractTextPlugin('style.bundle.css'),
     new CopyWebpackPlugin([{ from: './src/bootstrap.min.css', to: paths.DIST }]),
+    new UglifyJsPlugin({
+	    test: /\.js($|\?)/i
+	  })
   ],
   module: {
     rules: [

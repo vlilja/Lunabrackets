@@ -2,3 +2,4 @@ node_modules/
 dbcredentials.txt
 Front/dist/
 appsecret.txt
+*.log

@@ -4,20 +4,15 @@
     "script"      : "./Server/server.js",
     "watch"       : true,
     "env": {
-      "NODE_ENV": "development"
-    },
-    "env_production": {
       "NODE_ENV": "production"
     }
   },
   {
     "name"        : "webfront",
     "script"      : "./Front/app.js",
+    "watch"       : true,
     "env": {
-      "NODE_ENV": "development"
-    },
-    "env_production": {
       "NODE_ENV": "production"
     }
-    }]
+}]
 }
