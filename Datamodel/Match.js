@@ -67,7 +67,7 @@ module.exports = function Match(id, key, winnerNextMatchKey, loserNextMatchKey, 
         }
     }
     else if(this.walkOver === 1){
-      winner = this.playerOne ? this.playerOne.id : this.playerTwo.id;
+      winner = this.playerOne.id ? this.playerOne.id : this.playerTwo.id;
       return {winner: winner, loser:null}
     }
     else if(this.void === 1) {
