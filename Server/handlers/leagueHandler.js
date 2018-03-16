@@ -91,10 +91,8 @@ function checkForSubsitutes(grpWinners, matches) {
 }
 
 function scoreLeague(grpWinners, matches, players, scoring) {
-  console.log(players.length);
   let finalRankings = [];
   const subs = checkForSubsitutes(grpWinners, matches);
-  console.log(subs);
   const places = [];
   players.forEach((p, idx) => {
     places.push(idx + 1);
@@ -336,8 +334,7 @@ module.exports = {
           });
         }
         const finalRankings = scoreLeague(grpWinners, matches, response[7], response[8]);
-        console.log(finalRankings.length);
-        console.log(response[7].length);
+
         if (finalRankings.length !== response[7].length) {
           reject(new Error('Rankings missing'));
         }
@@ -635,7 +632,7 @@ module.exports = {
     promise.then((response) => {
       const matches = [];
       response.forEach((match) => {
-        const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, match.walk_over, match.void);
+        const m = new Match(match.id, match.match_key, match.winner_next_match_key, match.loser_next_match_key, match.player_one, match.player_two, null, match.walk_over, match.void);
         m.setScore(match.player_one_score, match.player_two_score);
         matches.push(m);
       });
