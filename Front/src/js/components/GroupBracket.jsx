@@ -115,7 +115,7 @@ export default class GroupBracket extends React.Component {
     this.props.bracket.grid.forEach((row, idx) => {
       const cells = [];
       const player = this.props.bracket.players.find(p => p.id === row[0].pOne);
-      cells.push(<td key="name">{`${player.firstName} ${player.lastName}`}</td>);
+      cells.push(<td key="name">{`${player.firstName} ${player.lastName}`} <span className="badge">{player.handicap}</span></td>);
       row.forEach((match) => {
         if (!match.match) {
           cells.push(<td key="greyed-out" className="greyed-out" />);
