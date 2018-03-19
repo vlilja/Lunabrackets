@@ -83,7 +83,7 @@ class SeasonDetails extends React.Component {
           } else {
             const playerDetails = this.props.players.find(p => p.id === result.player_id);
             players[result.player_id] = { details: playerDetails, leagues: {} };
-            players[result.player_id].leagues[league.id] = { points: result.points, bonus: result.points };
+            players[result.player_id].leagues[league.id] = { points: result.points, bonus: result.bonus };
           }
         });
       });
@@ -109,6 +109,9 @@ class SeasonDetails extends React.Component {
         let bonus = 0;
         leagueKeys.forEach((leagueKey) => {
           if (players[key].leagues && players[key].leagues[leagueKey]) {
+            if(key === '2') {
+              console.log(players[key]);
+            }
             const { points } = players[key].leagues[leagueKey];
             sum += Number(points);
             if (players[key].leagues[leagueKey].bonus === '1') {
