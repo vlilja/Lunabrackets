@@ -23,7 +23,10 @@ export default class ResultsView extends React.Component {
       results.forEach((result) => {
         const player = this.props.league.players.find(p => p.id === result.player_id);
         result.player = player;
-        mappedResults.push(<li key={player.id} className="list-group-item">{`${result.place}. ${player.firstName} ${player.lastName}`}
+        mappedResults.push(<li
+          key={player.id}
+          className="list-group-item"
+        >{`${result.place}. ${player.firstName} ${player.lastName}`}
           <span className="right">{`${phrases.resultsView.points}: ${result.points} |
             ${phrases.resultsView.bonus}: ${result.bonus === '1' ? '4' : '0'} |
             ${phrases.resultsView.total}: ${result.bonus === '1' ? Number(result.points) + 4 : result.points}`}</span>

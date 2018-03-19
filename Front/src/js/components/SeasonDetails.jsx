@@ -109,9 +109,6 @@ class SeasonDetails extends React.Component {
         let bonus = 0;
         leagueKeys.forEach((leagueKey) => {
           if (players[key].leagues && players[key].leagues[leagueKey]) {
-            if(key === '2') {
-              console.log(players[key]);
-            }
             const { points } = players[key].leagues[leagueKey];
             sum += Number(points);
             if (players[key].leagues[leagueKey].bonus === '1') {
