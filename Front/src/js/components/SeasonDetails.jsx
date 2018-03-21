@@ -127,7 +127,7 @@ class SeasonDetails extends React.Component {
         players[key].bonus = bonus;
         playersArr.push(players[key]);
       });
-      playersArr.sort((a, b) => b.sum - a.sum);
+      playersArr.sort(helper.sortSeasonRanking);
       // Table header
       const tableHeader = [];
       const headerRow = [];
