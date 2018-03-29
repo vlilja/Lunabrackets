@@ -8,8 +8,6 @@ export function validate(pickedPlayers) {
     return undefined;
   }
 
-  let i = 0;
-  const places = pickedPlayers.map( _ => ++i);
   const rankedPlayers = pickedPlayers.map( p => ({
     playerId: p.id,
     place: p.ranking
@@ -17,7 +15,7 @@ export function validate(pickedPlayers) {
 
   rankedPlayers.sort((a, b) => a.place - b.place);
   for (let i = 0; i < rankedPlayers.length; i += 1) {
-    if (places[i] !== rankedPlayers[i].place) {
+    if (rankedPlayers[i].place !== (i + 1)) {
       return undefined;
     }
   }
