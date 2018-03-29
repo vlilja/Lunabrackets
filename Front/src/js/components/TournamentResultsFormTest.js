@@ -29,6 +29,12 @@ const submit = (pickedPlayers) => {
 
 describe('Tournament Result Form validation', () => {
   it('Validates players before submitting results', () => {
-      expect(true).to.eql(true)
+    const pickedPlayers = [
+      { id: 0, ranking: 0},
+      { id: 1, ranking: 1},
+      { id: 2, ranking: 2}
+    ]
+
+    expect(submit(pickedPlayers)).to.be.undefined
   })
 });
