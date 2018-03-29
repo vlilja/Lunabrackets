@@ -1,7 +1,7 @@
 import chai from 'chai';
 const {expect} = chai
 
-const submit = (pickedPlayers) => {
+const validate = (pickedPlayers) => {
   if (pickedPlayers.length <= 16) {
     const places = [];
     const rankedPlayers = [];
@@ -28,13 +28,13 @@ const submit = (pickedPlayers) => {
 }
 
 describe('Tournament Result Form validation', () => {
-  it('Validates players before submitting results', () => {
+  it('Returns undefined for invalid input', () => {
     const pickedPlayers = [
       { id: 0, ranking: 0},
       { id: 1, ranking: 1},
       { id: 2, ranking: 2}
     ]
 
-    expect(submit(pickedPlayers)).to.be.undefined
+    expect(validate(pickedPlayers)).to.be.undefined
   })
 });
