@@ -21,14 +21,8 @@ export function validate(pickedPlayers) {
       valid = false;
     }
   }
-  if (valid) {
-    console.log(rankedPlayers);
-    // this.props.createTournamentResults(rankedPlayers);
-    return rankedPlayers;
-  } else {
-    // this.setState({ error: true });
-    return undefined
-  }
+
+  return valid ? rankedPlayers : undefined
 }
 
 export default class TournamentResultsForm extends React.Component {
