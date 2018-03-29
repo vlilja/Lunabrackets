@@ -37,4 +37,8 @@ describe('Tournament Result Form validation', () => {
 
     expect(validate(pickedPlayers)).to.be.undefined
   })
+
+  it('Returns empty array when given an empty array', () => {
+    expect(validate([])).to.eql([])
+  })
 });
