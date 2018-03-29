@@ -5,24 +5,24 @@ import phrases from '../../Phrases';
 
 export function validate(pickedPlayers) {
   if (pickedPlayers.length > 16) {
-    return undefined
+    return undefined;
   }
 
-  const places = [];
-  const rankedPlayers = [];
-  pickedPlayers.forEach((p, idx) => {
-    places.push(idx + 1);
-    rankedPlayers.push({ playerId: p.id, place: p.ranking });
-  });
+  let i = 0;
+  const places = pickedPlayers.map( _ => ++i);
+  const rankedPlayers = pickedPlayers.map( p => ({
+    playerId: p.id,
+    place: p.ranking
+  }) );
+
   rankedPlayers.sort((a, b) => a.place - b.place);
-  let valid = true;
   for (let i = 0; i < rankedPlayers.length; i += 1) {
     if (places[i] !== rankedPlayers[i].place) {
-      valid = false;
+      return undefined;
     }
   }
 
-  return valid ? rankedPlayers : undefined
+  return rankedPlayers;
 }
 
 export default class TournamentResultsForm extends React.Component {
