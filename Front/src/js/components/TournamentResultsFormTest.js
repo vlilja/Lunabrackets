@@ -1,8 +1,7 @@
 import chai from 'chai';
 const {expect} = chai
 
-const submit = () => {
-  const { pickedPlayers } = this.state;
+const submit = (pickedPlayers) => {
   if (pickedPlayers.length <= 16) {
     const places = [];
     const rankedPlayers = [];
@@ -19,9 +18,11 @@ const submit = () => {
     }
     if (valid) {
       console.log(rankedPlayers);
-      this.props.createTournamentResults(rankedPlayers);
+      // this.props.createTournamentResults(rankedPlayers);
+      return rankedPlayers;
     } else {
-      this.setState({ error: true });
+      // this.setState({ error: true });
+      return undefined
     }
   }
 }
