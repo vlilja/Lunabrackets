@@ -3,6 +3,25 @@ import _ from 'lodash';
 
 import phrases from '../../Phrases';
 
+export function validate(pickedPlayers) {
+  if (pickedPlayers.length > 16) {
+    return undefined;
+  }
+
+  const rankedPlayers = pickedPlayers.map( p => ({
+    playerId: p.id,
+    place: p.ranking
+  }) );
+
+  rankedPlayers.sort((a, b) => a.place - b.place);
+  for (let i = 0; i < rankedPlayers.length; i += 1) {
+    if (rankedPlayers[i].place !== (i + 1)) {
+      return undefined;
+    }
+  }
+
+  return rankedPlayers;
+}
 
 export default class TournamentResultsForm extends React.Component {
 
@@ -62,27 +81,13 @@ export default class TournamentResultsForm extends React.Component {
   }
 
   submit() {
-    const { pickedPlayers } = this.state;
-    if (pickedPlayers.length <= 16) {
-      const places = [];
-      const rankedPlayers = [];
-      pickedPlayers.forEach((p, idx) => {
-        places.push(idx + 1);
-        rankedPlayers.push({ playerId: p.id, place: p.ranking });
-      });
-      rankedPlayers.sort((a, b) => a.place - b.place);
-      let valid = true;
-      for (let i = 0; i < rankedPlayers.length; i += 1) {
-        if (places[i] !== rankedPlayers[i].place) {
-          valid = false;
-        }
-      }
-      if (valid) {
-        console.log(rankedPlayers);
-        this.props.createTournamentResults(rankedPlayers);
-      } else {
-        this.setState({ error: true });
-      }
+    const {pickedPlayers} = this.state;
+    const rankedPlayers = validate(pickedPlayers)
+    if (rankedPlayers) {
+      console.log(rankedPlayers);
+      this.props.createTournamentResults(rankedPlayers);
+    } else {
+      this.setState({ error: true });
     }
   }
 
